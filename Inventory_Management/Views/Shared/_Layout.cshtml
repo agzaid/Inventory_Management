@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GAG</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/css/app" asp-append-version="true" /> *@
+    <link href="~/plugins/vectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+    <link href="~/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+    <link href="~/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
+    <link href="~/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
+    <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> *@
+    <!-- loader-->
+    @* <link href="~/css/pace.min.css" rel="stylesheet" /> *@
+    <script src="~/js/pace.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/css/bootstrap-extended.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link href="~/css/app.css" rel="stylesheet">
+    <link href="~/css/icons.css" rel="stylesheet">
+    @* toastr css *@
+    @* <link href="~/css/toastr.min.css" rel="stylesheet" /> *@
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" asp-append-version="true" />
+
+    <link href="~/plugins/select2/css/select2.css" rel="stylesheet" />
+    <link href="~/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <link href="~/plugins/Drag-And-Drop/dist/imageuploadify.min.css" rel="stylesheet" />
+    <link href="~/plugins/image-modal-zoom-in-out/style.css" rel="stylesheet" />
+    <!-- Theme Style CSS -->
+    @* <link rel="stylesheet" href="~/css/dark-theme.css" />
+    <link rel="stylesheet" href="~/css/semi-dark.css" />
+    <link rel="stylesheet" href="~/css/header-colors.css" /> *@
+</head>
+<body>
+    <!--wrapper-->
+    <div class="wrapper">
+        <!--sidebar wrapper -->
+        <partial name="_SideBar">
+        <!--end sidebar wrapper -->
+        <!--start header -->
+        <partial name="_NavBar">
+        <!--end header -->
+        <!--start page wrapper -->
+        <div class="">
+            <main role="main" class="pb-3">
+                <partial name="_Notification">
+                    @RenderBody()
+            </main>
+        </div>
+        <!--end page wrapper -->
+        <!--start overlay-->
+        <div class="overlay toggle-icon"></div>
+        <!--end overlay-->
+        <!--Start Back To Top Button-->
+        <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+        <!--End Back To Top Button-->
+        <footer class="page-footer">
+            <p class="mb-0">Copyright © 2023. All right reserved. for <b>Clinics</b></p>
+        </footer>
+    </div>
+    <!--end wrapper-->
+    @* AG *@
+
+    <!-- Bootstrap JS -->
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <!--plugins-->
+    <script src="~/plugins/Drag-And-Drop/dist/imageuploadify.min.js"></script>
+    <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="~/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+    <script src="~/plugins/moment/moment.js"></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    @* <script src="~/plugins/drag-and-drop/dist/dropzonejs.js"></script> *@
+    <script src="~/js/index.js"></script>
+    <!--app JS-->
+    @* <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script> *@
+    <script src="~/js/default.js" asp-append-version="true"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

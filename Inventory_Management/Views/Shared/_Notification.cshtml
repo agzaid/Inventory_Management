@@ -1,0 +1,39 @@
+﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+@if (@TempData["success"] != null)
+{
+    <script>
+        @* debugger; *@
+            toastr.options = {
+            "closeButton": false,
+          "debug": false,
+              "newestOnTop": true,
+                        "progressBar": false,
+             "positionClass": "toast-top-right",
+                 "preventDuplicates": false,
+        "onclick": null,
+            "showDuration": "5000",
+         "hideDuration": "1000",
+             "timeOut": "0",
+                 "extendedTimeOut": "0",
+             "showEasing": "swing",
+                  "hideEasing": "linear",
+           "showMethod": "fadeIn",
+               "hideMethod": "fadeOut"
+        };
+        toastr.success('@TempData["success"]');
+    </script>
+}
+@if (@TempData["error"] != null)
+{
+    <script>
+        toastr.error('@TempData["error"]');
+    </script>
+}
+@if (@TempData["warning"] != null)
+{
+    <script>
+        toastr.warning('@TempData["warning"]');
+    </script>
+}
+

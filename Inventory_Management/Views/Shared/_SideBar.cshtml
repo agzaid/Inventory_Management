@@ -1,0 +1,151 @@
+﻿<div class="sidebar-wrapper" data-simplebar="true">
+    <div class="sidebar-header">
+        <div>
+            @* <img src="~/images/HealthcareLogoSymbolCopy.png" width="20px"height="20px" class="logo-icon" alt="logo icon"> *@
+            <i class="lni lni-sthethoscope"></i>
+        </div>
+        <div>
+            <a asp-action="index" asp-controller="home"><h4 class="logo-text">GAG_INV</h4></a>
+        </div>
+        <div class="toggle-icon ms-auto">
+            <i class='bx bx-arrow-back'></i>
+        </div>
+    </div>
+    <!--navigation-->
+    <ul class="metismenu" id="menu">
+        
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class='bx bx-home-alt'></i>
+                    </div>
+                    <div class="menu-title">Product</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="index" asp-controller="Product"><i class='bx bx-radio-circle'></i>Products List</a>
+                    </li>
+                    <li>
+                        <a asp-action="Create" asp-controller="Product"><i class='bx bx-radio-circle'></i>Add New Product</a>
+                    </li>
+                    <li>
+                        <a asp-action="index" asp-controller="Category"><i class='bx bx-radio-circle'></i>Category List</a>
+                    </li>
+                    <li>
+                        <a asp-action="Create" asp-controller="Category"><i class='bx bx-radio-circle'></i>Add New Category</a>
+                    </li>
+                    @* <li>
+                <a href="index2.html"><i class='bx bx-radio-circle'></i>Analytics</a>
+                </li> *@
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class="bx bx-category"></i>
+                    </div>
+                    <div class="menu-title">Clinical Visit</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="index" asp-controller="ClinicalVisit"><i class='bx bx-radio-circle'></i>Patient Waiting List</a>
+                    </li>
+                    <li>
+                        <a asp-action="AddPatientVisit" asp-controller="ClinicalVisit"><i class='bx bx-radio-circle'></i>Add Patient To Clinical Visit List</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class="bx bx-category"></i>
+                    </div>
+                    <div class="menu-title">Sign IN / UP</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="Login" asp-controller="Account"><i class='bx bx-radio-circle'></i>Login</a>
+                    </li>
+                    <li>
+                        <a asp-action="Register" asp-controller="Account"><i class='bx bx-radio-circle'></i>Register</a>
+                    </li>
+                </ul>
+            </li>
+       
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class="bx bx-category"></i>
+                    </div>
+                    <div class="menu-title">Diagnosis Profile</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="ListDiagnosis" asp-controller="Doctor"><i class='bx bx-radio-circle'></i>Diagnosis List</a>
+                    </li>
+                </ul>
+            </li>
+      
+
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class="bx bx-category"></i>
+                    </div>
+                    <div class="menu-title">Patient Profile</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="PatientDetails" asp-controller="Patient" asp-route-id="@Context.Request.Cookies["CookieUserMRN"]"><i class='bx bx-radio-circle'></i>Your Patient Profile</a>
+                    </li>
+                    <li>
+                        <a asp-action="index" asp-controller="Patient"><i class='bx bx-radio-circle'></i>Patient List</a>
+                    </li>
+                    <li>
+                        <a asp-action="AddNewPatient" asp-controller="Patient"><i class='bx bx-radio-circle'></i>Add New Patient</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class="bx bx-category"></i>
+                    </div>
+                    <div class="menu-title">Doctor Profile</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="GetDoctors" asp-controller="Doctor"><i class='bx bx-radio-circle'></i>Doctor List</a>
+                    </li>
+                    <li>
+                        <a asp-action="AddNewDoctor" asp-controller="Doctor"><i class='bx bx-radio-circle'></i>Add New Doctor</a>
+                    </li>
+                    <li>
+                        <a asp-action="AddSpeciality" asp-controller="Doctor"><i class='bx bx-radio-circle'></i>Add Speciality</a>
+                    </li>
+                    <li>
+                        <a asp-action="AssignDoctorToPeople" asp-controller="Doctor"><i class='bx bx-radio-circle'></i>Assign Doctor To User</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon">
+                        <i class="bx bx-category"></i>
+                    </div>
+                    <div class="menu-title">Role Management</div>
+                </a>
+                <ul>
+                    <li>
+                        <a asp-action="CreateRole" asp-controller="Account"><i class='bx bx-radio-circle'></i>Create Role</a>
+                    </li>
+                    <li>
+                        <a asp-action="AssignRole" asp-controller="Account"><i class='bx bx-radio-circle'></i>Assign Role</a>
+                    </li>
+                </ul>
+            </li>
+
+    </ul>
+    <!--end navigation-->
+</div>
