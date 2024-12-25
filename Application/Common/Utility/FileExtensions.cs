@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Drawing;
 
 namespace Application.Common.Utility
 {
@@ -76,56 +77,143 @@ namespace Application.Common.Utility
         }
         public static async Task<List<string>> CreateImages(List<IFormFile> images, string name)
         {
-            // Check if there are images in the list
-            if (images == null || images.Count == 0)
+            try
             {
-                return new List<string>();  // Return an empty list if no images were provided
-            }
-
-            var uploadedFilePaths = new List<string>();
-
-            // Directory to save files (path includes the provided name)
-            var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadedFiles", name);
-
-            // Create the directory if it doesn't exist
-            if (!Directory.Exists(uploadDirectory))
-            {
-                Directory.CreateDirectory(uploadDirectory);
-            }
-
-            // Iterate over each file and save it
-            foreach (var file in images)
-            {
-                if (file.Length > 0)
+                // Check if there are images in the list
+                if (images == null || images.Count == 0)
                 {
-                    // Generate a unique file name to avoid overwriting
-                    string fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                    string fileExtension = Path.GetExtension(file.FileName);
+                    return new List<string>();  // Return an empty list if no images were provided
+                }
 
-                    // Add a timestamp or GUID to make the filename unique
-                    string uniqueFileName = $"{fileName}_{Guid.NewGuid()}{fileExtension}";
-                    string filePath = Path.Combine(uploadDirectory, uniqueFileName);
+                var uploadedFilePaths = new List<string>();
 
-                    try
+                // Directory to save files (path includes the provided name)
+                var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadedFiles", name);
+
+                // Create the directory if it doesn't exist
+                if (!Directory.Exists(uploadDirectory))
+                {
+                    Directory.CreateDirectory(uploadDirectory);
+                }
+
+                // Iterate over each file and save it
+                foreach (var file in images)
+                {
+                    if (file.Length > 0)
                     {
-                        // Save the file to the specified path
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        // Generate a unique file name to avoid overwriting
+                        string fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        string fileExtension = Path.GetExtension(file.FileName);
+
+                        // Add a timestamp or GUID to make the filename unique
+                        string uniqueFileName = $"{fileName}_{Guid.NewGuid()}{fileExtension}";
+                        string filePath = Path.Combine(uploadDirectory, uniqueFileName);
+
+                        try
                         {
-                            await file.CopyToAsync(fileStream);
-                            // Add the relative file path to the list
-                            uploadedFilePaths.Add($"/UploadedFiles/{name}/{uniqueFileName}");
+                            // Save the file to the specified path
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(fileStream);
+                                // Add the relative file path to the list
+                                uploadedFilePaths.Add($"/UploadedFiles/{name}/{uniqueFileName}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log the error (you can use a logger or simply print it)
+                            uploadedFilePaths.Add($"Error uploading file {file.FileName}: {ex.Message}");
+                            // You can optionally return an error message or handle this differently.
                         }
                     }
-                    catch (Exception ex)
+                }
+                // Return the list of uploaded file paths
+                return uploadedFilePaths;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        public static async Task DeleteImages(List<string> images)
+        {
+            foreach (var imagePath in images)
+            {
+                try
+                {
+                    var image = "wwwroot" + imagePath;
+                    
+                    if (File.Exists(image))
                     {
-                        // Log the error (you can use a logger or simply print it)
-                        Console.WriteLine($"Error uploading file {file.FileName}: {ex.Message}");
-                        // You can optionally return an error message or handle this differently.
+                        await Task.Run(() => File.Delete(image));
+                        Console.WriteLine($"Image at {image} deleted successfully.");
+
+                        if (Directory.Exists(image))
+                        {
+                            // Get all files in the directory (including files in subdirectories, if needed)
+                            string[] files = Directory.GetFiles(image);
+
+                            // Get the count of files
+                            int fileCount = files.Length;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Image at {imagePath} does not exist.");
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting image: {ex.Message}");
+                }
             }
-            // Return the list of uploaded file paths
-            return uploadedFilePaths;
+
+        }
+        public static async Task DeleteEmptyFolder(string folderPath)
+        {
+            try
+            {
+                if (Directory.Exists(folderPath))
+                {
+                    await Task.Run(() => Directory.Delete(folderPath));
+                    Console.WriteLine($"Folder '{folderPath}' has been deleted.");
+                }
+                else
+                {
+                    Console.WriteLine($"Folder '{folderPath}' does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        public static byte[] ConvertImageToByteArray(IFormFile imageFile)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                // Copy the content of the image file into the memory stream
+                imageFile.CopyTo(memoryStream);
+
+                // Convert the memory stream to a byte array
+                return memoryStream.ToArray();
+            }
+        }
+        public static Image ByteArrayToImage(byte[] byteArray)
+        {
+            using (MemoryStream ms = new(byteArray))
+            {
+                return Image.FromStream(ms);
+            }
+        }
+        public static string ByteArrayToImageBase64(byte[] byteArray)
+        {
+            string base64Image = Convert.ToBase64String(byteArray);
+            string imageSrc = $"data:image/jpeg;base64,{base64Image}";
+            return imageSrc;
         }
     }
 }

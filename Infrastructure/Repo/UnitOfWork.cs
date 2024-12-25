@@ -22,13 +22,13 @@ namespace Infrastructure.Repo
             Category = new CategoryRepository(_db);
             Image = new ImageRepository(_db);
         }
-        public async Task SaveAsync()
+        public void Save()
         {
-            await _db.SaveChangesAsync();
+             _db.SaveChanges();
         }
-        public void Dispose()
-        {
-            _db.Dispose();
-        }
+        //public void Dispose()
+        //{
+        //    _db.Dispose();
+        //}
     }
 }

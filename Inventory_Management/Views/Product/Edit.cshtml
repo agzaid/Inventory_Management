@@ -1,0 +1,158 @@
+﻿@model Domain.Models.ProductVM
+
+<div class="page-wrapper">
+    <div class="page-content">
+        <div class="row">
+            <div class="col">
+                <div class="card radius-10">
+                    <div class="card-body p-4">
+                        <form asp-action="Create" asp-controller="Product" enctype="multipart/form-data">
+                            <h5 class="card-title">Add New Product</h5>
+                            <hr />
+                            <div class="form-body mt-4">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="border border-3 p-4 rounded">
+                                            <div class="mb-3">
+                                                <label class="form-label">Product Title</label>
+                                                <input class="form-control" asp-for="ProductName">
+                                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <input class="form-control" asp-for="Description">
+                                                <span asp-validation-for="Description" class="text-danger"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="inputProductDescription" class="form-label">Product Images</label>
+                                                <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
+                                            </div>
+                                            <div class="mb-3">
+                                                @foreach (var item in Model.ListOfRetrievedImages)
+                                                {
+                                                    @if (!string.IsNullOrEmpty(item))
+                                                    {
+                                                        <img width="50%" height="50%" src="@item?.ToString()" alt="Image" />
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="border border-3 p-4 rounded">
+                                            <div class="row g-3">
+                                                 <div class="col-md-6">
+                                                    <label class="form-label">Selling Price</label>
+                                                    <input class="form-control" asp-for="SellingPrice">
+                                                    <span asp-validation-for="SellingPrice" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Other Shops Price</label>
+                                                    <input class="form-control" asp-for="OtherShopsPrice">
+                                                    <span asp-validation-for="OtherShopsPrice" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label for="inputCostPerPrice" class="form-label">Difference Percentage</label>
+                                                    <input class="form-control" asp-for="DifferencePercentage">
+                                                    <span asp-validation-for="DifferencePercentage" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="inputStarPoints" class="form-label">Buying Price</label>
+                                                    <input class="form-control" asp-for="BuyingPrice">
+                                                    <span asp-validation-for="BuyingPrice" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="inputStarPoints" class="form-label">Max. Discount Percentage</label>
+                                                    @*  decimal discountPercentage = ((originalPrice - finalPrice) / originalPrice) * 100;  *@
+                                                    <input class="form-control" asp-for="MaximumDiscountPercentage">
+                                                    <span asp-validation-for="MaximumDiscountPercentage" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label for="inputStarPoints" class="form-label">Stock Qauntity</label>
+                                                    <input class="form-control" asp-for="StockQuantity">
+                                                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="inputStarPoints" class="form-label">Expiry Date</label>
+                                                    <input class="form-control" asp-for="ExpiryDate" type="date">
+                                                    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label for="inputProductType" class="form-label">Product Status</label>
+                                                    <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
+                                                            asp-for="StatusId" asp-items="@(new SelectList(Model.ListOfStatus, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                        <option disabled></option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label for="inputVendor" class="form-label">Category</label>
+                                                    <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
+                                                            asp-for="CategoryId" asp-items="@(new SelectList(Model.ListOfCategory, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                        <option disabled></option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label for="inputProductTags" class="form-label">Product Tags</label>
+                                                    <input type="text" class="form-control" id="inputProductTags" placeholder="Enter Product Tags">
+                                                </div> 
+                                                <div class="col-12">
+                                                    <div class="d-grid">
+                                                        <button type="submit" class="btn btn-primary">Save Product</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!--end row-->
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#ImagesFormFiles').imageuploadify();
+
+            $('#SellingPrice, #OtherShopsPrice').on('input', function() {
+                calculateDiscountPercentage();
+            });
+            $('#BuyingPrice').on('input', function() {
+                CalculateMaxDiscount();
+            });
+
+            function CalculateMaxDiscount() {
+                var sellingPrice = parseFloat($('#SellingPrice').val());
+                var buyingPrice = parseFloat($('#BuyingPrice').val());
+
+                if (!isNaN(sellingPrice) && sellingPrice > 0 && !isNaN(buyingPrice) && buyingPrice > 0) {
+                    var newPrice = sellingPrice - buyingPrice;
+                    var discount = Math.floor((newPrice/sellingPrice) *100);
+
+                    $('#MaximumDiscountPercentage').val(discount.toFixed(2) + "%");
+                } else {
+                    $('#MaximumDiscountPercentage').val('');
+                }
+            }
+            function calculateDiscountPercentage() {
+                var sellingPrice = parseFloat($('#SellingPrice').val());
+                var otherShopPrice = parseFloat($('#OtherShopsPrice').val());
+
+                // Check if both prices are valid and the otherShopPrice is greater than 0
+                if (!isNaN(sellingPrice) && !isNaN(otherShopPrice) && otherShopPrice > 0 && sellingPrice > 0) {
+                    var discountPercentage = ((otherShopPrice - sellingPrice) / otherShopPrice) * 100;
+
+                    // Display the discount percentage
+                    $('#DifferencePercentage').val(discountPercentage.toFixed(2) + "%");
+                } else {
+                    // If prices are not valid, clear the discount field
+                    $('#discount').val('');
+                }
+            }
+        })
+    </script>
+}

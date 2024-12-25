@@ -56,7 +56,7 @@ namespace Application.Services.Implementation
                         //Description = obj.Description,
                     };
                     _unitOfWork.Image.Add(image);
-                    _unitOfWork.SaveAsync();
+                    _unitOfWork.Save();
                     return "Category Created Successfully";
                 }
                 else
@@ -106,7 +106,7 @@ namespace Application.Services.Implementation
                     //oldCategory.Description = obj.Description;
                     //oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Image.Update(oldImage);
-                    _unitOfWork.SaveAsync();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -129,7 +129,7 @@ namespace Application.Services.Implementation
                     oldImage.IsDeleted = true;
                     oldImage.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Image.Update(oldImage);
-                    _unitOfWork.SaveAsync();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else

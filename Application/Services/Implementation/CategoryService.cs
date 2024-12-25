@@ -57,7 +57,7 @@ namespace Application.Services.Implementation
                         Description = obj.Description,
                     };
                     _unitOfWork.Category.Add(category);
-                    await _unitOfWork.SaveAsync();
+                     _unitOfWork.Save();
                     return "Category Created Successfully";
                 }
                 else
@@ -107,7 +107,7 @@ namespace Application.Services.Implementation
                     oldCategory.CategoryName = obj.CategoryName;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Category.Update(oldCategory);
-                    await _unitOfWork.SaveAsync();
+                     _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -130,7 +130,7 @@ namespace Application.Services.Implementation
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Category.Update(oldCategory);
-                    await _unitOfWork.SaveAsync();
+                     _unitOfWork.Save();
                     return true;
                 }
                 else

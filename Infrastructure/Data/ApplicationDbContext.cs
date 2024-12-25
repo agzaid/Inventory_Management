@@ -21,5 +21,19 @@ namespace Infrastructure.Data
         public DbSet<OrderItem> OrderItem { get; set; }
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Image> Image { get; set; }
+
+        public static void SeedData(ApplicationDbContext context)
+        {
+            // Check if the data is already seeded to avoid duplication
+            if (!context.Category.Any())
+            {
+                context.Category.AddRange(
+                    new Category { CategoryName = "rice"}
+                   
+                );
+
+                context.SaveChanges();
+            }
+        }
     }
 }

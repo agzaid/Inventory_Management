@@ -16,7 +16,8 @@ namespace Domain.Entities
         public decimal? MaximumDiscountPercentage { get; set; }
         public decimal? BuyingPrice { get; set; }
         public int? StockQuantity{ get; set; }
-        public string? ProductExpiryDate { get; set; }
+        public int? StatusId{ get; set; }
+        public DateOnly? ProductExpiryDate { get; set; }
 
         public int? CategoryId { get; set; } // Foreign Key
         public Category? Category { get; set; } // Navigation property

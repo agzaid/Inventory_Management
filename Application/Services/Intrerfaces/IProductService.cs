@@ -12,8 +12,8 @@ namespace Application.Services.Intrerfaces
     {
         IEnumerable<ProductVM> GetAllProducts();
         ProductVM GetProductById(int id);
-        Task<string> CreateProduct(ProductVM product);
-        ProductVM CreateProductGetRequset();
+        Task<string[]> CreateProduct(ProductVM product);
+        ProductVM CreateProductForViewing();
         bool UpdateProduct(ProductVM productVM);
         bool DeleteProduct(int id);
     }

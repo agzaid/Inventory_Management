@@ -11,32 +11,52 @@ namespace Inventory_Management.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, ICategoryService categoryService)
         {
             _productService = productService;
+            _categoryService = categoryService;
         }
+        [HttpGet]
         public IActionResult Index()
         {
             var products = _productService.GetAllProducts();
-            return View();
+            if (TempData["success"] != null)
+            {
+                TempData["success"] = TempData["success"];
+            }
+            else if (TempData["error"] != null)
+            {
+                TempData["error"] = TempData["error"];
+                TempData["error"] = TempData["error"];
+                ViewBag.error = TempData["error"];
+            }
+
+            return View(products);
         }
         public IActionResult Create()
         {
-            return View(_productService.CreateProductGetRequset());
+            return View(_productService.CreateProductForViewing());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ProductVM obj)
+        public async Task<IActionResult> Create(ProductVM obj)
         {
-            //if (ModelState.IsValid)
-            //{
-                var result = _productService.CreateProduct(obj);
-                TempData["success"] = result;
+            if (ModelState.IsValid)
+            {
+                var result = await _productService.CreateProduct(obj);
+                if (result != null && result[0] == "success")
+                {
+                    TempData["success"] = result[1];
+                }
+                else
+                    TempData["error"] = result[1];
+
                 return RedirectToAction(nameof(Index));
-            //}
-            return View();
+            }
+            return View(obj);
         }
 
         public IActionResult Edit(int id)

@@ -26,6 +26,13 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
+// Seed data when the application starts
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    ApplicationDbContext.SeedData(dbContext);
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
