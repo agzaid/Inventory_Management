@@ -19,18 +19,16 @@ namespace Inventory_Management.Controllers
             _categoryService = categoryService;
         }
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? status,string? message)
         {
             var products = _productService.GetAllProducts();
-            if (TempData["success"] != null)
+            if (status=="success")
             {
-                TempData["success"] = TempData["success"];
+                TempData["success"] = message;
             }
-            else if (TempData["error"] != null)
+            else
             {
-                TempData["error"] = TempData["error"];
-                TempData["error"] = TempData["error"];
-                ViewBag.error = TempData["error"];
+                TempData["error"] = message;
             }
 
             return View(products);
@@ -49,12 +47,12 @@ namespace Inventory_Management.Controllers
                 var result = await _productService.CreateProduct(obj);
                 if (result != null && result[0] == "success")
                 {
-                    TempData["success"] = result[1];
+                    //TempData["success"] = result[1];
+                    return RedirectToAction(nameof(Index), new { status="success", message = result[1] });
                 }
                 else
-                    TempData["error"] = result[1];
-
-                return RedirectToAction(nameof(Index));
+                    //TempData["error"] = result[1];
+                    return RedirectToAction(nameof(Index), new { status = "error", message = result[1] });
             }
             return View(obj);
         }

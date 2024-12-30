@@ -32,31 +32,30 @@ namespace Application.Services.Implementation
             var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName);
+                var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
                 if (lookForName != null)
                 {
                     return new string[] { "error", "Product Already Exists" };
                 }
                 else
                 {
-                    product.ProductName = product.ProductName?.ToLower();
-                    product.Description = product.Description?.ToLower();
-                    product.ProductTags = product.ProductTags?.ToLower();
+                    product.ProductName = product.ProductName?.ToLower().Trim();
+                    product.Description = product.Description?.ToLower().Trim();
+                    product.ProductTags = product.ProductTags?.ToLower().Trim();
                     product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
                     product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
                     var result = new List<string>();
-                    var result2 = new byte[0];
-                    //var result2 = new byte[]();
-                    if (product.ImagesFormFiles?.Count() > 0)
+                    var resultByteImage = new byte[0];
+                    if (product?.ImagesFormFiles?.Count() > 0)
                     {
-                        result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
+                        //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
+                        foreach (var item in product.ImagesFormFiles)
+                        {
+                            resultByteImage = FileExtensions.ConvertImageToByteArray(item);
+                            imagesToBeRemoved.Add(resultByteImage);
+                        }
                     }
-                    foreach (var item in product.ImagesFormFiles)
-                    {
-                        result2 = FileExtensions.ConvertImageToByteArray(item);
-                        imagesToBeRemoved.Add(result2);
-                    }
-                    imagesToBeDeleted = result;
+                    //imagesToBeDeleted = result;
                     var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
                     {
                         ImageByteArray = s ?? new byte[0],
@@ -80,14 +79,14 @@ namespace Application.Services.Implementation
                             ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "1-1-2000"),
                             CategoryId = int.Parse(product.CategoryId),
                             StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
+                            ProductTags = product.ProductTags ?? "",
+                            Images = listOfImages,
                             //Images = result.Select(s => new Image()
                             //{
                             //    FilePath = s,
                             //    ImageName = s,
                             //    Create_Date = DateTime.Now,
                             //}).ToList()
-                            Images = listOfImages,
-
                         };
                         _unitOfWork.Product.Add(Newproduct);
                         _unitOfWork.Save();
@@ -98,7 +97,7 @@ namespace Application.Services.Implementation
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
-                await FileExtensions.DeleteImages(imagesToBeDeleted);
+                //await FileExtensions.DeleteImages(imagesToBeDeleted);
 
                 return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it
             }

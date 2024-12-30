@@ -27,12 +27,15 @@
                                                 <label for="inputProductDescription" class="form-label">Product Images</label>
                                                 <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
                                             </div>
-                                            <div class="mb-3">
-                                                @foreach (var item in Model.ListOfRetrievedImages)
+                                            <div class="mb-3 d-flex">
+                                                @if (Model?.ListOfRetrievedImages != null)
                                                 {
-                                                    @if (!string.IsNullOrEmpty(item))
+                                                    @foreach (var item in Model?.ListOfRetrievedImages)
                                                     {
-                                                        <img width="50%" height="50%" src="@item?.ToString()" alt="Image" />
+                                                        @if (!string.IsNullOrEmpty(item))
+                                                        {
+                                                            <img width="50%" height="50%" src="@item?.ToString()" alt="Image" />
+                                                        }
                                                     }
                                                 }
                                             </div>
@@ -41,13 +44,13 @@
                                     <div class="col-lg-4">
                                         <div class="border border-3 p-4 rounded">
                                             <div class="row g-3">
-                                                 <div class="col-md-6">
+                                                <div class="col-md-6">
                                                     <label class="form-label">Selling Price</label>
                                                     <input class="form-control" asp-for="SellingPrice">
                                                     <span asp-validation-for="SellingPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Other Shops Price</label>
+                                                    <label class="form-label">Othr.shp.Price</label>
                                                     <input class="form-control" asp-for="OtherShopsPrice">
                                                     <span asp-validation-for="OtherShopsPrice" class="text-danger"></span>
                                                 </div>
@@ -95,7 +98,7 @@
                                                 <div class="col-12">
                                                     <label for="inputProductTags" class="form-label">Product Tags</label>
                                                     <input type="text" class="form-control" id="inputProductTags" placeholder="Enter Product Tags">
-                                                </div> 
+                                                </div>
                                                 <div class="col-12">
                                                     <div class="d-grid">
                                                         <button type="submit" class="btn btn-primary">Save Product</button>

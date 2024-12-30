@@ -18,6 +18,7 @@ namespace Domain.Entities
         public int? StockQuantity{ get; set; }
         public int? StatusId{ get; set; }
         public DateOnly? ProductExpiryDate { get; set; }
+        public string? ProductTags { get; set; }
 
         public int? CategoryId { get; set; } // Foreign Key
         public Category? Category { get; set; } // Navigation property

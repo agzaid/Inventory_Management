@@ -38,7 +38,7 @@
                                                     <span asp-validation-for="SellingPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Other Shops Price</label>
+                                                    <label class="form-label">Othr_shps_prc</label>
                                                     <input class="form-control" asp-for="OtherShopsPrice">
                                                     <span asp-validation-for="OtherShopsPrice" class="text-danger"></span>
                                                 </div>
@@ -53,7 +53,7 @@
                                                     <span asp-validation-for="BuyingPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="inputStarPoints" class="form-label">Max. Discount Percentage</label>
+                                                    <label for="inputStarPoints" class="form-label">Max_Discnt_Per</label>
                                                     @* decimal discountPercentage = ((originalPrice - finalPrice) / originalPrice) * 100; *@
                                                     <input class="form-control" asp-for="MaximumDiscountPercentage">
                                                     <span asp-validation-for="MaximumDiscountPercentage" class="text-danger"></span>
@@ -71,21 +71,21 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <label for="inputProductType" class="form-label">Product Status</label>
-                                                    <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
+                                                    <select class="form-select mb-2" aria-label="multiple select example"
                                                             asp-for="StatusId" asp-items="@(new SelectList(Model.ListOfStatus, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                         <option disabled></option>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
                                                     <label for="inputVendor" class="form-label">Category</label>
-                                                    <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
+                                                    <select class="form-select mb-2" aria-label="multiple select example"
                                                             asp-for="CategoryId" asp-items="@(new SelectList(Model.ListOfCategory, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                         <option disabled></option>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label for="inputProductTags" class="form-label">Product Tags</label>
-                                                    <input type="text" class="form-control" id="inputProductTags" placeholder="Enter Product Tags">
+                                                    <label class="form-label">Product Tags</label>
+                                                    <input type="text" class="form-control" asp-for="ProductTags" placeholder="Enter Product Tags">
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="d-grid">
