@@ -39,6 +39,8 @@ namespace Domain.Models
         public string? StatusId{ get; set; }
         public string? CategoryId{ get; set; }
         public string? CategoryName{ get; set; }
+        public List<IFormFile>? OldImages { get; set; } = new List<IFormFile>();
+        public List<string>? OldImagesBytes { get; set; } = new List<string>();
         public List<string>? ListOfRetrievedImages { get; set; } = new List<string>();
         public List<SelectListItem>? ListOfStatus { get; set; }
         public List<SelectListItem>? ListOfCategory { get; set; }

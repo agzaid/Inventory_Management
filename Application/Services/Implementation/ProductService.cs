@@ -194,7 +194,7 @@ namespace Application.Services.Implementation
                         StockQuantity = product.StockQuantity ?? int.Parse("0"),
                         CategoryId = product.CategoryId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
-                        // ProductTags = ""
+                        ProductTags = product.ProductTags ?? "",
                         //Images = result.Select(s => new Image()
                         //{
                         //    FilePath = s,
@@ -202,13 +202,16 @@ namespace Application.Services.Implementation
                         //    Create_Date = DateTime.Now,
                         //}).ToList()
                     };
-                    foreach (var item in product.Images)
+                    if (product.Images?.Count() > 0)
                     {
-                        //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
-                        if (item.ImageByteArray?.Length > 0)
+                        foreach (var item in product.Images)
                         {
-                            var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
-                            productVM.ListOfRetrievedImages?.Add(stringImages);
+                            //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
+                            if (item.ImageByteArray?.Length > 0)
+                            {
+                                var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
+                                productVM.ListOfRetrievedImages?.Add(stringImages);
+                            }
                         }
                     }
                     var category = _unitOfWork.Category.GetAll().ToList();

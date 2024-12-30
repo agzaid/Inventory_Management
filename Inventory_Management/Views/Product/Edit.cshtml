@@ -1,12 +1,15 @@
 ﻿@model Domain.Models.ProductVM
 
+
+
+
 <div class="page-wrapper">
     <div class="page-content">
         <div class="row">
             <div class="col">
                 <div class="card radius-10">
                     <div class="card-body p-4">
-                        <form asp-action="Create" asp-controller="Product" enctype="multipart/form-data">
+                        <form asp-action="Edit" asp-controller="Product" enctype="multipart/form-data">
                             <h5 class="card-title">Add New Product</h5>
                             <hr />
                             <div class="form-body mt-4">
@@ -28,16 +31,36 @@
                                                 <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
                                             </div>
                                             <div class="mb-3 d-flex">
-                                                @if (Model?.ListOfRetrievedImages != null)
+                                                @* @if (Model?.ListOfRetrievedImages != null)
                                                 {
-                                                    @foreach (var item in Model?.ListOfRetrievedImages)
+                                                    @* @foreach (var item in Model?.ListOfRetrievedImages) 
+                                                    @for (int i = 0; i < Model?.ListOfRetrievedImages.Count; i++)
                                                     {
-                                                        @if (!string.IsNullOrEmpty(item))
+                                                        @if (!string.IsNullOrEmpty(Model?.ListOfRetrievedImages[i]))
                                                         {
-                                                            <img width="50%" height="50%" src="@item?.ToString()" alt="Image" />
+                                                            <img width="50%" height="50%" name="oldImages[@i]" src="@Model?.ListOfRetrievedImages[i]?.ToString()" alt="Image" />
+                                                            <input name="oldImagesBytes[@i]" value="@Model?.ListOfRetrievedImages[i]" hidden>
                                                         }
                                                     }
+                                                } *@
+                                                @for (int i = 0; i < Model?.ListOfRetrievedImages?.Count; i++)
+                                                {
+                                                    var imageUrl = Model.ListOfRetrievedImages[i];  // Base64 string
+
+                                                    if (!string.IsNullOrEmpty(imageUrl))
+                                                    {
+                                                        <div class="image-container" id="image-container_@i" style="position: relative; display: inline-block;">
+                                                            <!-- Image -->
+                                                            <img width="100%" height="50%" src="@imageUrl" alt="Image" />
+                                                            <input name="oldImagesBytes[@i]" id="oldImagesBytes[@i]" value="@imageUrl" hidden>
+                                                            <!-- Pop-up with delete option -->
+                                                            <div class="popup-delete" style="display: block; position: absolute; top: 0; right: 0; cursor: pointer;">
+                                                                <button class="btn btn-inverse-danger" type="button" onclick="deleteImage(@i)">X</button>
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 }
+
                                             </div>
                                         </div>
                                     </div>
@@ -84,20 +107,20 @@
                                                 <div class="col-12">
                                                     <label for="inputProductType" class="form-label">Product Status</label>
                                                     <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
-                                                            asp-for="StatusId" asp-items="@(new SelectList(Model.ListOfStatus, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                            asp-for="StatusId" asp-items="@(new SelectList(Model?.ListOfStatus, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                         <option disabled></option>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
                                                     <label for="inputVendor" class="form-label">Category</label>
                                                     <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
-                                                            asp-for="CategoryId" asp-items="@(new SelectList(Model.ListOfCategory, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                            asp-for="CategoryId" asp-items="@(new SelectList(Model?.ListOfCategory, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                         <option disabled></option>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
                                                     <label for="inputProductTags" class="form-label">Product Tags</label>
-                                                    <input type="text" class="form-control" id="inputProductTags" placeholder="Enter Product Tags">
+                                                    <input type="text" class="form-control" asp-for=ProductTags placeholder="Enter Product Tags">
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="d-grid">
@@ -156,6 +179,13 @@
                     $('#discount').val('');
                 }
             }
-        })
+        });
+          async function deleteImage(i) {
+                var result = await _SWAL.CustomAlert();
+                if(result){
+                    // $('#oldImagesBytes['+i+']')
+                    $('#image-container_' + i).remove();
+                }
+            }
     </script>
 }
