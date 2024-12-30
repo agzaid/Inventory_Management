@@ -7,6 +7,7 @@ using Domain.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -235,16 +236,50 @@ namespace Application.Services.Implementation
         {
             try
             {
-                obj.ProductName = obj.ProductName?.ToLower();
-                obj.Description = obj.Description?.ToLower();
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id);
+                var resultByteImage = new byte[0];
+                var imagesToBeRemoved = new List<byte[]>();
+                var imagesToBeInserted = new List<byte[]>();
+                var oldImages = obj.OldImagesBytes;
+                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
+                oldProduct.Images?.Clear();
+                if (obj.ImagesFormFiles.Count > 0)
+                {
+                    foreach (var item in obj.ImagesFormFiles)
+                    {
+                        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
+                        imagesToBeInserted.Add(resultByteImage);
+                    }
+                }
+                if (obj.OldImagesBytes?.Count > 0)
+                {
+                    var byteImages = obj.OldImagesBytes.Select(s => Convert.FromBase64String(s)).ToList();
+                    imagesToBeInserted.AddRange(byteImages);
+                }
+
+                var listOfImages = imagesToBeInserted.Select(s => new Domain.Entities.Image()
+                {
+                    ImageByteArray = s ?? new byte[0],
+                    Create_Date = DateTime.Now,
+                }).ToList();
                 if (oldProduct != null)
                 {
-                    oldProduct.Description = obj.Description;
-                    oldProduct.ProductName = obj.ProductName;
+                    oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
+                    oldProduct.Description = obj.Description?.ToLower().Trim();
+                    oldProduct.SellingPrice = obj.SellingPrice;
+                    oldProduct.BuyingPrice = obj.BuyingPrice;
+                    oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
+                    oldProduct.StockQuantity = obj.StockQuantity;
+                    oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
+                    oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
+                    oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
+                    oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
+                    oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
+                    oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
+                    oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
                     oldProduct.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.Product.Update(oldProduct);
-                    _unitOfWork.Save();
+                    oldProduct.Images = listOfImages;
+                    //_unitOfWork.Product.Update(oldProduct);
+                    //_unitOfWork.Save();
                     return true;
                 }
                 else

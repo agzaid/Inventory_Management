@@ -9,7 +9,7 @@
             <div class="col">
                 <div class="card radius-10">
                     <div class="card-body p-4">
-                        <form asp-action="Edit" asp-controller="Product" enctype="multipart/form-data">
+                        <form id="editForm" asp-action="Edit" asp-controller="Product" enctype="multipart/form-data">
                             <h5 class="card-title">Add New Product</h5>
                             <hr />
                             <div class="form-body mt-4">
@@ -150,6 +150,13 @@
             $('#BuyingPrice').on('input', function() {
                 CalculateMaxDiscount();
             });
+            // $('#editForm').submit(function(event) {
+            // // event.preventDefault();
+
+            //     updateInputIndices();
+            // });
+
+           
 
             function CalculateMaxDiscount() {
                 var sellingPrice = parseFloat($('#SellingPrice').val());
@@ -184,8 +191,25 @@
                 var result = await _SWAL.CustomAlert();
                 if(result){
                     // $('#oldImagesBytes['+i+']')
+
                     $('#image-container_' + i).remove();
+                    updateInputIndices();
                 }
+            }
+             
+            function updateInputIndices() {
+                debugger;
+                 $('#editForm .image-container').each(function (index) {
+                     debugger;
+                // Find the input field inside the current image container
+                var input = $(this).find('input[name^="oldImagesBytes"]'); // Find inputs with name starting with oldImagesBytes
+                if (input.length > 0) {
+                    // Update the name attribute with the new index
+                    input.attr('name', 'oldImagesBytes[' + index + ']');
+                    // Optionally, update the ID attribute as well
+                    input.attr('id', 'oldImagesBytes_' + index);
+                }
+             });
             }
     </script>
 }
