@@ -30,26 +30,14 @@
                                                 <label for="inputProductDescription" class="form-label">Product Images</label>
                                                 <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
                                             </div>
-                                            <div class="mb-3 d-flex">
-                                                @* @if (Model?.ListOfRetrievedImages != null)
-                                                {
-                                                    @* @foreach (var item in Model?.ListOfRetrievedImages) 
-                                                    @for (int i = 0; i < Model?.ListOfRetrievedImages.Count; i++)
-                                                    {
-                                                        @if (!string.IsNullOrEmpty(Model?.ListOfRetrievedImages[i]))
-                                                        {
-                                                            <img width="50%" height="50%" name="oldImages[@i]" src="@Model?.ListOfRetrievedImages[i]?.ToString()" alt="Image" />
-                                                            <input name="oldImagesBytes[@i]" value="@Model?.ListOfRetrievedImages[i]" hidden>
-                                                        }
-                                                    }
-                                                } *@
+                                            <div class="mb-3 d-flex" style="height:auto">
                                                 @for (int i = 0; i < Model?.ListOfRetrievedImages?.Count; i++)
                                                 {
                                                     var imageUrl = Model.ListOfRetrievedImages[i];  // Base64 string
 
                                                     if (!string.IsNullOrEmpty(imageUrl))
                                                     {
-                                                        <div class="image-container" id="image-container_@i" style="position: relative; display: inline-block;">
+                                                        <div class="image-container" id="image-container_@i" style="position: relative; display: inline-block; height:fit-content">
                                                             <!-- Image -->
                                                             <img width="100%" height="50%" src="@imageUrl" alt="Image" />
                                                             <input name="oldImagesBytes[@i]" id="oldImagesBytes[@i]" value="@imageUrl" hidden>
@@ -60,7 +48,6 @@
                                                         </div>
                                                     }
                                                 }
-
                                             </div>
                                         </div>
                                     </div>
@@ -156,7 +143,7 @@
             //     updateInputIndices();
             // });
 
-           
+
 
             function CalculateMaxDiscount() {
                 var sellingPrice = parseFloat($('#SellingPrice').val());
@@ -196,7 +183,7 @@
                     updateInputIndices();
                 }
             }
-             
+
             function updateInputIndices() {
                 debugger;
                  $('#editForm .image-container').each(function (index) {

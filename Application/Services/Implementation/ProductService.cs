@@ -128,12 +128,39 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldCategory = _unitOfWork.Category.Get(s => s.Id == id);
-                if (oldCategory != null)
+                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id);
+                if (oldProduct != null)
                 {
-                    oldCategory.IsDeleted = true;
-                    oldCategory.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.Category.Update(oldCategory);
+                    oldProduct.IsDeleted = true;
+                    oldProduct.Modified_Date = DateTime.UtcNow;
+                    _unitOfWork.Product.Update(oldProduct);
+                    _unitOfWork.Save();
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting category with Id: {Id}", id);
+                return false; // Rethrow the exception after logging it
+            }
+        }
+        public bool HardDeleteProduct(int id)
+        {
+            try
+            {
+                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id,"Images");
+                if (oldProduct != null)
+                {
+                    if (oldProduct.Images?.Count > 0)
+                    {
+                        foreach (var item in oldProduct.Images)
+                        {
+                            _unitOfWork.Image.Remove(item);
+                        }
+                    }
+                    _unitOfWork.Product.Remove(oldProduct);
                     _unitOfWork.Save();
                     return true;
                 }
@@ -240,8 +267,17 @@ namespace Application.Services.Implementation
                 var imagesToBeRemoved = new List<byte[]>();
                 var imagesToBeInserted = new List<byte[]>();
                 var oldImages = obj.OldImagesBytes;
+
                 var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
+                if (oldImages?.Count > 0)
+                {
+                    foreach (var item in oldProduct.Images)
+                    {
+                        _unitOfWork.Image.Remove(item);
+                    }
+                }
                 oldProduct.Images?.Clear();
+                //add remove image from database
                 if (obj.ImagesFormFiles.Count > 0)
                 {
                     foreach (var item in obj.ImagesFormFiles)
@@ -252,8 +288,12 @@ namespace Application.Services.Implementation
                 }
                 if (obj.OldImagesBytes?.Count > 0)
                 {
-                    var byteImages = obj.OldImagesBytes.Select(s => Convert.FromBase64String(s)).ToList();
-                    imagesToBeInserted.AddRange(byteImages);
+                    foreach (var item in obj.OldImagesBytes)
+                    {
+                        var newImagesBytes = FileExtensions.FromImageToByteArray(item);
+                        imagesToBeInserted.Add(newImagesBytes);
+                    }
+
                 }
 
                 var listOfImages = imagesToBeInserted.Select(s => new Domain.Entities.Image()
@@ -278,8 +318,8 @@ namespace Application.Services.Implementation
                     oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
                     oldProduct.Modified_Date = DateTime.UtcNow;
                     oldProduct.Images = listOfImages;
-                    //_unitOfWork.Product.Update(oldProduct);
-                    //_unitOfWork.Save();
+                    _unitOfWork.Product.Update(oldProduct);
+                    _unitOfWork.Save();
                     return true;
                 }
                 else

@@ -71,20 +71,32 @@ namespace Inventory_Management.Controllers
                 var result = _productService.UpdateProduct(obj);
                 if (result == true)
                 {
-                    TempData["success"] = "Category Updated Successfully";
+                    //TempData["success"] = result[1];
+                    return RedirectToAction(nameof(Index), new { status = "success", message = "Product Updated Successfully" });
                 }
                 else
-                    TempData["error"] = result;
-                return RedirectToAction(nameof(Index));
+                    TempData["error"] = "Error Occured...!!!";
+                    return View(obj);
             }
-            return View();
+            return View(obj);
         }
         public IActionResult Delete(int id)
         {
             var result = _productService.DeleteProduct(id);
             if (result == true)
             {
-                TempData["success"] = "Category Deleted Successfully";
+                TempData["success"] = "Product Deleted Successfully";
+            }
+            else
+                TempData["error"] = result;
+            return RedirectToAction(nameof(Index));
+        }
+        public IActionResult HardDelete(int id)
+        {
+            var result = _productService.HardDeleteProduct(id);
+            if (result == true)
+            {
+                TempData["success"] = "Product Deleted Successfully";
             }
             else
                 TempData["error"] = result;

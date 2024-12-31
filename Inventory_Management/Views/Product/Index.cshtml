@@ -55,14 +55,15 @@
                                             <td>@item.StockQuantity</td>
                                             <td>@item.CreatedDate</td>
                                             <td class="text-center" style="font-size:20px">
-                                                <a class="me-3" asp-action="Edit" asp-route-id="@item.Id">
-                                                    <i class="lni lni-eye"></i>
-                                                </a>
                                                 <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id">
                                                     <i class="bx bx-message-square-edit"></i>
                                                 </a>
-                                                <a class="text-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                                <a class="text-danger me-3" asp-action="Delete" asp-route-id="@item.Id">
                                                     <i class="lni lni-cross-circle"></i>
+                                                </a>
+                                                @* only for admins *@
+                                                <a class="btn btn-inverse-danger me-3" asp-action="HardDelete" asp-route-id="@item.Id">
+                                                    <i class="lni lni-cross-circle" style="margin:auto"></i>
                                                 </a>
                                             </td>
                                         </tr>

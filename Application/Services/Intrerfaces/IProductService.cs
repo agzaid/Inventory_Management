@@ -16,5 +16,6 @@ namespace Application.Services.Intrerfaces
         ProductVM CreateProductForViewing();
         bool UpdateProduct(ProductVM productVM);
         bool DeleteProduct(int id);
+        bool HardDeleteProduct(int id);
     }
 }
