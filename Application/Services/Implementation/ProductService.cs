@@ -82,12 +82,6 @@ namespace Application.Services.Implementation
                             StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
                             ProductTags = product.ProductTags ?? "",
                             Images = listOfImages,
-                            //Images = result.Select(s => new Image()
-                            //{
-                            //    FilePath = s,
-                            //    ImageName = s,
-                            //    Create_Date = DateTime.Now,
-                            //}).ToList()
                         };
                         _unitOfWork.Product.Add(Newproduct);
                         _unitOfWork.Save();
@@ -269,16 +263,21 @@ namespace Application.Services.Implementation
                 var oldImages = obj.OldImagesBytes;
 
                 var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
-                if (oldImages?.Count > 0)
+
+                // Remove old images
+                if (oldProduct?.Images?.Count > 0)
                 {
+                    _logger.LogInformation("Removing old images for product with Id: {Id}", obj.Id);
                     foreach (var item in oldProduct.Images)
                     {
                         _unitOfWork.Image.Remove(item);
                     }
+                    oldProduct.Images.Clear();
+                    _logger.LogInformation("Old images removed.");
                 }
-                oldProduct.Images?.Clear();
-                //add remove image from database
-                if (obj.ImagesFormFiles.Count > 0)
+
+                // Add new images from form files
+                if (obj.ImagesFormFiles?.Count > 0)
                 {
                     foreach (var item in obj.ImagesFormFiles)
                     {
@@ -286,6 +285,8 @@ namespace Application.Services.Implementation
                         imagesToBeInserted.Add(resultByteImage);
                     }
                 }
+
+                // Add old images (if any)
                 if (obj.OldImagesBytes?.Count > 0)
                 {
                     foreach (var item in obj.OldImagesBytes)
@@ -293,14 +294,16 @@ namespace Application.Services.Implementation
                         var newImagesBytes = FileExtensions.FromImageToByteArray(item);
                         imagesToBeInserted.Add(newImagesBytes);
                     }
-
                 }
 
+                // Create new Image entities
                 var listOfImages = imagesToBeInserted.Select(s => new Domain.Entities.Image()
                 {
                     ImageByteArray = s ?? new byte[0],
                     Create_Date = DateTime.Now,
                 }).ToList();
+
+                // Update product
                 if (oldProduct != null)
                 {
                     oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
@@ -318,6 +321,7 @@ namespace Application.Services.Implementation
                     oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
                     oldProduct.Modified_Date = DateTime.UtcNow;
                     oldProduct.Images = listOfImages;
+
                     _unitOfWork.Product.Update(oldProduct);
                     _unitOfWork.Save();
                     return true;
@@ -327,9 +331,10 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating category with Id: {Id}", obj.Id);
+                _logger.LogError(ex, "An error occurred while updating product with Id: {Id}", obj.Id);
                 return false;  // Rethrow the exception after logging it
             }
+
         }
     }
 }
