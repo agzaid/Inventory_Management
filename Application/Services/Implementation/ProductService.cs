@@ -4,6 +4,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -144,7 +145,7 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id,"Images");
+                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id, "Images");
                 if (oldProduct != null)
                 {
                     if (oldProduct.Images?.Count > 0)
@@ -252,89 +253,196 @@ namespace Application.Services.Implementation
             }
             return new ProductVM();
         }
-
         public bool UpdateProduct(ProductVM obj)
         {
             try
             {
-                var resultByteImage = new byte[0];
-                var imagesToBeRemoved = new List<byte[]>();
+                // Prepare byte arrays for images
                 var imagesToBeInserted = new List<byte[]>();
-                var oldImages = obj.OldImagesBytes;
 
                 var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
 
-                // Remove old images
-                if (oldProduct?.Images?.Count > 0)
-                {
-                    _logger.LogInformation("Removing old images for product with Id: {Id}", obj.Id);
-                    foreach (var item in oldProduct.Images)
-                    {
-                        _unitOfWork.Image.Remove(item);
-                    }
-                    oldProduct.Images.Clear();
-                    _logger.LogInformation("Old images removed.");
-                }
+                // Remove old images if necessary
+                RemoveOldImages(oldProduct);
 
-                // Add new images from form files
-                if (obj.ImagesFormFiles?.Count > 0)
-                {
-                    foreach (var item in obj.ImagesFormFiles)
-                    {
-                        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                        imagesToBeInserted.Add(resultByteImage);
-                    }
-                }
+                // Add new images from form files or old image bytes
+                AddNewImages(obj.ImagesFormFiles, obj.OldImagesBytes, imagesToBeInserted);
 
-                // Add old images (if any)
-                if (obj.OldImagesBytes?.Count > 0)
-                {
-                    foreach (var item in obj.OldImagesBytes)
-                    {
-                        var newImagesBytes = FileExtensions.FromImageToByteArray(item);
-                        imagesToBeInserted.Add(newImagesBytes);
-                    }
-                }
+                // Create Image entities from byte arrays
+                var listOfImages = CreateImageEntities(imagesToBeInserted);
 
-                // Create new Image entities
-                var listOfImages = imagesToBeInserted.Select(s => new Domain.Entities.Image()
-                {
-                    ImageByteArray = s ?? new byte[0],
-                    Create_Date = DateTime.Now,
-                }).ToList();
-
-                // Update product
+                // Update product properties
                 if (oldProduct != null)
                 {
-                    oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
-                    oldProduct.Description = obj.Description?.ToLower().Trim();
-                    oldProduct.SellingPrice = obj.SellingPrice;
-                    oldProduct.BuyingPrice = obj.BuyingPrice;
-                    oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
-                    oldProduct.StockQuantity = obj.StockQuantity;
-                    oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
-                    oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
-                    oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
-                    oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
-                    oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
-                    oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
-                    oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
-                    oldProduct.Modified_Date = DateTime.UtcNow;
-                    oldProduct.Images = listOfImages;
+                    UpdateProductProperties(oldProduct, obj, listOfImages);
 
+                    // Save the updated product
                     _unitOfWork.Product.Update(oldProduct);
                     _unitOfWork.Save();
                     return true;
                 }
-                else
-                    return false;
+
+                return false;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating product with Id: {Id}", obj.Id);
-                return false;  // Rethrow the exception after logging it
+                return false;
+            }
+        }
+
+
+        #region Update Product Private Methods
+
+        // Method to remove old images from the product
+        private void RemoveOldImages(Product oldProduct)
+        {
+            if (oldProduct?.Images?.Count > 0)
+            {
+                _logger.LogInformation("Removing old images for product with Id: {Id}", oldProduct.Id);
+                foreach (var item in oldProduct.Images)
+                {
+                    _unitOfWork.Image.Remove(item);
+                }
+                oldProduct.Images.Clear();
+                _logger.LogInformation("Old images removed.");
+            }
+        }
+        // Method to add new images (from form files and old image bytes)
+        private void AddNewImages(IList<IFormFile> newImages, IList<string> oldImages, List<byte[]> imagesToBeInserted)
+        {
+            if (newImages?.Count > 0)
+            {
+                foreach (var item in newImages)
+                {
+                    var byteImage = FileExtensions.ConvertImageToByteArray(item);
+                    imagesToBeInserted.Add(byteImage);
+                }
             }
 
+            if (oldImages?.Count > 0)
+            {
+                foreach (var item in oldImages)
+                {
+                    var byteImage = FileExtensions.FromImageToByteArray(item);
+                    imagesToBeInserted.Add(byteImage);
+                }
+            }
         }
+
+        // Method to create Image entities from byte arrays
+        private List<Domain.Entities.Image> CreateImageEntities(List<byte[]> imagesToBeInserted)
+        {
+            return imagesToBeInserted.Select(image => new Domain.Entities.Image()
+            {
+                ImageByteArray = image ?? new byte[0],
+                Create_Date = DateTime.Now,
+            }).ToList();
+        }
+
+        // Method to update product properties
+        private void UpdateProductProperties(Product oldProduct, ProductVM obj, List<Domain.Entities.Image> listOfImages)
+        {
+            oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
+            oldProduct.Description = obj.Description?.ToLower().Trim();
+            oldProduct.SellingPrice = obj.SellingPrice;
+            oldProduct.BuyingPrice = obj.BuyingPrice;
+            oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
+            oldProduct.StockQuantity = obj.StockQuantity;
+            oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
+            oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
+            oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
+            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
+            oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
+            oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
+            oldProduct.Modified_Date = DateTime.UtcNow;
+            oldProduct.Images = listOfImages;
+        }
+
+
+        //public bool UpdateProduct(ProductVM obj)
+        //{
+        //    try
+        //    {
+        //        var resultByteImage = new byte[0];
+        //        var imagesToBeRemoved = new List<byte[]>();
+        //        var imagesToBeInserted = new List<byte[]>();
+        //        var oldImages = obj.OldImagesBytes;
+
+        //        var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
+
+        //        // Remove old images
+        //        if (oldProduct?.Images?.Count > 0)
+        //        {
+        //            _logger.LogInformation("Removing old images for product with Id: {Id}", obj.Id);
+        //            foreach (var item in oldProduct.Images)
+        //            {
+        //                _unitOfWork.Image.Remove(item);
+        //            }
+        //            oldProduct.Images.Clear();
+        //            _logger.LogInformation("Old images removed.");
+        //        }
+
+        //        // Add new images from form files
+        //        if (obj.ImagesFormFiles?.Count > 0)
+        //        {
+        //            foreach (var item in obj.ImagesFormFiles)
+        //            {
+        //                resultByteImage = FileExtensions.ConvertImageToByteArray(item);
+        //                imagesToBeInserted.Add(resultByteImage);
+        //            }
+        //        }
+
+        //        // Add old images (if any)
+        //        if (obj.OldImagesBytes?.Count > 0)
+        //        {
+        //            foreach (var item in obj.OldImagesBytes)
+        //            {
+        //                var newImagesBytes = FileExtensions.FromImageToByteArray(item);
+        //                imagesToBeInserted.Add(newImagesBytes);
+        //            }
+        //        }
+
+        //        // Create new Image entities
+        //        var listOfImages = imagesToBeInserted.Select(s => new Domain.Entities.Image()
+        //        {
+        //            ImageByteArray = s ?? new byte[0],
+        //            Create_Date = DateTime.Now,
+        //        }).ToList();
+
+        //        // Update product
+        //        if (oldProduct != null)
+        //        {
+        //            oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
+        //            oldProduct.Description = obj.Description?.ToLower().Trim();
+        //            oldProduct.SellingPrice = obj.SellingPrice;
+        //            oldProduct.BuyingPrice = obj.BuyingPrice;
+        //            oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
+        //            oldProduct.StockQuantity = obj.StockQuantity;
+        //            oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
+        //            oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
+        //            oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
+        //            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
+        //            oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
+        //            oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
+        //            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
+        //            oldProduct.Modified_Date = DateTime.UtcNow;
+        //            oldProduct.Images = listOfImages;
+
+        //            _unitOfWork.Product.Update(oldProduct);
+        //            _unitOfWork.Save();
+        //            return true;
+        //        }
+        //        else
+        //            return false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "An error occurred while updating product with Id: {Id}", obj.Id);
+        //        return false;  // Rethrow the exception after logging it
+        //    }
+
+        //}
+        #endregion
     }
 }
