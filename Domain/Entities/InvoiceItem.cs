@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class OrderItem : BaseEntity
+    public class InvoiceItem : BaseEntity
     {
-        public int OrderId { get; set; } // Foreign Key
-        public Order? Order { get; set; } // Navigation property
+        public int InvoiceId { get; set; } // Foreign Key
+        public Invoice? Invoice{ get; set; } // Navigation property
 
         public int ProductId { get; set; } // Foreign Key
         public Product? Product { get; set; } // Navigation property

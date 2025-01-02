@@ -13,6 +13,6 @@ namespace Domain.Entities
         public string? Phone { get; set; }
         public string? Address { get; set; }
 
-        public ICollection<Order>? Orders { get; set; } // Navigation property
+        public ICollection<Invoice>? Invoices { get; set; } // Navigation property
     }
 }

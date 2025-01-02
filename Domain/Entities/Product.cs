@@ -18,6 +18,7 @@ namespace Domain.Entities
         public int? StockQuantity{ get; set; }
         public int? StatusId{ get; set; }
         public DateOnly? ProductExpiryDate { get; set; }
+        public string? Barcode { get; set; }
         public string? ProductTags { get; set; }
 
         public int? CategoryId { get; set; } // Foreign Key
@@ -25,7 +26,7 @@ namespace Domain.Entities
         public int? SupplierId { get; set; } // Foreign Key
         public Supplier? Supplier { get; set; } // Navigation property
 
-        public ICollection<OrderItem>? OrderItems { get; set; } // Navigation property
+        public ICollection<InvoiceItem>? InvoiceItems { get; set; } // Navigation property
         public ICollection<InventoryLog>? InventoryLogs { get; set; } // Navigation property
         public ICollection<Image>? Images { get; set; } // Navigation property
 
