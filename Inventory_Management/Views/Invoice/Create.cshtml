@@ -1,0 +1,250 @@
+﻿@model Domain.Models.ProductVM
+
+<div class="page-wrapper">
+    <div class="page-content">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <form asp-action="Create" asp-controller="Invoice" enctype="multipart/form-data">
+                            <h5 class="card-title">Create Invoice</h5>
+                            <hr />
+                            <div class="card-body">
+                                <div class="fm-search">
+                                    <div class="mb-0">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-transparent"><i class='bx bx-search'></i></span>
+                                            <input id="inputSearch" type="text" class="form-control" placeholder="Search the files">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-striped table-hover table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Name <i class='bx bx-up-arrow-alt ms-2'></i>
+                                                </th>
+                                                <th>Members</th>
+                                                <th>Last Modified</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file-pdf me-2 font-24 text-danger'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-danger">Competitor Analysis Template</div>
+                                                    </div>
+                                                </td>
+                                                <td>Only you</td>
+                                                <td>Sep 3, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file me-2 font-24 text-primary'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-primary">How to Create a Case Study</div>
+                                                    </div>
+                                                </td>
+                                                <td>3 members</td>
+                                                <td>Jun 12, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file me-2 font-24 text-primary'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-primary">Landing Page Structure</div>
+                                                    </div>
+                                                </td>
+                                                <td>10 members</td>
+                                                <td>Jul 17, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file-pdf me-2 font-24 text-danger'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-danger">Meeting Report</div>
+                                                    </div>
+                                                </td>
+                                                <td>5 members</td>
+                                                <td>Aug 28, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file me-2 font-24 text-primary'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-primary">Project Documents</div>
+                                                    </div>
+                                                </td>
+                                                <td>Only you</td>
+                                                <td>Aug 17, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file-doc me-2 font-24 text-success'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-success">Review Checklist Template</div>
+                                                    </div>
+                                                </td>
+                                                <td>7 members</td>
+                                                <td>Sep 8, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file me-2 font-24 text-primary'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-primary">How to Create a Case Study</div>
+                                                    </div>
+                                                </td>
+                                                <td>3 members</td>
+                                                <td>Jun 12, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file me-2 font-24 text-primary'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-primary">Landing Page Structure</div>
+                                                    </div>
+                                                </td>
+                                                <td>10 members</td>
+                                                <td>Jul 17, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <i class='bx bxs-file-doc me-2 font-24 text-success'></i>
+                                                        </div>
+                                                        <div class="font-weight-bold text-success">Review Checklist Template</div>
+                                                    </div>
+                                                </td>
+                                                <td>7 members</td>
+                                                <td>Sep 8, 2019</td>
+                                                <td>
+                                                    <i class='bx bx-dots-horizontal-rounded font-24'></i>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="container col-8">
+                                        <div class="mb-3">
+                                            <label class="form-label">Customer Name</label>
+                                            <input class="form-control" asp-for="ProductName">
+                                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="align-items-center">
+                                            <h5 class="mb-0 font-weight-bold">Social Traffic</h5>
+                                            <div class="mb-3">
+                                                <label class="form-label">Customer Name</label>
+                                                <input class="form-control" asp-for="ProductName">
+                                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div> <div class="mb-3">
+                                                <label class="form-label">Customer Name</label>
+                                                <input class="form-control" asp-for="ProductName">
+                                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div> <div class="mb-3">
+                                            <label class="form-label">Customer Name</label>
+                                            <input class="form-control" asp-for="ProductName">
+                                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div> <div class="mb-3">
+                                                <label class="form-label">Customer Name</label>
+                                                <input class="form-control" asp-for="ProductName">
+                                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#ImagesFormFiles').imageuploadify();
+
+            $('#inputSearch').on('change', function() {
+                SearchProduct();
+            });
+
+            function SearchProduct() {
+                debugger;
+                var query = $('#inputSearch').val();
+                var data = $("#dataTable").DataTable().row(this).data();
+                var date = $("#filterDate").val();
+                // var $url = "@Url.Action("FilterPatientByDate", "Doctor")";
+                var $url = "@Url.Action("SearchProduct", "Invoice")";
+                var parameter = {
+                    //id: 9,
+                   // id: query,
+                    data: query
+                };
+                _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
+                    function (data) {
+                        var res = JSON.parse(data);
+                        if (res != null) {
+                            $("#dataTable").DataTable().data;
+                            //to be removed from here
+                            //ShowTable(res.Patient);
+                            // } else
+                            //     ShowTable(res.Patient);
+                        } else
+                            _SWAL.AlertWithoutNotification(res.Message);
+                    },
+                    function (xhr) {
+                        _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                    });
+            };
+        })
+    </script>
+}

@@ -25,6 +25,7 @@ namespace Domain.Models
         [Required]
         public string? ProductName { get; set; }
         public string? Description { get; set; }
+        public string? Barcode { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
         public decimal? SellingPrice { get; set; }
         public decimal? OtherShopsPrice { get; set; }

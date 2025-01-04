@@ -1,4 +1,5 @@
-﻿using Application.Services.Intrerfaces;
+﻿using Application.Services.Implementation;
+using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,21 +9,21 @@ namespace Inventory_Management.Controllers
     public class InvoiceController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly IInvoiceService _invoiceService;
         private readonly ILogger<CategoryController> _logger;
 
-        public InvoiceController(ICategoryService categoryService, ILogger<CategoryController> logger)
+        public InvoiceController(IInvoiceService invoiceService, ICategoryService categoryService, ILogger<CategoryController> logger)
         {
             _categoryService = categoryService;
+            _invoiceService = invoiceService;
             _logger = logger;
         }
         public IActionResult Index()
         {
             try
             {
-                var categories = _categoryService.GetAllCategories();
-                TempData["success"] = TempData["success"];
-                TempData["error"] = TempData["success"];
-                return View(categories.ToList());
+                //  var invoices = _invoiceService.GetAllInvoices();
+                return View(new List<ProductVM>());
             }
             catch (Exception ex)
             {
@@ -32,7 +33,7 @@ namespace Inventory_Management.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            return View(new ProductVM());
         }
 
         [HttpPost]
@@ -79,6 +80,20 @@ namespace Inventory_Management.Controllers
             }
             else
                 TempData["error"] = result;
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchProduct(string data)
+        {
+            string search = HttpContext.Request.Query["data"];
+
+            var result = _invoiceService.SearchForProducts(data);
+            //if (result == true)
+            //{
+            //    TempData["success"] = "Category Deleted Successfully";
+            //}
+            //else
+            //    TempData["error"] = result;
             return RedirectToAction(nameof(Index));
         }
     }

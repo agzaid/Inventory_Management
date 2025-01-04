@@ -21,6 +21,7 @@ namespace Infrastructure.Data
         public DbSet<InvoiceItem> OrderItem { get; set; }
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Image> Image { get; set; }
+        public DbSet<Invoice> Invoice { get; set; }
 
         public static void SeedData(ApplicationDbContext context)
         {

@@ -22,8 +22,6 @@ namespace Inventory_Management.Controllers
             try
             {
                 var categories = _categoryService.GetAllCategories();
-                TempData["success"] = TempData["success"];
-                TempData["error"] = TempData["success"];
                 return View(categories.ToList());
             }
             catch (Exception ex)

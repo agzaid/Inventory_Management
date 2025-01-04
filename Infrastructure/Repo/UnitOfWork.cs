@@ -15,12 +15,14 @@ namespace Infrastructure.Repo
         public IProductRepository Product { get; private set; }
         public ICategoryRepository Category { get; private set; }
         public IImageRepository Image { get; private set; }
+        public IInvoiceRepository Invoice { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
             Product = new ProductRepository(_db);
             Category = new CategoryRepository(_db);
             Image = new ImageRepository(_db);
+            Invoice = new InvoiceRepository(_db);
         }
         public void Save()
         {

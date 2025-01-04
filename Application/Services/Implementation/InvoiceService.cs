@@ -17,18 +17,18 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Application.Services.Implementation
 {
-    public class ProductService : IProductService
+    public class InvoiceService : IInvoiceService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ProductService> _logger;
 
-        public ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logger)
+        public InvoiceService(IUnitOfWork unitOfWork, ILogger<ProductService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
-        public async Task<string[]> CreateProduct(ProductVM product)
+        public async Task<string[]> CreateInvoice(ProductVM product)
         {
             var imagesToBeDeleted = new List<string>();
             var imagesToBeRemoved = new List<byte[]>();
@@ -101,12 +101,38 @@ namespace Application.Services.Implementation
             }
         }
 
-        public ProductVM CreateProductForViewing()
+        public ProductVM SearchForProducts(string search)
+        {
+            try
+            {
+                var product = _unitOfWork.Product.GetAll(s => s.ProductName.Contains(search) || s.Barcode.Contains(search)).ToList();
+                if (product == null)
+                {
+                    // return "No product with this key";
+                }
+                else
+                {
+                    product.Select(s => new ProductVM
+                    {
+                        ProductName = s.ProductName,
+                        Description=s.Description,
+                        
+                    });
+                }
+                return new ProductVM();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public ProductVM CreateInvoiceForViewing()
         {
             try
             {
                 var productVM = new ProductVM();
-                var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                var category = _unitOfWork.Category.GetAll().ToList();
                 productVM.ListOfCategory = category.Select(v => new SelectListItem
                 {
                     Text = v.CategoryName,
@@ -118,9 +144,10 @@ namespace Application.Services.Implementation
             {
                 throw;
             }
+
         }
 
-        public bool DeleteProduct(int id)
+        public bool DeleteInvoice(int id)
         {
             try
             {
@@ -142,7 +169,7 @@ namespace Application.Services.Implementation
                 return false; // Rethrow the exception after logging it
             }
         }
-        public bool HardDeleteProduct(int id)
+        public bool HardDeleteInvoice(int id)
         {
             try
             {
@@ -170,7 +197,7 @@ namespace Application.Services.Implementation
             }
         }
 
-        public IEnumerable<ProductVM> GetAllProducts()
+        public IEnumerable<ProductVM> GetAllInvoices()
         {
             try
             {
@@ -187,7 +214,9 @@ namespace Application.Services.Implementation
                 }).ToList();
 
                 _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", showProducts.Count);
+
                 return showProducts;
+
             }
             catch (Exception ex)
             {
@@ -196,7 +225,7 @@ namespace Application.Services.Implementation
             }
         }
 
-        public ProductVM GetProductById(int id)
+        public ProductVM GetInvoiceById(int id)
         {
             try
             {
@@ -237,7 +266,7 @@ namespace Application.Services.Implementation
                             }
                         }
                     }
-                    var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                    var category = _unitOfWork.Category.GetAll().ToList();
                     productVM.ListOfCategory = category.Select(v => new SelectListItem
                     {
                         Text = v.CategoryName,
@@ -253,7 +282,7 @@ namespace Application.Services.Implementation
             }
             return new ProductVM();
         }
-        public bool UpdateProduct(ProductVM obj)
+        public bool UpdateInvoice(ProductVM obj)
         {
             try
             {
