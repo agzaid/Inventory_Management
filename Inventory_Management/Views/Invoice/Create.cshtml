@@ -46,27 +46,94 @@
                                             <input class="form-control" asp-for="ProductName">
                                             <span asp-validation-for="ProductName" class="text-danger"></span>
                                         </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Shipping Notes</label>
+                                            <input class="form-control" asp-for="ProductName">
+                                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                                        </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="align-items-center">
-                                            <h5 class="mb-0 font-weight-bold">Social Traffic</h5>
-                                            <div class="mb-3">
-                                                <label class="form-label">Customer Name</label>
-                                                <input class="form-control" asp-for="ProductName">
+                                            <table class="table table-striped table-hover table-sm mb-0" id="">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            Total Amount :
+                                                        </td>
+                                                        <td class="text-center d-flex">
+                                                            <div id="totalAmount">--</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            Order Tax :
+                                                        </td>
+                                                        <td class="text-center d-flex">
+                                                            <div id="orderTax">--</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            Shipping :
+                                                        </td>
+                                                        <td class="text-center d-flex">
+                                                            <div id="shipping">--</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            Discount :
+                                                        </td>
+                                                        <td class="text-center d-flex">
+                                                            <div id="discount">--</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            Grand Total :
+                                                        </td>
+                                                        <td class="text-center d-flex">
+                                                            <div id="grandTotal">--</div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            @* <h5 class="mb-0 font-weight-bold">Social Traffic</h5>
+                                            <div class="mb-3 d-flex">
+                                                <label class="form-label">Total Amount : </label>
+                                                <div class="ms-2" asp-for="ProductName">2342</div>
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> <div class="mb-3">
-                                                <label class="form-label">Customer Name</label>
-                                                <input class="form-control" asp-for="ProductName">
+                                            </div> 
+                                            <div class="mb-3 d-flex">
+                                                <label class="form-label">Order Tax : </label>
+                                                <div class="ms-2" asp-for="ProductName">2342</div>
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> <div class="mb-3">
-                                                <label class="form-label">Customer Name</label>
-                                                <input class="form-control" asp-for="ProductName">
+                                            </div> 
+                                            <div class="mb-3 d-flex">
+                                                <label class="form-label">Shipping : </label>
+                                                <div class="ms-2" asp-for="ProductName">2342</div>
+
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> <div class="mb-3">
-                                                <label class="form-label">Customer Name</label>
-                                                <input class="form-control" asp-for="ProductName">
+                                            </div> 
+                                            <div class="mb-3 d-flex">
+                                                <label class="form-label">Discount : </label>
+                                                <div class="ms-2" asp-for="ProductName">2342</div>
+
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div>
+                                            </div> 
+                                            <div class="mb-3 d-flex">
+                                                <label class="form-label">Grand Total : </label>
+                                                <div class="ms-2" asp-for="ProductName">2342</div>
+
+                                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            </div> *@
                                         </div>
                                     </div>
                                 </div>
@@ -92,8 +159,31 @@
                 SearchProduct();
             });
 
-           
+
         });
+
+         function updateTotalPrice() {
+            var totalPrice = 0;
+
+            // Loop through each row to sum the product total prices
+            $('.price-input').each(function() {
+                debugger;
+                var price = parseInt($(this).val());
+                var row = $(this).closest('tr');
+                var quantity = row.find('.quantity-input').val();
+                var productTotal = quantity * price;
+
+                // Update the product's total price in the row
+                $('#totalAmount').text('$' + productTotal.toFixed(2));
+
+                // Add to the grand total
+                totalPrice += productTotal;
+            });
+
+            // Update the total price in the UI
+            $('#grandTotal').text('$' + totalPrice.toFixed(2));
+        }
+
         function AddNewRow(data){
             var newRowHtml = `
                <tr>
@@ -104,7 +194,10 @@
                        </div>
                        <div class="font-weight-bold text-danger" id="${data.ProductName}">${data.ProductName}</div></div>
                    </td>
-                   <td>${data.SellingPrice}</td>
+                   <td>
+                   ${data.SellingPrice}
+                   <input type="text" class="form-control price-input" id="${data.ProductName}-price" value="${data.SellingPrice}" hidden>
+                   </td>
                    <td class="col-3"><div>
                            <div class="input-group input-spinner">
                                <button class="btn btn-white" type="button" id="button-plus" onclick="Add(event)"> + </button>
@@ -114,7 +207,7 @@
                        </div>
                    </td>
                    <td class="text-danger">${data.StockQuantity}</td>
-                   <td><button id="deleteBtn" type="button" onclick="Delete(event)">Delete</button></td>
+                   <td><button class="btn btn-inverse-danger" id="deleteBtn" type="button" onclick="Delete(event)">Delete</button></td>
                </tr>
                 `;
             $('#listOfPurchases tbody').append(newRowHtml);
@@ -130,8 +223,8 @@
 
                       // Increment the value by 1
                       inputField.val(currentValue + 1);
-            }; 
-            
+            };
+
          function Decrement(event) {
                     debugger;
                    var addBtn = $(event.target);  // Get the clicked button
@@ -148,8 +241,6 @@
                 // var $url = "@Url.Action("FilterPatientByDate", "Doctor")";
                 var $url = "@Url.Action("SearchProduct", "Invoice")";
                 var parameter = {
-                    //id: 9,
-                   // id: query,
                     data: query
                 };
                 _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
@@ -158,7 +249,7 @@
                         if (res != null && res.IsSuccess==true) {
                             AddNewRow(res.Data[0]);
                             checkNoData();
-
+                            updateTotalPrice();
                         } else
                             _SWAL.AlertWithoutNotification(res.Message);
                     },
@@ -166,12 +257,13 @@
                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
                     });
             };
-        //window.Delete = 
+        //window.Delete =
          function Delete(event) {
                  var deleteBtn = $(event.target);
                  var rowToDelete = deleteBtn.closest('tr');
                  rowToDelete.remove();
                  reorderRows();
+                 updateTotalPrice();
          };
 
          function reorderRows() {

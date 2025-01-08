@@ -105,10 +105,14 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var product = _unitOfWork.Product.GetAll(s => s.ProductName.Contains(search) || s.Barcode.Contains(search)).ToList();
-                if (product == null)
+                var product = _unitOfWork.Product.GetAll(s => (s.ProductName.Contains(search) || s.Barcode.Contains(search)) && s.IsDeleted == false).ToList();
+                if (product.Count == 0)
                 {
-                    return Result<List<ProductVM>>.Failure("error", "Product not found...!!!");
+                    return Result<List<ProductVM>>.Failure("Product not found...!!!", "error");
+                }
+                else if (product.Count > 0 && product?.FirstOrDefault()?.StockQuantity == 0)
+                {
+                    return Result<List<ProductVM>>.Failure("Product Out of Stock...!!!", "error");
                 }
                 else
                 {
@@ -123,7 +127,7 @@ namespace Application.Services.Implementation
                         CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                         Barcode = s.Barcode,
                     }).ToList();
-                    return Result<List<ProductVM>>.Success(productViewModel,"Product retrieved successfully.");
+                    return Result<List<ProductVM>>.Success(productViewModel, "Product retrieved successfully.");
                 }
             }
             catch (Exception ex)
