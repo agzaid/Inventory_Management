@@ -3,6 +3,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Inventory_Management.Controllers
 {
@@ -85,16 +86,9 @@ namespace Inventory_Management.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchProduct(string data)
         {
-            string search = HttpContext.Request.Query["data"];
-
             var result = _invoiceService.SearchForProducts(data);
-            //if (result == true)
-            //{
-            //    TempData["success"] = "Category Deleted Successfully";
-            //}
-            //else
-            //    TempData["error"] = result;
-            return RedirectToAction(nameof(Index));
+            var res = JsonConvert.SerializeObject(result);
+            return Json(res);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Application.Services.Intrerfaces
         IEnumerable<ProductVM> GetAllInvoices();
         ProductVM GetInvoiceById(int id);
         Task<string[]> CreateInvoice(ProductVM product);
-        ProductVM SearchForProducts(string search);
+        Result<List<ProductVM>> SearchForProducts(string search);
         ProductVM CreateInvoiceForViewing();
         bool UpdateInvoice(ProductVM productVM);
         bool DeleteInvoice(int id);

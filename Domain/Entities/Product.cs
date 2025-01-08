@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,15 +17,16 @@ namespace Domain.Entities
         public decimal? MaximumDiscountPercentage { get; set; }
         public decimal? BuyingPrice { get; set; }
         public int? StockQuantity{ get; set; }
-        public int? StatusId{ get; set; }
         public DateOnly? ProductExpiryDate { get; set; }
         public string? Barcode { get; set; }
+        public int? StatusId{ get; set; }
         public string? ProductTags { get; set; }
 
         public int? CategoryId { get; set; } // Foreign Key
         public Category? Category { get; set; } // Navigation property
         public int? SupplierId { get; set; } // Foreign Key
         public Supplier? Supplier { get; set; } // Navigation property
+        //public ICollection<Inventory>? Inventory { get; set; } // Navigation property
 
         public ICollection<InvoiceItem>? InvoiceItems { get; set; } // Navigation property
         public ICollection<InventoryLog>? InventoryLogs { get; set; } // Navigation property

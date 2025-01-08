@@ -35,7 +35,7 @@ namespace Inventory_Management.Controllers
         }
         public IActionResult Create()
         {
-            return View(_productService.CreateProductForViewing());
+            return View(_productService.CreateProductForViewingInCreate());
         }
 
         [HttpPost]

@@ -101,7 +101,7 @@ namespace Application.Services.Implementation
             }
         }
 
-        public ProductVM CreateProductForViewing()
+        public ProductVM CreateProductForViewingInCreate()
         {
             try
             {
@@ -179,6 +179,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     ProductName = s.ProductName?.ToUpper(),
+                    Description = s.Description,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
                     StockQuantity = s.StockQuantity,

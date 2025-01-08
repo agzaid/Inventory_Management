@@ -101,25 +101,30 @@ namespace Application.Services.Implementation
             }
         }
 
-        public ProductVM SearchForProducts(string search)
+        public Result<List<ProductVM>> SearchForProducts(string search)
         {
             try
             {
                 var product = _unitOfWork.Product.GetAll(s => s.ProductName.Contains(search) || s.Barcode.Contains(search)).ToList();
                 if (product == null)
                 {
-                    // return "No product with this key";
+                    return Result<List<ProductVM>>.Failure("error", "Product not found...!!!");
                 }
                 else
                 {
-                    product.Select(s => new ProductVM
+                    var productViewModel = product.Select(s => new ProductVM
                     {
-                        ProductName = s.ProductName,
-                        Description=s.Description,
-                        
-                    });
+                        Id = s.Id,
+                        ProductName = s.ProductName?.ToUpper(),
+                        Description = s.Description,
+                        CategoryName = s.Category?.CategoryName?.ToUpper(),
+                        SellingPrice = s.SellingPrice,
+                        StockQuantity = s.StockQuantity,
+                        CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                        Barcode = s.Barcode,
+                    }).ToList();
+                    return Result<List<ProductVM>>.Success(productViewModel,"Product retrieved successfully.");
                 }
-                return new ProductVM();
             }
             catch (Exception ex)
             {
