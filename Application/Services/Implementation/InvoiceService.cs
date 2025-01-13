@@ -110,7 +110,7 @@ namespace Application.Services.Implementation
                 {
                     return Result<List<ProductVM>>.Failure("Product not found...!!!", "error");
                 }
-                else if (product.Count > 0 && product?.FirstOrDefault()?.StockQuantity == 0)
+                else if (product.Count > 0 && (product?.FirstOrDefault()?.StockQuantity == 0 || product?.FirstOrDefault()?.StockQuantity == null))
                 {
                     return Result<List<ProductVM>>.Failure("Product Out of Stock...!!!", "error");
                 }
@@ -136,16 +136,16 @@ namespace Application.Services.Implementation
             }
 
         }
-        public ProductVM CreateInvoiceForViewing()
+        public InvoiceVM CreateInvoiceForViewing()
         {
             try
             {
-                var productVM = new ProductVM();
-                var category = _unitOfWork.Category.GetAll().ToList();
-                productVM.ListOfCategory = category.Select(v => new SelectListItem
+                var productVM = new InvoiceVM();
+                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
-                    Text = v.CategoryName,
-                    Value = v.Id.ToString()
+                    Text = v.Area,
+                    Value = v.Price.ToString()
                 }).ToList();
                 return productVM;
             }

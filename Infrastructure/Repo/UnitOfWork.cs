@@ -16,6 +16,7 @@ namespace Infrastructure.Repo
         public ICategoryRepository Category { get; private set; }
         public IImageRepository Image { get; private set; }
         public IInvoiceRepository Invoice { get; private set; }
+        public IShippingFreightRepository ShippingFreight { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -23,6 +24,7 @@ namespace Infrastructure.Repo
             Category = new CategoryRepository(_db);
             Image = new ImageRepository(_db);
             Invoice = new InvoiceRepository(_db);
+            ShippingFreight = new ShippingFreightRepository(_db);
         }
         public void Save()
         {

@@ -1,13 +1,13 @@
-﻿@model List<Domain.Models.ProductVM>
+﻿@model List<Domain.Models.ShippingFreightVM>
 
 <div class="page-wrapper">
     <div class="page-content">
         <div class="row">
             <div class="col">
-                <div class="d-flex justify-content-end mb-1">
-                    <a class="btn btn-primary mb-3 mb-lg-0" asp-action="Create" asp-controller="Product">
+                <div class="d-flex justify-content-end mb-2">
+                    <a class="btn btn-primary mb-3 mb-lg-0" asp-action="Create" asp-controller="ShippingFreight">
                         <i class="bx bxs-plus-square"></i>
-                        Add New Product
+                        Add New Shipping Freight
                     </a>
                 </div>
                 <div class="card radius-10">
@@ -16,13 +16,10 @@
                             <table id="example2" class="table table-striped table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Product Name</th>
-                                        <th>Details</th>
-                                        <th>Category</th>
+                                        <th>Area</th>
+                                        <th>Regoin</th>
                                         <th>Price</th>
-                                        <th>Qty</th>
-                                        <th>Expires At</th>
-                                        <th>Created At</th>
+                                        <th>Created Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -30,41 +27,32 @@
                                     @foreach (var item in Model)
                                     {
                                         <tr>
-                                            <td>@item.ProductName</td>
-                                            <td>@item.Description</td>
-                                            <td>@item.CategoryName</td>
-                                            <td>@item.SellingPrice</td>
-                                            <td>@item.StockQuantity</td>
-                                            <td>@item.ExpiryDate</td>
+                                            <td>@item.Area</td>
+                                            <td>@item.Region</td>
+                                            <td>@item.Price</td>
                                             <td>@item.CreatedDate</td>
                                             <td class="text-center" style="font-size:20px">
                                                 <a class="me-3" asp-action="Edit" asp-route-id="@item.Id">
+                                                    <i class="lni lni-eye"></i>
+                                                </a>
+                                                <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id">
                                                     <i class="bx bx-message-square-edit"></i>
                                                 </a>
-                                                <a class="text-danger me-3" asp-action="Delete" asp-route-id="@item.Id">
-                                                    <i class="bx bxs-trash"></i>
-                                                </a>
-                                                @* only for admins *@
-                                                <a class="btn btn-inverse-danger me-3" asp-action="HardDelete" asp-route-id="@item.Id">
-                                                    <i class="lni lni-cross-circle" style="margin:auto"></i>
+                                                <a class="text-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                                    <i class="lni lni-cross-circle"></i>
                                                 </a>
                                             </td>
                                         </tr>
                                     }
-
                                 </tbody>
-                                <tfoot>
+                               @*  <tfoot>
                                     <tr>
-                                        <th>Product Name</th>
+                                        <th>Category Name</th>
                                         <th>Description</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Qty</th>
-                                        <th>Expires At</th>
-                                        <th>Created At</th>
+                                        <th>Created Date</th>
                                         <th>Actions</th>
                                     </tr>
-                                </tfoot>
+                                </tfoot> *@
                             </table>
                         </div>
                     </div>

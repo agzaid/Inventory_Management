@@ -34,16 +34,16 @@ namespace Inventory_Management.Controllers
         }
         public IActionResult Create()
         {
-            return View(new ProductVM());
+            return View(_invoiceService.CreateInvoiceForViewing());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryVM obj)
+        public async Task<IActionResult> Create(InvoiceVM obj)
         {
             if (ModelState.IsValid)
             {
 
-                var result = await _categoryService.CreateCategory(obj);
+                var result =  _invoiceService.CreateInvoiceForViewing();
                 TempData["success"] = result;
                 return RedirectToAction(nameof(Index));
             }

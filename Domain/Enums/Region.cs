@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Enums
 {
-    public enum Status
+    public enum Regoin
     {
-        Available,
-        OutOfStock,
-        Completed,
-        InProgress,
-        InActive
+        Other,
+        Maadi,
+        Mokattam,
     }
 }

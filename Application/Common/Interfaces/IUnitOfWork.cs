@@ -12,6 +12,7 @@ namespace Application.Common.Interfaces
         ICategoryRepository Category { get; }
         IImageRepository Image { get; }
         IInvoiceRepository Invoice { get; }
+        IShippingFreightRepository ShippingFreight { get; }
         void Save();
 
     }

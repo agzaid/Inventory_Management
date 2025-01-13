@@ -22,6 +22,7 @@ namespace Infrastructure.Data
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
+        public DbSet<ShippingFreight> ShippingFreight { get; set; }
 
         public static void SeedData(ApplicationDbContext context)
         {
@@ -29,8 +30,16 @@ namespace Infrastructure.Data
             if (!context.Category.Any())
             {
                 context.Category.AddRange(
-                    new Category { CategoryName = "rice"}
-                   
+                    new Category { CategoryName = "rice" }
+                );
+
+                context.SaveChanges();
+            }
+            // Check if the data is already seeded to avoid duplication
+            if (!context.ShippingFreight.Any())
+            {
+                context.ShippingFreight.AddRange(
+                    new ShippingFreight { Area = "other", Region = "other", Price = 50}
                 );
 
                 context.SaveChanges();

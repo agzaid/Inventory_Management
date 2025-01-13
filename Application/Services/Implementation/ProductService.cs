@@ -183,6 +183,7 @@ namespace Application.Services.Implementation
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
                     StockQuantity = s.StockQuantity,
+                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     Barcode = s.Barcode,
                 }).ToList();

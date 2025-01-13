@@ -1,4 +1,4 @@
-﻿@model Domain.Models.ProductVM
+﻿@model Domain.Models.InvoiceVM
 
 <div class="page-wrapper">
     <div class="page-content">
@@ -43,13 +43,26 @@
                                     <div class="container col-8">
                                         <div class="mb-3">
                                             <label class="form-label">Customer Name</label>
-                                            <input class="form-control" asp-for="ProductName">
-                                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            <input class="form-control" asp-for="CustomerName">
+                                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Phone Number</label>
+                                            <input class="form-control" asp-for="PhoneNumber">
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="inputProductType" class="form-label">Delivery Regoin</label>
+                                            <select class="form-select mb-2" aria-label="multiple select example"
+                                                    asp-for="AreaId" asp-items="@(new SelectList(Model.ListOfAreas, "Value", "Text"))" data-placeholder=" Choose Area...">
+                                                <option disabled>Please Select Area...</option>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Shipping Notes</label>
-                                            <input class="form-control" asp-for="ProductName">
-                                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                                            <textarea class="form-control" asp-for="ShippingNotes" placeholder="Detailed Address...">
+                                             </textarea>
+                                            <span asp-validation-for="ShippingNotes" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-4">
@@ -105,39 +118,11 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            @* <h5 class="mb-0 font-weight-bold">Social Traffic</h5>
-                                            <div class="mb-3 d-flex">
-                                                <label class="form-label">Total Amount : </label>
-                                                <div class="ms-2" asp-for="ProductName">2342</div>
-                                                <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> 
-                                            <div class="mb-3 d-flex">
-                                                <label class="form-label">Order Tax : </label>
-                                                <div class="ms-2" asp-for="ProductName">2342</div>
-                                                <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> 
-                                            <div class="mb-3 d-flex">
-                                                <label class="form-label">Shipping : </label>
-                                                <div class="ms-2" asp-for="ProductName">2342</div>
-
-                                                <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> 
-                                            <div class="mb-3 d-flex">
-                                                <label class="form-label">Discount : </label>
-                                                <div class="ms-2" asp-for="ProductName">2342</div>
-
-                                                <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> 
-                                            <div class="mb-3 d-flex">
-                                                <label class="form-label">Grand Total : </label>
-                                                <div class="ms-2" asp-for="ProductName">2342</div>
-
-                                                <span asp-validation-for="ProductName" class="text-danger"></span>
-                                            </div> *@
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <button type="submit" id="submitBtn" class="btn btn-inverse-primary">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -149,20 +134,44 @@
     <script>
         $(document).ready(function () {
 
+            let userTyping = false;
+
           $('#myForm').on('submit', function (event) {
-            event.preventDefault();  // Prevents the form from being submitted
-            alert("Form submission prevented!");
+              debugger;
+              if (!userTyping) {
+                 event.preventDefault();  // Prevent the form from submitting
+              }else
+                userTyping=false;
             });
+
+          $('#inputSearch').on('input', function() {
+            userTyping = true;
+              });
+
             $('#ImagesFormFiles').imageuploadify();
 
-            $('#inputSearch').on('change', function() {
-                SearchProduct();
+            $('#inputSearch').on('keydown', function(event) {
+                debugger;
+                    if (event.key === 'Enter') {
+                            event.preventDefault();  // Prevent the form from submitting
+                            SearchProduct();
+                        }
+                 event.preventDefault();  // Prevents the form from being submitted
             });
+            $('#AreaId').on('change',function() {
+                 debugger;
+                 // Get the selected option
+                 var selectedOption = $(this).find('option:selected');
 
-
+                 // Get the value of the selected option
+                 var selectedValue = parseFloat(selectedOption.val());
+                 $('#shipping').text('$' + selectedValue.toFixed(2));
+                 $('#shipping').attr('data-value', selectedValue);
+                 updateTotalPrice();
+             });
         });
 
-         function updateTotalPrice() {
+        function updateTotalPrice() {
             var totalPrice = 0;
 
             // Loop through each row to sum the product total prices
@@ -171,11 +180,11 @@
                 var price = parseInt($(this).val());
                 var row = $(this).closest('tr');
                 var quantity = row.find('.quantity-input').val();
-                var productTotal = quantity * price;
+                var shipping =parseFloat( $('#shipping').attr('data-value'));
+                var productTotal = quantity * price + shipping;
 
                 // Update the product's total price in the row
                 $('#totalAmount').text('$' + productTotal.toFixed(2));
-
                 // Add to the grand total
                 totalPrice += productTotal;
             });
@@ -185,35 +194,67 @@
         }
 
         function AddNewRow(data){
+            debugger;
+             var rowIndex = $('#listOfPurchases tbody tr').length;
             var newRowHtml = `
-               <tr>
-                   <td></td>
-                   <td colspan="2"><div class="d-flex align-items-center">
-                       <div>
-                           <i class='bx bxs-file-pdf me-2 font-24 text-danger'></i>
-                       </div>
-                       <div class="font-weight-bold text-danger" id="${data.ProductName}">${data.ProductName}</div></div>
-                   </td>
-                   <td>
-                   ${data.SellingPrice}
-                   <input type="text" class="form-control price-input" id="${data.ProductName}-price" value="${data.SellingPrice}" hidden>
-                   </td>
-                   <td class="col-3"><div>
-                           <div class="input-group input-spinner">
-                               <button class="btn btn-white" type="button" id="button-plus" onclick="Add(event)"> + </button>
-                                <input type="text" class="form-control quantity-input" id="${data.ProductName}-quantity" value="1">
-                               <button class="btn btn-white" type="button" id="button-minus" onclick="Decrement(event)"> − </button>
-                           </div>
-                       </div>
-                   </td>
-                   <td class="text-danger">${data.StockQuantity}</td>
-                   <td><button class="btn btn-inverse-danger" id="deleteBtn" type="button" onclick="Delete(event)">Delete</button></td>
-               </tr>
-                `;
+                <tr id="row-${rowIndex}">
+                <td id="index-${rowIndex}">${rowIndex + 1}</td>
+                <td colspan="2">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <i class='bx bxs-file-pdf me-2 font-24 text-danger'></i>
+                        </div>
+                        <div class="font-weight-bold text-danger">${data.ProductName}</div>
+                        <input class="font-weight-bold text-danger product-input" name="productInput[${rowIndex}]" id="productInput[${rowIndex}]" value="${data.ProductName}" hidden>
+                    </div>
+                </td>
+                <td>
+                    ${data.SellingPrice}
+                    <input type="text" class="form-control price-input" id="priceInput[${rowIndex}]" name="priceInput[${rowIndex}]" value="${data.SellingPrice}" hidden>
+                </td>
+                <td class="col-3">
+                    <div>
+                        <div class="input-group input-spinner">
+                            <button class="btn btn-white" type="button" id="button-plus-${rowIndex}" onclick="Add(event, ${rowIndex})"> + </button>
+                            <input type="text" class="form-control quantity-input" name="quantityInput[${rowIndex}]" id="quantityInput[${rowIndex}]" value="1">
+                            <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-danger">
+                ${data.StockQuantity}
+                <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.StockQuantity}" hidden>
+                </td>
+                <td><button class="btn btn-inverse-danger" id="deleteBtn-${rowIndex}" type="button" onclick="Delete(event, ${rowIndex})">Delete</button></td>
+            </tr>
+        `;
             $('#listOfPurchases tbody').append(newRowHtml);
             reorderRows();
         };
-         function Add(event) {
+        function reorderRows() {
+            $('#listOfPurchases tbody tr').each(function(index) {
+             debugger;
+            // Update the id and text of each td based on the index of the row
+            var row = $(this);
+
+            // Update the index column
+            row.find('td').first().text(index + 1);  // Reset the first column to show the updated index
+
+            // Update ids for the quantity and price inputs and buttons
+            row.find('.product-input').attr('id', `productInput[${index}]`);
+            row.find('.product-input').attr('name', `productInput[${index}]`);
+            row.find('.price-input').attr('id', `priceInput[${index}]`);
+            row.find('.price-input').attr('name', `priceInput[${index}]`);
+            row.find('.quantity-input').attr('id', `quantityInput[${index}]`);
+            row.find('.quantity-input').attr('name', `quantityInput[${index}]`);
+            row.find('.stock-input').attr('id', `stockInput[${index}]`);
+            row.find('.stock-input').attr('name', `stockInput[${index}]`);
+            row.find('button[id^="button-plus"]').attr('id', `button-plus-${index}`);
+            row.find('button[id^="button-minus"]').attr('id', `button-minus-${index}`);
+            row.find('button[id^="deleteBtn"]').attr('id', `deleteBtn-${index}`);
+                });
+           }
+        function Add(event) {
                     debugger;
                       var addBtn = $(event.target);  // Get the clicked button
                       var inputField = addBtn.siblings('.quantity-input');  // Get the input field that is a sibling of the clicked button
@@ -247,8 +288,8 @@
                     function (data) {
                         var res = JSON.parse(data);
                         if (res != null && res.IsSuccess==true) {
-                            AddNewRow(res.Data[0]);
                             checkNoData();
+                            AddNewRow(res.Data[0]);
                             updateTotalPrice();
                         } else
                             _SWAL.AlertWithoutNotification(res.Message);
@@ -259,6 +300,7 @@
             };
         //window.Delete =
          function Delete(event) {
+             debugger;
                  var deleteBtn = $(event.target);
                  var rowToDelete = deleteBtn.closest('tr');
                  rowToDelete.remove();
@@ -266,15 +308,7 @@
                  updateTotalPrice();
          };
 
-         function reorderRows() {
-             debugger;
-               $('#listOfPurchases tbody tr').each(function(index) {
-                   // Optionally, reset the row index or any other data you want
-                   // Here, we reset the product index or make any adjustments as needed
-                   var s = $(this).find('td');
-                   $(this).find('td').first().text(index);  // This will reset the first column to show the index number
-               });
-           }
+
         function checkNoData() {
         var rows = $('#listOfPurchases tbody tr');
 
@@ -284,7 +318,9 @@
             $('#listOfPurchases tbody .no-data-row').show();
         } else {
             // If rows are added, remove the "No data found yet" row
-            $('#listOfPurchases tbody .no-data-row').remove();
+            //debugger;
+             $('#listOfPurchases tbody .no-data-row').closest('tr').remove();
+            //$('#listOfPurchases tbody .no-data-row').remove();
         }
         }
     </script>
