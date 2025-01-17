@@ -92,7 +92,7 @@ var _SWAL = {
                 window.location = `@Url.Action("Index","Doctor",new { id = 3 })`;
             }
         });
-    }, CustomAlertWithRedirect: function (controller,action,parameter) {
+    }, CustomAlertWithRedirect: function (controller, action, parameter) {
         Swal.fire({
             title: 'هل تريد الاستمرار؟',
             icon: 'question',
@@ -119,9 +119,26 @@ var _SWAL = {
                 showCloseButton: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    resolve(true); 
+                    resolve(true);
                 } else
-                    resolve(false); 
+                    resolve(false);
+            });
+        });
+    }, CustomAlertWithOwnMessage: function (mess, yes, no) {
+        return new Promise((resolve) => {
+            Swal.fire({
+                title: mess,
+                icon: 'question',
+                iconHtml: '؟',
+                confirmButtonText: yes,
+                cancelButtonText: no,
+                showCancelButton: true,
+                showCloseButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    resolve(true);
+                } else
+                    resolve(false);
             });
         });
     },

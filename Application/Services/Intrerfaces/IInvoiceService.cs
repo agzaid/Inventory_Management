@@ -14,6 +14,7 @@ namespace Application.Services.Intrerfaces
         ProductVM GetInvoiceById(int id);
         Task<string[]> CreateInvoice(ProductVM product);
         Result<List<ProductVM>> SearchForProducts(string search);
+        Result<CustomerVM> SearchForCustomer(string search);
         InvoiceVM CreateInvoiceForViewing();
         bool UpdateInvoice(ProductVM productVM);
         bool DeleteInvoice(int id);

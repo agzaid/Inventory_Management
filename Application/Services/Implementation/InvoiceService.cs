@@ -20,9 +20,9 @@ namespace Application.Services.Implementation
     public class InvoiceService : IInvoiceService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<ProductService> _logger;
+        private readonly ILogger<InvoiceService> _logger;
 
-        public InvoiceService(IUnitOfWork unitOfWork, ILogger<ProductService> logger)
+        public InvoiceService(IUnitOfWork unitOfWork, ILogger<InvoiceService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -128,6 +128,35 @@ namespace Application.Services.Implementation
                         Barcode = s.Barcode,
                     }).ToList();
                     return Result<List<ProductVM>>.Success(productViewModel, "Product retrieved successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public Result<CustomerVM> SearchForCustomer(string search)
+        {
+            try
+            {
+                var customer = _unitOfWork.Customer.Get(s => s.Phone.Contains(search));
+                if (customer == null)
+                {
+                    return Result<CustomerVM>.Failure("Customer not found...!!!", "error");
+                }
+                else
+                {
+                    var customerVm = new CustomerVM()
+                    {
+                        Phone = customer.Phone,
+                        Address = customer.Address,
+                        Area = customer.Area,
+                        CustomerName = customer.CustomerName,
+                        Email = customer.Email,
+                        AreaId = customer.Area
+                    };
+                    return Result<CustomerVM>.Success(customerVm, "Customer retrieved successfully.");
                 }
             }
             catch (Exception ex)

@@ -90,5 +90,13 @@ namespace Inventory_Management.Controllers
             var res = JsonConvert.SerializeObject(result);
             return Json(res);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchCustomer(string data)
+        {
+            var result = _invoiceService.SearchForCustomer(data);
+            var res = JsonConvert.SerializeObject(result);
+            return Json(res);
+        }
     }
 }

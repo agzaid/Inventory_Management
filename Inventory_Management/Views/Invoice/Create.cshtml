@@ -148,28 +148,64 @@
             userTyping = true;
               });
 
-            $('#ImagesFormFiles').imageuploadify();
+          $('#ImagesFormFiles').imageuploadify();
 
-            $('#inputSearch').on('keydown', function(event) {
-                debugger;
-                    if (event.key === 'Enter') {
-                            event.preventDefault();  // Prevent the form from submitting
-                            SearchProduct();
-                        }
-                 event.preventDefault();  // Prevents the form from being submitted
-            });
-            $('#AreaId').on('change',function() {
-                 debugger;
-                 // Get the selected option
-                 var selectedOption = $(this).find('option:selected');
+          $('#inputSearch').on('keydown', function(event) {
+              debugger;
+             if (event.key === 'Enter') {
+                     event.preventDefault();  // Prevent the form from submitting
+                     SearchProduct();
+              } // Prevents the form from being submitted
+          });
+          $('#AreaId').on('change',function() {
+               debugger;
+               // Get the selected option
+               var selectedOption = $(this).find('option:selected');
 
-                 // Get the value of the selected option
-                 var selectedValue = parseFloat(selectedOption.val());
-                 $('#shipping').text('$' + selectedValue.toFixed(2));
-                 $('#shipping').attr('data-value', selectedValue);
-                 updateTotalPrice();
-             });
+               // Get the value of the selected option
+               var selectedValue = parseFloat(selectedOption.val());
+               $('#shipping').text('$' + selectedValue.toFixed(2));
+               $('#shipping').attr('data-value', selectedValue);
+               updateTotalPrice();
+           });
+
+         $('#PhoneNumber').on('keydown',function(event) {
+            debugger;
+             if (event.key === 'Enter') {
+                     event.preventDefault();  // Prevent the form from submitting
+                     SearchCustomer();
+              }
+         });
         });
+
+        function SearchCustomer(){
+             var query = $('#PhoneNumber').val();
+                // var $url = "@Url.Action("FilterPatientByDate", "Doctor")";
+                var $url = "@Url.Action("SearchCustomer", "Invoice")";
+                var parameter = {
+                    data: query
+                };
+                _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
+                    function (data) {
+                        debugger;
+                        var res = JSON.parse(data);
+                        if (res != null && res.IsSuccess==true) {
+                           MappingToFields(res);
+                        } else
+                            _SWAL.AlertWithoutNotification(res.Message);
+                    },
+                    function (xhr) {
+                        _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                    });
+        };
+
+       async function MappingToFields(res){
+           debugger;
+              var result = await _SWAL.CustomAlertWithOwnMessage("A Customer Was Found, Do you want to use that customer???","Yes","No");
+             if(result){
+
+             }
+        }
 
         function updateTotalPrice() {
             var totalPrice = 0;
@@ -180,11 +216,12 @@
                 var price = parseInt($(this).val());
                 var row = $(this).closest('tr');
                 var quantity = row.find('.quantity-input').val();
-                var shipping =parseFloat( $('#shipping').attr('data-value'));
+                var shipping = parseFloat( $('#shipping').attr('data-value'));
                 var productTotal = quantity * price + shipping;
+                var productItemsTotal = quantity * price ;
 
                 // Update the product's total price in the row
-                $('#totalAmount').text('$' + productTotal.toFixed(2));
+                $('#totalAmount').text('$' + productItemsTotal.toFixed(2));
                 // Add to the grand total
                 totalPrice += productTotal;
             });
