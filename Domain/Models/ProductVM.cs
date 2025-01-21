@@ -31,6 +31,7 @@ namespace Domain.Models
         public decimal? OtherShopsPrice { get; set; }
         public string? DifferencePercentage { get; set; }
         public string? MaximumDiscountPercentage { get; set; }
+        public decimal? DiscPerceForCreateInvoice { get; set; }
         public decimal? BuyingPrice{ get; set; }
         public int? StockQuantity { get; set; }
         public string? CreatedDate { get; set; }

@@ -19,10 +19,14 @@ namespace Domain.Models
         public List<string>? priceInput { get; set; } = new List<string>();
         public List<string>? stockInput { get; set; } = new List<string>();
         public List<string>? quantityInput { get; set; } = new List<string>();
+        public List<string>? individualDiscount { get; set; } = new List<string>();
         public string? CustomerName { get; set; }
         public string? PhoneNumber { get; set; }
         public string? ShippingNotes { get; set; }
         public string? Number { get; set; }
+        public double? totalAmountInput { get; set; }
+        public double? shippingInput { get; set; }
+        public double? grandTotalInput { get; set; }
         public decimal? TotalAmount { get; set; }
         public string? AreaId { get; set; }
         public List<SelectListItem>? ListOfAreas { get; set; }

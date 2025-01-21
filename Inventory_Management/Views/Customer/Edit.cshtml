@@ -28,9 +28,14 @@
                                                     <span asp-validation-for="Phone" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Area</label>
+                                                    <label for="inputProductType" class="form-label">Area</label>
+                                                    <select class="form-select mb-2" aria-label="multiple select example"
+                                                            asp-for="AreaId" asp-items="@(new SelectList(Model.ListOfAreas, "Value", "Text"))" data-placeholder=" Choose Area...">
+                                                        <option disabled>Please Select Area...</option>
+                                                    </select>
+                                                    @* <label class="form-label">Area</label>
                                                     <input class="form-control" asp-for="Area">
-                                                    <span asp-validation-for="Area" class="text-danger"></span>
+                                                    <span asp-validation-for="Area" class="text-danger"></span> *@
                                                 </div>
                                                 <div class="col-12">
                                                     <label class="form-label">Address</label>

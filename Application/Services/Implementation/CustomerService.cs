@@ -108,13 +108,15 @@ namespace Application.Services.Implementation
                     var customerVM = new CustomerVM()
                     {
                         CustomerName = customer.CustomerName,
-                        Area = customer.Area,
+                         AreaId = customer.Area,
                         Address = customer.Address,
                         Email = customer.Email,
                         Phone = customer.Phone,
                         CreatedDate = customer.Create_Date?.ToString("yyyy-MM-dd")
                     };
-                    return Result<CustomerVM>.Success(customerVM,"success");
+                    var customer1 = CreateCustomerForViewing();
+                    customerVM.ListOfAreas = customer1.ListOfAreas;
+                    return Result<CustomerVM>.Success(customerVM, "success");
                 }
             }
             catch (Exception ex)
@@ -137,10 +139,10 @@ namespace Application.Services.Implementation
                 if (oldCustomer != null)
                 {
                     oldCustomer.CustomerName = obj.CustomerName;
-                    oldCustomer.Area = obj.Area;
+                    oldCustomer.Area = obj.AreaId;
                     oldCustomer.Phone = obj.Phone;
                     oldCustomer.Email = obj.Email;
-                    oldCustomer.Area = obj.Area;
+                   // oldCustomer.Area = obj.Area;
                     oldCustomer.Address = obj.Address;
                     oldCustomer.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Customer.Update(oldCustomer);

@@ -123,9 +123,11 @@ namespace Application.Services.Implementation
                         Description = s.Description,
                         CategoryName = s.Category?.CategoryName?.ToUpper(),
                         SellingPrice = s.SellingPrice,
+                        DiscPerceForCreateInvoice = s.MaximumDiscountPercentage,
                         StockQuantity = s.StockQuantity,
                         CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                         Barcode = s.Barcode,
+                        //ListOfRetrievedImages = s.Images?.Select(v => FileExtensions.ByteArrayToImageBase64(v.ImageByteArray)).ToList()
                     }).ToList();
                     return Result<List<ProductVM>>.Success(productViewModel, "Product retrieved successfully.");
                 }
