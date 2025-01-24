@@ -107,19 +107,20 @@
                                                         </td>
                                                         <td class="text-center d-flex">
                                                             <div id="shipping" data-value="0">--</div>
-                                                            <input id="shippingInput" name="shippingInput" value="0" hidden />
+                                                            <input id="shippingInput" name="shippingInput" value="@Model.AreaId" hidden />
+                                                            <input id="shippingText" name="shippingText" value="other" hidden />
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
                                                             <div class="form-check form-switch form-check-primary">
-                                                                <input class="form-check-input" id="discountSwitch" type="checkbox" />
+                                                                <input class="form-check-input" id="discountSwitch" name="discountSwitch" type="checkbox" />
                                                                 Discount :
                                                             </div>
                                                         </td>
                                                         <td class="text-center d-flex">
                                                             <div id="discount">--</div>
-                                                            <input class="form-control col-1" id="discountInput" name="discountInput" style="display:none"/>
+                                                            <input class="form-control col-1" id="allDiscountInput" name="allDiscountInput" style="display:none" />
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -170,7 +171,6 @@
                   SearchProduct();
            });
            $('#inputSearch').on('keydown', function(event) {
-               debugger;
               if (event.key === 'Enter') {
                       event.preventDefault();
                       SearchProduct();
@@ -179,11 +179,13 @@
            $('#AreaId').on('change',function() {
                 debugger;
                 var selectedOption = $(this).find('option:selected');
-
+                var selectedText = selectedOption[0].text;
                 var selectedValue = parseFloat(selectedOption.val());
                 $('#shipping').text('$' + selectedValue.toFixed(2));
                 $('#shipping').attr('data-value', selectedValue);
+                $('#shipping').attr('data-text', selectedText);
                 $('#shippingInput').val(selectedValue);
+                $('#shippingText').val(selectedText);
                 updateTotalPrice();
             });
 
@@ -202,10 +204,10 @@
             if ($(this).prop('checked')) {
                 $('.individualDiscount').hide();
                 $('#discount').hide();
-                $('#discountInput').show();
+                $('#allDiscountInput').show();
             } else {
                 $('#discount').show();
-                $('#discountInput').hide();
+                $('#allDiscountInput').hide();
                 $('.individualDiscount').show();
             }
               updateTotalPrice();
@@ -215,6 +217,9 @@
            $('.individualDiscount-input').on('input',function() {
                debugger;
                updateTotalPrice();
+           });
+           $('#allDiscountInput').on('change',function() {
+                updateTotalPrice();
            });
 
 
@@ -261,6 +266,7 @@
              var totalPrice = 0;
              var totalProductItems=0;
              var shipping=0;
+             var allDiscountInput = $('#allDiscountInput').val();
 
              $('.price-input').each(function() {
                  debugger;
@@ -268,6 +274,11 @@
                  var row = $(this).closest('tr');
                  var quantity = row.find('.quantity-input').val();
                  var discount = row.find('.individualDiscount-input').val();
+                 var discountSwitch = $('#discountSwitch');
+
+                 if(discountSwitch.checked || discountSwitch[0].checked){
+                     discount = '';
+                 }
                  shipping = parseFloat( $('#shipping').attr('data-value'));
                 // var productTotal = quantity * price + shipping;
                 var productItemsTotal = 0;
@@ -284,6 +295,11 @@
                  $('#totalAmountInput').val(totalProductItems);
              });
 
+             debugger;
+             if(allDiscountInput != "" && (discountSwitch.checked || discountSwitch[0].checked)){
+                    allDiscountInput = parseFloat(allDiscountInput);
+                    totalProductItems = totalProductItems - (totalProductItems * allDiscountInput / 100);
+              }
               totalPrice = totalProductItems + shipping;
              $('#grandTotal').text('$' + totalPrice.toFixed(2));
              $('#grandTotalInput').val(totalPrice);
@@ -322,12 +338,16 @@
                  <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.StockQuantity}" hidden>
                  </td>
                  <td class="individualDiscount col-1">
-                 <input class="form-control individualDiscount-input" type="number" max="${data.DiscPerceForCreateInvoice}" name="individualDiscount[${rowIndex}]"/> <td/>
+                 <input class="form-control individualDiscount-input" type="number" max="${data.DiscPerceForCreateInvoice}" name="individualDiscount[${rowIndex}]" 
+                 oninput="IndividualDiscount(this.value)"/> <td/>
                  <td><button class="btn btn-inverse-danger" id="deleteBtn-${rowIndex}" type="button" onclick="Delete(event, ${rowIndex})">Delete</button></td>
              </tr>
          `;
              $('#listOfPurchases tbody').append(newRowHtml);
              reorderRows();
+         };
+         function IndividualDiscount(value){
+             updateTotalPrice();
          };
          function reorderRows() {
              $('#listOfPurchases tbody tr').each(function(index) {

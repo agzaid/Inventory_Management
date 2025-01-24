@@ -28,73 +28,59 @@ namespace Application.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<string[]> CreateInvoice(ProductVM product)
+        public async Task<string[]> CreateInvoice(InvoiceVM invoiceVM)
         {
-            var imagesToBeDeleted = new List<string>();
-            var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
+                var customer = _unitOfWork.Customer.Get(s => s.Phone == invoiceVM.PhoneNumber);
+                var invoice = new Invoice();
+                for (int i = 0; i < invoiceVM.productInput?.Count; i++)
+                {
+                    var product = _unitOfWork.Product.Get(s => s.ProductName == invoiceVM.productInput[i].ToLower());
+                    var area = _unitOfWork.ShippingFreight.Get(s => s.Area == invoiceVM.shippingText);
+                    //add code to update quantity
+                    var invoiceItems = new InvoiceItem()
+                    {
+                        ProductName = product.ProductName,
+                        ProductId = product.Id,
+                        Quantity = int.Parse(invoiceVM.quantityInput[i]),
+                        AreaId = area?.Id,
+                        Price = decimal.Parse(invoiceVM.priceInput[i]),
+                        ShippingPrice = invoiceVM.shippingInput,
+                        IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] == null ? "0" : invoiceVM.individualDiscount[i]),
+                        Product = product
+                    };
+                    invoice.InvoiceItems.Add(invoiceItems);
+                }
+                invoice.Customer = customer;
+                invoice.CustomerId = customer.Id;
+                invoice.OrderDate = DateTime.UtcNow;
+                invoice.AllDiscountInput = decimal.Parse(invoiceVM.allDiscountInput == null ? "0.00" : invoiceVM.allDiscountInput);
+                invoice.GrandTotalAmount = invoiceVM.grandTotalInput;
+                invoice.ProductsOnlyAmount = invoiceVM.totalAmountInput == 0 ? decimal.Parse("0.00") : (decimal)invoiceVM.totalAmountInput;
+                invoice.AllProductItems = string.Join(',', invoiceVM.productInput);
+                invoice.ShippingNotes = invoiceVM.ShippingNotes;
+                invoice.ShippingPrice = double.Parse(invoiceVM.AreaId);
+
+                _unitOfWork.Invoice.Add(invoice);
+                _unitOfWork.Save();
+
+                var lookForName = _unitOfWork.Product.GetAll();
                 if (lookForName != null)
                 {
                     return new string[] { "error", "Product Already Exists" };
                 }
                 else
                 {
-                    product.ProductName = product.ProductName?.ToLower().Trim();
-                    product.Description = product.Description?.ToLower().Trim();
-                    product.ProductTags = product.ProductTags?.ToLower().Trim();
-                    product.Barcode = product.Barcode?.ToLower().Trim();
-                    product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
-                    product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
-                    var result = new List<string>();
-                    var resultByteImage = new byte[0];
-                    if (product?.ImagesFormFiles?.Count() > 0)
-                    {
-                        //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
-                        foreach (var item in product.ImagesFormFiles)
-                        {
-                            resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                            imagesToBeRemoved.Add(resultByteImage);
-                        }
-                    }
-                    //imagesToBeDeleted = result;
-                    var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
-                    {
-                        ImageByteArray = s ?? new byte[0],
-                        Create_Date = DateTime.Now,
-                    }).ToList();
 
-                    if (!(result == null && result.Contains("Error")))
-                    {
-                        var Newproduct = new Product()
-                        {
-                            ProductName = product.ProductName,
-                            Description = product.Description,
-                            Barcode = product.Barcode,
-                            Create_Date = DateTime.Now,
-                            SellingPrice = product.SellingPrice,
-                            BuyingPrice = product.BuyingPrice,
-                            DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
-                            IsDeleted = false,
-                            MaximumDiscountPercentage = decimal.Parse(product.MaximumDiscountPercentage ?? "0.00"),
-                            OtherShopsPrice = product.OtherShopsPrice,
-                            StockQuantity = product.StockQuantity,
-                            ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "1-1-2000"),
-                            CategoryId = int.Parse(product.CategoryId),
-                            StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
-                            ProductTags = product.ProductTags ?? "",
-                            Images = listOfImages,
-                        };
-                        _unitOfWork.Product.Add(Newproduct);
-                        _unitOfWork.Save();
-                    }
+                    _unitOfWork.Product.Add(new Product());
+
                     return new string[] { "success", "Product Created Successfully" };
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
+                _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}");
                 //await FileExtensions.DeleteImages(imagesToBeDeleted);
 
                 return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it

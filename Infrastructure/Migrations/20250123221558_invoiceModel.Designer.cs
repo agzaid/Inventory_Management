@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250123221558_invoiceModel")]
+    partial class invoiceModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,20 +179,17 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("AllDiscountInput")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("AllProductItems")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("GrandTotalAmount")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("GrandTotalAmount")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("InvoiceNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("InvoiceNumber")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -202,12 +202,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<decimal?>("ProductsOnlyAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ShippingNotes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("ShippingPrice")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -224,7 +218,7 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AreaId")
+                    b.Property<int>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("Create_Date")
@@ -233,7 +227,7 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("IndividualDiscount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("InvoiceId")
+                    b.Property<int>("InvoiceId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -242,10 +236,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("Price")
+                    b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("ProductName")
@@ -431,11 +425,15 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entities.Invoice", "Invoice")
                         .WithMany("InvoiceItems")
-                        .HasForeignKey("InvoiceId");
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany("InvoiceItems")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Invoice");
 

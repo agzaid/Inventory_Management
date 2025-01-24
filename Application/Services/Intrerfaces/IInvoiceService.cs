@@ -12,7 +12,7 @@ namespace Application.Services.Intrerfaces
     {
         IEnumerable<ProductVM> GetAllInvoices();
         ProductVM GetInvoiceById(int id);
-        Task<string[]> CreateInvoice(ProductVM product);
+        Task<string[]> CreateInvoice(InvoiceVM invoice);
         Result<List<ProductVM>> SearchForProducts(string search);
         Result<CustomerVM> SearchForCustomer(string search);
         InvoiceVM CreateInvoiceForViewing();
