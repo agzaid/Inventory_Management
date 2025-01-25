@@ -18,7 +18,7 @@ namespace Infrastructure.Data
         public DbSet<Customer> Customer { get; set; }
         public DbSet<InventoryLog> InventoryLog { get; set; }
         public DbSet<Invoice> Order { get; set; }
-        public DbSet<InvoiceItem> OrderItem { get; set; }
+        public DbSet<InvoiceItem> InvoiceItem { get; set; }
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Invoice> Invoice { get; set; }

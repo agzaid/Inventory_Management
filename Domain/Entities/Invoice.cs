@@ -20,7 +20,8 @@ namespace Domain.Entities
         public string? ShippingNotes { get; set; }
         public double? ShippingPrice { get; set; }
 
-        public int CustomerId { get; set; } // Foreign Key
+        public int? AreaId { get; set; }
+        public int? CustomerId { get; set; } // Foreign Key
         public Customer? Customer { get; set; } // Navigation property
 
         public DateTime OrderDate { get; set; }

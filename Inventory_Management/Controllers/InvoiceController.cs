@@ -43,8 +43,15 @@ namespace Inventory_Management.Controllers
             if (ModelState.IsValid)
             {
 
-                var result =  _invoiceService.CreateInvoice(obj);
-                TempData["success"] = result;
+                var result = await _invoiceService.CreateInvoice(obj);
+                if (result[0] == "success")
+                {
+                    TempData["success"] = result[1];
+                }
+                else
+                {
+                    TempData["error"] = result[1];
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View();

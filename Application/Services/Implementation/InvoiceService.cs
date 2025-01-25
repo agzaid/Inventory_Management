@@ -32,28 +32,48 @@ namespace Application.Services.Implementation
         {
             try
             {
+                var productQuantityMap = new Dictionary<int, int>();
                 var customer = _unitOfWork.Customer.Get(s => s.Phone == invoiceVM.PhoneNumber);
                 var invoice = new Invoice();
+                var area = _unitOfWork.ShippingFreight.Get(s => s.Area == invoiceVM.shippingText);
                 for (int i = 0; i < invoiceVM.productInput?.Count; i++)
                 {
                     var product = _unitOfWork.Product.Get(s => s.ProductName == invoiceVM.productInput[i].ToLower());
-                    var area = _unitOfWork.ShippingFreight.Get(s => s.Area == invoiceVM.shippingText);
-                    //add code to update quantity
                     var invoiceItems = new InvoiceItem()
                     {
                         ProductName = product.ProductName,
                         ProductId = product.Id,
                         Quantity = int.Parse(invoiceVM.quantityInput[i]),
-                        AreaId = area?.Id,
                         Price = decimal.Parse(invoiceVM.priceInput[i]),
                         ShippingPrice = invoiceVM.shippingInput,
                         IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] == null ? "0" : invoiceVM.individualDiscount[i]),
-                        Product = product
+                        // Product = product
                     };
-                    invoice.InvoiceItems.Add(invoiceItems);
+                    if (productQuantityMap.ContainsKey(product.Id))
+                    {
+                        var s = invoice.InvoiceItems?.FirstOrDefault(s => s.ProductId == product.Id);
+                        s.Quantity += int.Parse(invoiceVM.quantityInput[i]);
+                        productQuantityMap[product.Id] += int.Parse(invoiceVM.quantityInput[i]); // Add quantity if product already exists
+                    }
+                    else
+                    {
+                        productQuantityMap[product.Id] = int.Parse(invoiceVM.quantityInput[i]); // Initialize the quantity if it's the first occurrence
+                        invoice.InvoiceItems?.Add(invoiceItems);
+                    }
                 }
-                invoice.Customer = customer;
-                invoice.CustomerId = customer.Id;
+
+                foreach (var productEntry in productQuantityMap)
+                {
+                    var productUpdate = _unitOfWork.Product.Get(s => s.Id == productEntry.Key);
+                    if (productUpdate != null)
+                    {
+                        productUpdate.StockQuantity -= productEntry.Value; // Update stock after all items are processed
+                        _unitOfWork.Product.Update(productUpdate); // Update product only once
+                    }
+                }
+                invoice.AreaId = area?.Id;
+                //invoice.Customer = customer;
+                invoice.CustomerId = customer?.Id;
                 invoice.OrderDate = DateTime.UtcNow;
                 invoice.AllDiscountInput = decimal.Parse(invoiceVM.allDiscountInput == null ? "0.00" : invoiceVM.allDiscountInput);
                 invoice.GrandTotalAmount = invoiceVM.grandTotalInput;
@@ -62,25 +82,16 @@ namespace Application.Services.Implementation
                 invoice.ShippingNotes = invoiceVM.ShippingNotes;
                 invoice.ShippingPrice = double.Parse(invoiceVM.AreaId);
 
+                //delete from quantity products
+
                 _unitOfWork.Invoice.Add(invoice);
                 _unitOfWork.Save();
 
-                var lookForName = _unitOfWork.Product.GetAll();
-                if (lookForName != null)
-                {
-                    return new string[] { "error", "Product Already Exists" };
-                }
-                else
-                {
-
-                    _unitOfWork.Product.Add(new Product());
-
-                    return new string[] { "success", "Product Created Successfully" };
-                }
+                return new string[] { "success", "Invoice Created Successfully" };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}");
+                _logger.LogError(ex, "An error occurred while creating invoice");
                 //await FileExtensions.DeleteImages(imagesToBeDeleted);
 
                 return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it

@@ -26,7 +26,6 @@ namespace Domain.Entities
         public int? ProductId { get; set; } // Foreign Key
         public Product? Product { get; set; } // Navigation property
 
-        public int? AreaId { get; set; }
         public decimal? Price { get; set; }
     }
 }

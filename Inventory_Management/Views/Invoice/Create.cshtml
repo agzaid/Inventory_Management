@@ -106,7 +106,7 @@
                                                             Shipping :
                                                         </td>
                                                         <td class="text-center d-flex">
-                                                            <div id="shipping" data-value="0">--</div>
+                                                            <div id="shipping" data-value="55">55</div>
                                                             <input id="shippingInput" name="shippingInput" value="@Model.AreaId" hidden />
                                                             <input id="shippingText" name="shippingText" value="other" hidden />
                                                         </td>
@@ -151,7 +151,7 @@
          $(document).ready(function () {
 
              let userTyping = false;
-
+             updateTotalPrice();
            $('#myForm').on('submit', function (event) {
                debugger;
                if (!userTyping) {
@@ -265,7 +265,7 @@
              debugger;
              var totalPrice = 0;
              var totalProductItems=0;
-             var shipping=0;
+             var shipping=55;
              var allDiscountInput = $('#allDiscountInput').val();
 
              $('.price-input').each(function() {
