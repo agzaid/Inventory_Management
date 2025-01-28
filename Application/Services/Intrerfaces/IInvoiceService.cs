@@ -10,7 +10,7 @@ namespace Application.Services.Intrerfaces
 {
     public interface IInvoiceService
     {
-        IEnumerable<ProductVM> GetAllInvoices();
+        IEnumerable<InvoiceVM> GetAllInvoices();
         ProductVM GetInvoiceById(int id);
         Task<string[]> CreateInvoice(InvoiceVM invoice);
         Result<List<ProductVM>> SearchForProducts(string search);

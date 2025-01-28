@@ -3,11 +3,13 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 
+
 //using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inventory_Management.Controllers
+namespace Inventory_Management.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class ShippingFreightController : Controller
     {
         private readonly IShippingFreightService _shippingFreightService;

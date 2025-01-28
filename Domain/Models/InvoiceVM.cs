@@ -20,6 +20,7 @@ namespace Domain.Models
         public List<string>? stockInput { get; set; } = new List<string>();
         public List<string>? quantityInput { get; set; } = new List<string>();
         public List<string>? individualDiscount { get; set; } = new List<string>();
+        public string? AllProductsForIndexViewing { get; set; }
         public string? allDiscountInput { get; set; }
         public bool? discountSwitch { get; set; }
         public string? CustomerName { get; set; }
@@ -32,6 +33,7 @@ namespace Domain.Models
         public double? grandTotalInput { get; set; }
         public decimal? TotalAmount { get; set; }
         public string? AreaId { get; set; }
+        public string? CreatedDate { get; set; }
         public List<SelectListItem>? ListOfAreas { get; set; }
 
 

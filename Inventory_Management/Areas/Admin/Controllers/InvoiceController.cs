@@ -5,15 +5,16 @@ using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Inventory_Management.Controllers
+namespace Inventory_Management.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class InvoiceController : Controller
     {
         private readonly ICategoryService _categoryService;
         private readonly IInvoiceService _invoiceService;
-        private readonly ILogger<CategoryController> _logger;
+        private readonly ILogger<InvoiceController> _logger;
 
-        public InvoiceController(IInvoiceService invoiceService, ICategoryService categoryService, ILogger<CategoryController> logger)
+        public InvoiceController(IInvoiceService invoiceService, ICategoryService categoryService, ILogger<InvoiceController> logger)
         {
             _categoryService = categoryService;
             _invoiceService = invoiceService;
@@ -23,8 +24,8 @@ namespace Inventory_Management.Controllers
         {
             try
             {
-                //  var invoices = _invoiceService.GetAllInvoices();
-                return View(new List<ProductVM>());
+                var invoices = _invoiceService.GetAllInvoices();
+                return View(invoices);
             }
             catch (Exception ex)
             {
@@ -81,10 +82,10 @@ namespace Inventory_Management.Controllers
         }
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _categoryService.DeleteCategory(id);
+            var result = _invoiceService.DeleteInvoice(id);
             if (result == true)
             {
-                TempData["success"] = "Category Deleted Successfully";
+                TempData["success"] = "Invoice Deleted Successfully";
             }
             else
                 TempData["error"] = result;

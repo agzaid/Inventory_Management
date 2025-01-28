@@ -28,6 +28,36 @@ namespace Application.Services.Implementation
             _logger = logger;
         }
 
+        public IEnumerable<InvoiceVM> GetAllInvoices()
+        {
+            try
+            {
+                var invoices = _unitOfWork.Invoice.GetAll(s => s.IsDeleted == false, "InvoiceItems,Customer");
+                var areas = _unitOfWork.ShippingFreight.GetAll().ToList();
+
+                var invoiceVMs = invoices.Select(s => new InvoiceVM
+                {
+                    CustomerName = s.Customer?.CustomerName,
+                    Number = s.InvoiceNumber,
+                    TotalAmount = (decimal)s.GrandTotalAmount,
+                    PhoneNumber = s.Customer?.Phone,
+                    AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.Area?.ToString(),
+                    ShippingNotes = s.ShippingNotes,
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    AllProductsForIndexViewing = s.AllProductItems,
+                }).ToList();
+
+                _logger.LogInformation("GetAllInvoices method completed. {InvoiceCount} Invoices retrieved.", invoiceVMs.Count);
+
+                return invoiceVMs;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving Invoices.");
+                throw;  // Rethrow the exception after logging it
+            }
+        }
+
         public async Task<string[]> CreateInvoice(InvoiceVM invoiceVM)
         {
             try
@@ -188,12 +218,12 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id);
-                if (oldProduct != null)
+                var oldInvoice = _unitOfWork.Invoice.Get(s => s.Id == id);
+                if (oldInvoice != null)
                 {
-                    oldProduct.IsDeleted = true;
-                    oldProduct.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.Product.Update(oldProduct);
+                    oldInvoice.IsDeleted = true;
+                    oldInvoice.Modified_Date = DateTime.UtcNow;
+                    _unitOfWork.Invoice.Update(oldInvoice);
                     _unitOfWork.Save();
                     return true;
                 }
@@ -234,33 +264,6 @@ namespace Application.Services.Implementation
             }
         }
 
-        public IEnumerable<ProductVM> GetAllInvoices()
-        {
-            try
-            {
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category");
-                var showProducts = products.Select(s => new ProductVM()
-                {
-                    Id = s.Id,
-                    ProductName = s.ProductName?.ToUpper(),
-                    CategoryName = s.Category?.CategoryName?.ToUpper(),
-                    SellingPrice = s.SellingPrice,
-                    StockQuantity = s.StockQuantity,
-                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
-                    Barcode = s.Barcode,
-                }).ToList();
-
-                _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", showProducts.Count);
-
-                return showProducts;
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving categories.");
-                throw;  // Rethrow the exception after logging it
-            }
-        }
 
         public ProductVM GetInvoiceById(int id)
         {

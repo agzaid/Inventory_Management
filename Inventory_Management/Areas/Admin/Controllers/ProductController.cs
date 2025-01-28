@@ -6,8 +6,9 @@ using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inventory_Management.Controllers
+namespace Inventory_Management.Areas.admin.Controllers
 {
+    [Area("Admin")]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
@@ -19,10 +20,10 @@ namespace Inventory_Management.Controllers
             _categoryService = categoryService;
         }
         [HttpGet]
-        public IActionResult Index(string? status,string? message)
+        public IActionResult Index(string? status, string? message)
         {
             var products = _productService.GetAllProducts();
-            if (status=="success")
+            if (status == "success")
             {
                 TempData["success"] = message;
             }
@@ -48,7 +49,7 @@ namespace Inventory_Management.Controllers
                 if (result != null && result[0] == "success")
                 {
                     //TempData["success"] = result[1];
-                    return RedirectToAction(nameof(Index), new { status="success", message = result[1] });
+                    return RedirectToAction(nameof(Index), new { status = "success", message = result[1] });
                 }
                 else
                     //TempData["error"] = result[1];
@@ -76,7 +77,7 @@ namespace Inventory_Management.Controllers
                 }
                 else
                     TempData["error"] = "Error Occured...!!!";
-                    return View(obj);
+                return View(obj);
             }
             return View(obj);
         }
