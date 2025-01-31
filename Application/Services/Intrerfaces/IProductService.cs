@@ -11,6 +11,7 @@ namespace Application.Services.Intrerfaces
     public interface IProductService
     {
         IEnumerable<ProductVM> GetAllProducts();
+        IEnumerable<ProductVM> GetAllProductsForPortal();
         ProductVM GetProductById(int id);
         Task<string[]> CreateProduct(ProductVM product);
         ProductVM CreateProductForViewingInCreate();
