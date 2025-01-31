@@ -27,4 +27,64 @@
     <Folder Include="wwwroot\UploadedFiles\rice\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\img\about\1.mp4" />
+    <None Include="wwwroot\img\about\a1.png" />
+    <None Include="wwwroot\img\about\a2.jpg" />
+    <None Include="wwwroot\img\about\a3.png" />
+    <None Include="wwwroot\img\about\a4.png" />
+    <None Include="wwwroot\img\about\a5.jpg" />
+    <None Include="wwwroot\img\about\a6.jpg" />
+    <None Include="wwwroot\img\about\banner.png" />
+    <None Include="wwwroot\img\banner\b1.jpg" />
+    <None Include="wwwroot\img\banner\b10.jpg" />
+    <None Include="wwwroot\img\banner\b14.png" />
+    <None Include="wwwroot\img\banner\b16.jpg" />
+    <None Include="wwwroot\img\banner\b17.jpg" />
+    <None Include="wwwroot\img\banner\b18.jpg" />
+    <None Include="wwwroot\img\banner\b19.jpg" />
+    <None Include="wwwroot\img\banner\b2.jpg" />
+    <None Include="wwwroot\img\banner\b20.jpg" />
+    <None Include="wwwroot\img\banner\b4.jpg" />
+    <None Include="wwwroot\img\banner\b7.jpg" />
+    <None Include="wwwroot\img\blog\b1.jpg" />
+    <None Include="wwwroot\img\blog\b2.jpg" />
+    <None Include="wwwroot\img\blog\b3.jpg" />
+    <None Include="wwwroot\img\blog\b4.jpg" />
+    <None Include="wwwroot\img\blog\b5.jpg" />
+    <None Include="wwwroot\img\blog\b6.jpg" />
+    <None Include="wwwroot\img\blog\b7.jpg" />
+    <None Include="wwwroot\img\button.png" />
+    <None Include="wwwroot\img\features\f1.png" />
+    <None Include="wwwroot\img\features\f2.png" />
+    <None Include="wwwroot\img\features\f3.png" />
+    <None Include="wwwroot\img\features\f4.png" />
+    <None Include="wwwroot\img\features\f5.png" />
+    <None Include="wwwroot\img\features\f6.png" />
+    <None Include="wwwroot\img\hero4.png" />
+    <None Include="wwwroot\img\logo.png" />
+    <None Include="wwwroot\img\pay\app.jpg" />
+    <None Include="wwwroot\img\pay\pay.png" />
+    <None Include="wwwroot\img\pay\play.jpg" />
+    <None Include="wwwroot\img\people\1.png" />
+    <None Include="wwwroot\img\people\2.png" />
+    <None Include="wwwroot\img\people\3.png" />
+    <None Include="wwwroot\img\products\f1.jpg" />
+    <None Include="wwwroot\img\products\f2.jpg" />
+    <None Include="wwwroot\img\products\f3.jpg" />
+    <None Include="wwwroot\img\products\f4.jpg" />
+    <None Include="wwwroot\img\products\f5.jpg" />
+    <None Include="wwwroot\img\products\f6.jpg" />
+    <None Include="wwwroot\img\products\f7.jpg" />
+    <None Include="wwwroot\img\products\f8.jpg" />
+    <None Include="wwwroot\img\products\n1.jpg" />
+    <None Include="wwwroot\img\products\n2.jpg" />
+    <None Include="wwwroot\img\products\n3.jpg" />
+    <None Include="wwwroot\img\products\n4.jpg" />
+    <None Include="wwwroot\img\products\n5.jpg" />
+    <None Include="wwwroot\img\products\n6.jpg" />
+    <None Include="wwwroot\img\products\n7.jpg" />
+    <None Include="wwwroot\img\products\n8.jpg" />
+  </ItemGroup>
+
 </Project>

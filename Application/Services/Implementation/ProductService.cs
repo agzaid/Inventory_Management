@@ -170,6 +170,63 @@ namespace Application.Services.Implementation
             }
         }
 
+        public IEnumerable<ProductVM> GetAllProductsForPortal()
+        {
+            var retrievedImages = new List<string>();
+            var image64 = new List<string>();
+            var productVMs = new List<ProductVM>();
+            try
+            {
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images");
+
+                foreach (var item in products)
+                {
+                    retrievedImages.Clear();
+                    if (item.Images?.Count() > 0)
+                    {
+                         image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                        retrievedImages.AddRange(image64);
+                    }
+                    var productVM = new ProductVM()
+                    {
+                        Id = item.Id,
+                        ProductName = item.ProductName?.ToUpper(),
+                        Description = item.Description,
+                        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                        SellingPrice = item.SellingPrice,
+                        StockQuantity = item.StockQuantity,
+                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                        Barcode = item.Barcode,
+                        ListOfRetrievedImages = image64,
+                    };
+                    productVMs.Add(productVM);
+                }
+                //var showProducts = products.Select(s => new ProductVM()
+                //{
+                //    Id = s.Id,
+                //    ProductName = s.ProductName?.ToUpper(),
+                //    Description = s.Description,
+                //    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                //    SellingPrice = s.SellingPrice,
+                //    StockQuantity = s.StockQuantity,
+                //    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                //    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                //    Barcode = s.Barcode,
+                //    ListOfRetrievedImages = retrievedImages,
+                //}).ToList();
+                //showProducts.ForEach(s => s.ListOfRetrievedImages = retrievedImages);
+
+
+                _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", productVMs.Count);
+                return productVMs;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving categories.");
+                throw;  // Rethrow the exception after logging it
+            }
+        }
         public IEnumerable<ProductVM> GetAllProducts()
         {
             try

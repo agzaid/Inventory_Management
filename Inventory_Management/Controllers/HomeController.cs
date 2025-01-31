@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using Application.Services.Intrerfaces;
+using Domain.Enums;
 using Infrastructure.Data;
 using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,23 +10,30 @@ namespace Inventory_Management.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IProductService _productService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, IProductService productService)
         {
             _logger = logger;
-            _context = context;
+            _productService = productService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var products = _productService.GetAllProductsForPortal();
+            //if (status == "success")
+            //{
+            //    TempData["success"] = message;
+            //}
+            //else
+            //{
+            //    TempData["error"] = message;
+            //}
+            return View(products);
         }
 
         public IActionResult Privacy()
         {
-            var s = _context.Product.ToList();
-            var sd = _context.Product.FirstOrDefault(s => s.Id == 1);
             return View();
         }
 
