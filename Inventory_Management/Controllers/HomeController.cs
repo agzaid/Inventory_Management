@@ -30,7 +30,17 @@ namespace Inventory_Management.Controllers
             //}
             return View(products);
         }
+        public IActionResult ProductDetails(int Id)
+        {
+            var products = _productService.GetProductDetails(Id);
+            
+            return View(products);
+        }
 
+        public IActionResult Contact()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

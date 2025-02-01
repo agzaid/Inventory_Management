@@ -13,6 +13,7 @@ namespace Application.Services.Intrerfaces
         IEnumerable<ProductVM> GetAllProducts();
         IEnumerable<ProductVM> GetAllProductsForPortal();
         ProductVM GetProductById(int id);
+        ProductVM GetProductDetails(int id);
         Task<string[]> CreateProduct(ProductVM product);
         ProductVM CreateProductForViewingInCreate();
         bool UpdateProduct(ProductVM productVM);

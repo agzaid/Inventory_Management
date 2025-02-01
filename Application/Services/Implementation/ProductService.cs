@@ -296,6 +296,19 @@ namespace Application.Services.Implementation
             }
             return new ProductVM();
         }
+        public ProductVM GetProductDetails(int id)
+        {
+            try
+            {
+                var product = GetProductById(id);
+                return product;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
+                throw;  // Rethrow the exception after logging it
+            }
+        }
         public bool UpdateProduct(ProductVM obj)
         {
             try
