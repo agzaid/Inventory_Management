@@ -30,13 +30,31 @@ namespace Inventory_Management.Controllers
             //}
             return View(products);
         }
+        public IActionResult Shop()
+        {
+            var products = _productService.GetAllProductsForPortal();
+            //if (status == "success")
+            //{
+            //    TempData["success"] = message;
+            //}
+            //else
+            //{
+            //    TempData["error"] = message;
+            //}
+            return View(products);
+        }
         public IActionResult ProductDetails(int Id)
         {
             var products = _productService.GetProductDetails(Id);
             
             return View(products);
         }
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToCart(ProductVM product)
+        {
+            return View();
+        }
         public IActionResult Contact()
         {
             return View();

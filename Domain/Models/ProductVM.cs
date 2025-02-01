@@ -38,6 +38,7 @@ namespace Domain.Models
         public string? ExpiryDate { get; set; }
         public Status? ProductStatus { get; set; }
         public string? ProductTags { get; set; }
+        public int? InputQuantity { get; set; }
         public string? StatusId{ get; set; }
         public string? CategoryId{ get; set; }
         public string? CategoryName{ get; set; }

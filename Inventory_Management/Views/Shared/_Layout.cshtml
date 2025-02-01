@@ -74,8 +74,24 @@
             </div>
         </footer>
 
+
+        <script src="~/js/jquery.min.js"></script>
+        <script src="~/js/bootstrap.bundle.min.js"></script>
+        <!--plugins-->
+        <script src="~/plugins/Drag-And-Drop/dist/imageuploadify.min.js"></script>
+        <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
+        <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
+        <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+        <script src="~/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+        <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+        <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+        <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+        <script src="~/plugins/select2/js/select2.full.min.js"></script>
+        <script src="~/plugins/moment/moment.js"></script>
+        <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
         <script src="~/js/script.js"></script>
-        <script src="~/js/cart.js"></script>
+        @* <script src="~/js/cart.js"></script> *@
+        @RenderSection("scripts", required: false)
 </body>
 
 </html>
