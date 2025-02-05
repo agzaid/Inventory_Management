@@ -31,7 +31,7 @@
                 <option value="small">Small</option>
             </select>
         </div> *@
-        <form asp-action="AddToCart" asp-controller="Home" enctype="multipart/form-data">
+        <form asp-action="AddToCart" asp-controller="Cart" enctype="multipart/form-data">
             <input asp-for="Id" hidden/>
             <div class="quantity">
                 @if (@Model.StockQuantity <= 5)

@@ -49,12 +49,7 @@ namespace Inventory_Management.Controllers
             
             return View(products);
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddToCart(ProductVM product)
-        {
-            return View();
-        }
+       
         public IActionResult Contact()
         {
             return View();
