@@ -60,26 +60,26 @@ namespace Inventory_Management.Areas.Admin.Controllers
 
         public IActionResult Edit(int id)
         {
-            return View(_categoryService.GetCategoryById(id));
+            return View(_invoiceService.GetInvoiceById(id));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(CategoryVM obj)
-        {
-            if (ModelState.IsValid)
-            {
+        //[HttpPost]
+        //public async Task<IActionResult> Edit(CategoryVM obj)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
 
-                var result = await _categoryService.UpdateCategory(obj);
-                if (result == true)
-                {
-                    TempData["success"] = "Category Updated Successfully";
-                }
-                else
-                    TempData["error"] = result;
-                return RedirectToAction(nameof(Index));
-            }
-            return View();
-        }
+        //        var result = await _categoryService.UpdateCategory(obj);
+        //        if (result == true)
+        //        {
+        //            TempData["success"] = "Category Updated Successfully";
+        //        }
+        //        else
+        //            TempData["error"] = result;
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View();
+        //}
         public async Task<IActionResult> Delete(int id)
         {
             var result = _invoiceService.DeleteInvoice(id);

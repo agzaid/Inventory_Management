@@ -34,11 +34,25 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td colspan="10" class="no-data-row text-center">
-                                                    No products yet...!!!
-                                                </td>
-                                            </tr>
+                                            @if (Model.ListOfProductsVMs?.Count > 0)
+                                            {
+                                                @foreach (var item in Model.ListOfProductsVMs)
+                                                {
+                                                    <tr>
+                                                        <td>@item.ProductName</td>
+                                                        <td>@item.SellingPrice</td>
+                                                        <td>@item.Barcode</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="10" class="no-data-row text-center">
+                                                        No products yet...!!!
+                                                    </td>
+                                                </tr>
+                                            }
                                         </tbody>
                                     </table>
                                 </div>

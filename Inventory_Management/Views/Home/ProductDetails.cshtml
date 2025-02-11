@@ -19,7 +19,9 @@
     <!-- Right side -->
     <div class="product-info">
         <h3>@Model.ProductName</h3>
+        <input id="productName" value="@Model.ProductName" hidden />
         <h5>Price: $@Model.SellingPrice <del>$@Model.OtherShopsPrice</del></h5>
+        <input id="price" value="@Model.SellingPrice" hidden />
         <p>@Model.Description</p>
 
         @* <div class="sizes">
@@ -31,16 +33,16 @@
                 <option value="small">Small</option>
             </select>
         </div> *@
-        <form asp-action="AddToCart" asp-controller="Cart" enctype="multipart/form-data">
-            <input asp-for="Id" hidden/>
+        <form id="myForm" asp-action="AddToCart" asp-controller="Cart" enctype="multipart/form-data">
+            <input asp-for="Id" hidden />
             <div class="quantity">
                 @if (@Model.StockQuantity <= 5)
                 {
                     <p style="color:red">Limited Quantity : @Model.StockQuantity</p>
                 }
 
-                <input type="number" asp-for="InputQuantity" value="1" min="1"/>
-                <button>Add to Cart</button>
+                <input type="number" asp-for="InputQuantity" value="1" min="1" max="@Model.StockQuantity" />
+                <button id="addCart">Add to Cart</button>
             </div>
         </form>
 
@@ -71,3 +73,90 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#myForm').on('submit', function (event) {
+               // if (!userTyping) {
+                  event.preventDefault();
+               // }else
+               //   userTyping=false;
+             });
+            $('#ImagesFormFiles').imageuploadify();
+
+            $('#SellingPrice, #OtherShopsPrice').on('input', function() {
+                calculateDiscountPercentage();
+            });
+            $('#addCart').on('click', function() {
+                var quantity = parseInt($('#InputQuantity').val());
+                var id = $('#Id').val();
+                var productName = $('#productName').val();
+                var price = $('#price').val();
+                if (quantity <= 0) {
+                    alert('Quantity must be greater than 0');
+                    return false;
+                }else{
+                    AddToCart(id,productName,price,quantity);
+                    return true;
+                }
+            });
+
+
+              function AddToCart(productId, productName, productPrice, Quantity) {
+                  debugger;
+                 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                 const existingProductIndex = cart.findIndex(item => item.productId === productId);
+
+                 if (existingProductIndex > -1) {
+                     cart[existingProductIndex].quantity = Quantity;
+                 } else {
+                     const newItem = {
+                         productId: productId,
+                         productName: productName,
+                         productPrice: productPrice,
+                         quantity: Quantity
+                     };
+                     cart.push(newItem);
+                 }
+
+                 localStorage.setItem('cart', JSON.stringify(cart));
+
+                 alert('Item added to cart!');
+             }
+            function RemoveFromCart(productId) {
+                 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                 cart = cart.filter(item => item.productId !== productId);
+                 localStorage.setItem('cart', JSON.stringify(cart));
+            }
+            function CalculateMaxDiscount() {
+                var sellingPrice = parseFloat($('#SellingPrice').val());
+                var buyingPrice = parseFloat($('#BuyingPrice').val());
+
+                if (!isNaN(sellingPrice) && sellingPrice > 0 && !isNaN(buyingPrice) && buyingPrice > 0) {
+                    var newPrice = sellingPrice - buyingPrice;
+                    var discount = Math.floor((newPrice/sellingPrice) *100);
+
+                    $('#MaximumDiscountPercentage').val(discount.toFixed(2) + "%");
+                } else {
+                    $('#MaximumDiscountPercentage').val('');
+                }
+            }
+            function calculateDiscountPercentage() {
+                var sellingPrice = parseFloat($('#SellingPrice').val());
+                var otherShopPrice = parseFloat($('#OtherShopsPrice').val());
+
+                // Check if both prices are valid and the otherShopPrice is greater than 0
+                if (!isNaN(sellingPrice) && !isNaN(otherShopPrice) && otherShopPrice > 0 && sellingPrice > 0) {
+                    var discountPercentage = ((otherShopPrice - sellingPrice) / otherShopPrice) * 100;
+
+                    // Display the discount percentage
+                    $('#DifferencePercentage').val(discountPercentage.toFixed(2) + "%");
+                } else {
+                    // If prices are not valid, clear the discount field
+                    $('#discount').val('');
+                }
+            }
+        })
+    </script>
+}

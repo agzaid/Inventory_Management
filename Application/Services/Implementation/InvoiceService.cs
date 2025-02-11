@@ -37,6 +37,7 @@ namespace Application.Services.Implementation
 
                 var invoiceVMs = invoices.Select(s => new InvoiceVM
                 {
+                    Id = s.Id,
                     CustomerName = s.Customer?.CustomerName,
                     Number = s.InvoiceNumber,
                     TotalAmount = (decimal)s.GrandTotalAmount,
@@ -128,6 +129,7 @@ namespace Application.Services.Implementation
             }
         }
 
+
         public Result<List<ProductVM>> SearchForProducts(string search)
         {
             try
@@ -213,6 +215,25 @@ namespace Application.Services.Implementation
             }
 
         }
+        public InvoiceVM GetInvoiceById()
+        {
+            try
+            {
+                var productVM = new InvoiceVM();
+                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                productVM.ListOfAreas = freights.Select(v => new SelectListItem
+                {
+                    Text = v.Area,
+                    Value = v.Price.ToString()
+                }).ToList();
+                return productVM;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
 
         public bool DeleteInvoice(int id)
         {
@@ -265,54 +286,59 @@ namespace Application.Services.Implementation
         }
 
 
-        public ProductVM GetInvoiceById(int id)
+        public InvoiceVM GetInvoiceById(int id)
         {
             try
             {
-                var product = _unitOfWork.Product.Get(u => u.Id == id, "Images");
-                if (product != null)
+                var invoice = _unitOfWork.Invoice.Get(u => u.Id == id, "InvoiceItems,Customer");
+                if (invoice == null)
                 {
-                    var productVM = new ProductVM()
+                    return new InvoiceVM();
+                }
+                else
+                {
+                    var invoiceVM = new InvoiceVM()
                     {
-                        ProductName = product.ProductName ?? "",
-                        Description = product.Description ?? "",
-                        Barcode = product.Barcode ?? "",
-                        ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
-                        SellingPrice = product.SellingPrice ?? decimal.Parse("0.00"),
-                        BuyingPrice = product.BuyingPrice ?? decimal.Parse("0.00"),
-                        DifferencePercentage = product.DifferencePercentage?.ToString() ?? "",
-                        MaximumDiscountPercentage = product.MaximumDiscountPercentage?.ToString() ?? "",
-                        OtherShopsPrice = product.OtherShopsPrice ?? decimal.Parse("0.00"),
-                        StockQuantity = product.StockQuantity ?? int.Parse("0"),
-                        CategoryId = product.CategoryId.ToString() ?? "",
-                        StatusId = product.StatusId?.ToString() ?? "",
-                        ProductTags = product.ProductTags ?? "",
-                        //Images = result.Select(s => new Image()
-                        //{
-                        //    FilePath = s,
-                        //    ImageName = s,
-                        //    Create_Date = DateTime.Now,
-                        //}).ToList()
-                    };
-                    if (product.Images?.Count() > 0)
-                    {
-                        foreach (var item in product.Images)
+                        CustomerName = invoice.Customer?.CustomerName,
+                        Number = invoice.InvoiceNumber,
+                        AllProductsForIndexViewing = invoice.AllProductItems,
+                        allDiscountInput = invoice.AllDiscountInput.ToString(),
+                        grandTotalInput = invoice.GrandTotalAmount,
+                        totalAmountInput = invoice.ProductsOnlyAmount == null ? 0.00 : (double)invoice.ProductsOnlyAmount,
+                        TotalAmount = invoice.ProductsOnlyAmount == null ? 0 : (decimal)invoice.ProductsOnlyAmount,
+                        shippingInput = invoice.ShippingPrice,
+                        AreaId = invoice.AreaId.ToString(),
+                        individualDiscount = invoice.InvoiceItems?.Select(s => s.IndividualDiscount.ToString()).ToList(),
+                        PhoneNumber = invoice.Customer?.Phone,
+                        ShippingNotes = invoice.ShippingNotes,
+                        productInput = invoice.InvoiceItems?.Select(s => s.ProductName).ToList(),
+                        priceInput = invoice.InvoiceItems?.Select(s => s.Price.ToString()).ToList(),
+                        quantityInput = invoice.InvoiceItems?.Select(s => s.Quantity.ToString()).ToList(),
+                        CreatedDate = invoice.Create_Date?.ToString("yyyy-MM-dd"),
+                        ListOfAreas = _unitOfWork.ShippingFreight.GetAll().Select(v => new SelectListItem
                         {
-                            //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
-                            if (item.ImageByteArray?.Length > 0)
-                            {
-                                var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
-                                productVM.ListOfRetrievedImages?.Add(stringImages);
-                            }
-                        }
-                    }
-                    var category = _unitOfWork.Category.GetAll().ToList();
-                    productVM.ListOfCategory = category.Select(v => new SelectListItem
-                    {
-                        Text = v.CategoryName,
-                        Value = v.Id.ToString()
-                    }).ToList();
-                    return productVM;
+                            Text = v.Area,
+                            Value = v.Price.ToString()
+                        }).ToList(),
+
+                    };
+                    invoiceVM.ListOfProductsVMs = _unitOfWork.Product
+                         .GetAll(s => invoiceVM.productInput.Contains(s.ProductName)) // Directly filter based on product name matching any valueinproductInput
+                         .Select(s => new ProductVM
+                         {
+                             Id = s.Id,
+                             ProductName = s.ProductName?.ToUpper(),
+                             Description = s.Description,
+                             CategoryName = s.Category?.CategoryName?.ToUpper(),
+                             SellingPrice = s.SellingPrice,
+                             DiscPerceForCreateInvoice = s.MaximumDiscountPercentage,
+                             StockQuantity = s.StockQuantity,
+                             CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                             Barcode = s.Barcode,
+                             //ListOfRetrievedImages = s.Images?.Select(v => FileExtensions.ByteArrayToImageBase64(v.ImageByteArray)).ToList()
+                         })
+                         .ToList();
+                    return invoiceVM;
                 }
             }
             catch (Exception ex)
@@ -320,7 +346,7 @@ namespace Application.Services.Implementation
                 _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
                 throw;  // Rethrow the exception after logging it
             }
-            return new ProductVM();
+            return new InvoiceVM();
         }
         public bool UpdateInvoice(ProductVM obj)
         {

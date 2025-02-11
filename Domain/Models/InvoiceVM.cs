@@ -35,6 +35,7 @@ namespace Domain.Models
         public string? AreaId { get; set; }
         public string? CreatedDate { get; set; }
         public List<SelectListItem>? ListOfAreas { get; set; }
+        public List<ProductVM>? ListOfProductsVMs { get; set; }
 
 
         public int? ProductId { get; set; }

@@ -11,11 +11,12 @@ namespace Application.Services.Intrerfaces
     public interface IInvoiceService
     {
         IEnumerable<InvoiceVM> GetAllInvoices();
-        ProductVM GetInvoiceById(int id);
+        InvoiceVM GetInvoiceById(int id);
         Task<string[]> CreateInvoice(InvoiceVM invoice);
         Result<List<ProductVM>> SearchForProducts(string search);
         Result<CustomerVM> SearchForCustomer(string search);
         InvoiceVM CreateInvoiceForViewing();
+        InvoiceVM GetInvoiceById();
         bool UpdateInvoice(ProductVM productVM);
         bool DeleteInvoice(int id);
         bool HardDeleteInvoice(int id);
