@@ -335,6 +335,7 @@ namespace Application.Services.Implementation
                              StockQuantity = s.StockQuantity,
                              CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                              Barcode = s.Barcode,
+                             
                              //ListOfRetrievedImages = s.Images?.Select(v => FileExtensions.ByteArrayToImageBase64(v.ImageByteArray)).ToList()
                          })
                          .ToList();
