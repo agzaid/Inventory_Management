@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Application.Services.Intrerfaces;
 using Infrastructure.Data;
 using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,23 +10,24 @@ namespace Inventory_Management.Areas.Admin.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IInvoiceService _invoiceService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, IInvoiceService invoiceService)
         {
             _logger = logger;
-            _context = context;
+            _invoiceService = invoiceService;
         }
 
         public IActionResult Index()
         {
+            var invoices = _invoiceService.GetAllInvoices();
+            var totalAmount = invoices.Sum(x => x.TotalAmount ?? 0);
+            ViewBag.TotalAmount = totalAmount;
             return View();
         }
 
         public IActionResult Privacy()
         {
-            var s = _context.Product.ToList();
-            var sd = _context.Product.FirstOrDefault(s => s.Id == 1);
             return View();
         }
 

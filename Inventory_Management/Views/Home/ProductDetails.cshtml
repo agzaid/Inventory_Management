@@ -1,5 +1,42 @@
 ﻿@model Domain.Models.ProductVM
 
+@section Styles {
+    <style>
+        .img-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #featured-image {
+            width: 80%; /* Initially bigger size */
+            max-width: 600px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .small-Card {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .small-Img {
+            width: 60px; /* size of small images */
+            height: 60px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .big-Img {
+            width: 100%; /* This class will be applied when the image is considered the "big" one */
+            max-width: 600px;
+        }
+    </style>
+}
+
 <div class="pagination">
     <p>Home > Shop > Women > Jacket </p>
 </div>
@@ -7,12 +44,19 @@
 <section class="product-container">
     <!-- left side -->
     <div class="img-card">
-        <img id="featured-image" src="@(Model.ListOfRetrievedImages.Count > 0 ?Model.ListOfRetrievedImages[0]:"")">
-        <!-- small img -->
+        <!-- Featured Image (first image) -->
+        <img id="featured-image"
+             src="@(Model.ListOfRetrievedImages.Count > 0 ? Model.ListOfRetrievedImages[0] : "/images/placeholder.jpg")"
+             alt="Featured Image" class="big-Img">
+
+        <!-- Small Images (additional images) -->
         <div class="small-Card">
-            @for (int i = 1; i < Model.ListOfRetrievedImages.Count; i++)
+            @for (int i = 0; i < Model.ListOfRetrievedImages.Count; i++)
             {
-                <img src="@Model.ListOfRetrievedImages[i]" class="small-Img" />
+                <img src="@Model.ListOfRetrievedImages[i]"
+                     class="small-Img"
+                     alt="Additional Image @i"
+                     data-index="@i" />
             }
         </div>
     </div>
@@ -102,7 +146,31 @@
                 }
             });
 
+              // When a small image is clicked, update the big image
+             document.querySelectorAll('.small-Img').forEach(img => {
+                 img.addEventListener('click', function () {
+                     // Get the clicked small image source
+                     const smallImageSrc = img.src;
 
+                     // Update the featured image
+                     const featuredImage = document.getElementById('featured-image');
+                     featuredImage.src = smallImageSrc;
+
+                     // Update the clicked image class to show it's the featured one
+                     featuredImage.classList.add('big-Img');
+
+                     // Optionally remove the 'big-Img' class from any other images if necessary
+                     document.querySelectorAll('.small-Img').forEach(small => {
+                         small.classList.remove('big-Img');
+                     });
+
+                     // Make the clicked image smaller and featured
+                     img.classList.add('big-Img');
+                 });
+             });
+
+      
+        })
               function AddToCart(productId, productName, productPrice, Quantity) {
                   debugger;
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -124,39 +192,10 @@
 
                  alert('Item added to cart!');
              }
-            function RemoveFromCart(productId) {
+              function RemoveFromCart(productId) {
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
                  cart = cart.filter(item => item.productId !== productId);
                  localStorage.setItem('cart', JSON.stringify(cart));
             }
-            function CalculateMaxDiscount() {
-                var sellingPrice = parseFloat($('#SellingPrice').val());
-                var buyingPrice = parseFloat($('#BuyingPrice').val());
-
-                if (!isNaN(sellingPrice) && sellingPrice > 0 && !isNaN(buyingPrice) && buyingPrice > 0) {
-                    var newPrice = sellingPrice - buyingPrice;
-                    var discount = Math.floor((newPrice/sellingPrice) *100);
-
-                    $('#MaximumDiscountPercentage').val(discount.toFixed(2) + "%");
-                } else {
-                    $('#MaximumDiscountPercentage').val('');
-                }
-            }
-            function calculateDiscountPercentage() {
-                var sellingPrice = parseFloat($('#SellingPrice').val());
-                var otherShopPrice = parseFloat($('#OtherShopsPrice').val());
-
-                // Check if both prices are valid and the otherShopPrice is greater than 0
-                if (!isNaN(sellingPrice) && !isNaN(otherShopPrice) && otherShopPrice > 0 && sellingPrice > 0) {
-                    var discountPercentage = ((otherShopPrice - sellingPrice) / otherShopPrice) * 100;
-
-                    // Display the discount percentage
-                    $('#DifferencePercentage').val(discountPercentage.toFixed(2) + "%");
-                } else {
-                    // If prices are not valid, clear the discount field
-                    $('#discount').val('');
-                }
-            }
-        })
     </script>
 }
