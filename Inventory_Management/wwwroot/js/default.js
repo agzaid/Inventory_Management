@@ -36,7 +36,7 @@ var _Ajax = {
             error: function (xhr, textStatus, errorThrown) { $errorcallBack(xhr); }
         });
     },
-    GETWithParameters: function ($url, $params, $method, $beforecallBack, $successcallBack, $errorcallBack) {
+    GETWithParameters: function ($url, $params, $method,$token, $beforecallBack, $successcallBack, $errorcallBack) {
         debugger;
         $.ajax({
             type: $method,
@@ -44,6 +44,9 @@ var _Ajax = {
             // url: `/` + controller + `/` + action,
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify($params),
+            headers: {
+            "RequestVerificationToken": $token // Send the token in the request headers
+            },
             dataType: 'json',
             beforeSend: function () {
                 $beforecallBack();

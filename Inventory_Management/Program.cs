@@ -3,6 +3,7 @@ using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
 using Infrastructure.Data;
 using Infrastructure.Repo;
+using Inventory_Management.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -43,6 +44,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
+app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

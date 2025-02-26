@@ -3,6 +3,8 @@ using Application.Services.Intrerfaces;
 using Infrastructure.Data;
 using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Inventory_Management.Controllers
 {
@@ -50,6 +52,17 @@ namespace Inventory_Management.Controllers
             return View(products);
         }
        
+        public IActionResult Cart()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CheckoutDetails([FromBody]List<CartVM> data)
+        {
+
+            return View();
+        }
         public IActionResult Contact()
         {
             return View();

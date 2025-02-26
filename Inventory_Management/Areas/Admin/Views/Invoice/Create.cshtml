@@ -254,9 +254,9 @@
                    $('#CustomerName').val(res.Data.CustomerName);
                    $('#ShippingNotes').val(res.Data.Address);
                    $('#PhoneNumber').val(res.Data.Phone);
-                           var selectedValue = $('#AreaId option').filter(function() {
-                                                  return $(this).text() === res.Data.Area;
-                                                }).val();
+                   var selectedValue = $('#AreaId option').filter(function() {
+                             return $(this).text() === res.Data.Area;
+                           }).val();
                    $('#AreaId').val(selectedValue).change();
               }
          }

@@ -7,7 +7,7 @@
             <li><a href="blog.html">Blog</a></li>
             <li><a href="about.html">About</a></li>
             <li><a asp-action="Contact" asp-controller="Home">Contact</a></li>
-            <li id="lg-bag"><a href="cart.html"><i class="ri-shopping-bag-line"></i></a></li>
+            <li id="lg-bag"><a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum" class="badge rounded-pill bg-danger"></span></i></a></li>
             <a href="#" id="close"><i class="ri-close-large-fill"></i></a>
         </ul>
     </div>
@@ -16,3 +16,17 @@
         <i id="bar" class="ri-menu-fold-3-fill"></i>
     </div>
 </section>
+
+@section scripts {
+    <script>
+        //
+        $(document).ready(function() {
+            debugger;
+                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                 if(cart == []){
+                     $("cartNum").innerHTML= 0;
+                 }else{
+             }
+        });
+    </script>
+}

@@ -128,7 +128,6 @@
                                                     <tr>
                                                         <td class="text-center">
                                                             <div class="form-check form-switch form-check-primary">
-                                                                @* <input class="form-check-input" id="discountSwitch" name="discountSwitch" type="checkbox" /> *@
                                                                 Discount :
                                                             </div>
                                                         </td>
@@ -277,7 +276,6 @@
          }
 
          function updateTotalPrice() {
-             debugger;
              var totalPrice = 0;
              var totalProductItems=0;
              var shipping=55;
@@ -310,7 +308,6 @@
                  $('#totalAmountInput').val(totalProductItems);
              });
 
-             debugger;
              if(allDiscountInput != "" && (discountSwitch.checked || discountSwitch[0].checked)){
                     allDiscountInput = parseFloat(allDiscountInput);
                     totalProductItems = totalProductItems - (totalProductItems * allDiscountInput / 100);

@@ -39,6 +39,7 @@ namespace Inventory_Management.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(InvoiceVM obj)
         {
             if (ModelState.IsValid)

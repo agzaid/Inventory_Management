@@ -1,0 +1,292 @@
+﻿@model Inventory_Management.Models.CartVM
+
+<section id="page-header" class="">
+    <h2>#let's_meetup</h2>
+    <p>Deleviry In Cairo and Around Egypt</p>
+</section>
+
+@Html.AntiForgeryToken()
+<section id="cart" class="section-p1">
+    <table width="100%" id="cartTable">
+        <thead>
+            <tr>
+                <td>Remove</td>
+                <td>Image</td>
+                <td>Product</td>
+                <td>Price</td>
+                <td>Quantity</td>
+                <td>Subtotal</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</section>
+
+<section id="cart-add" class="section-p1 g-2">
+    @*  <div id="coupon">
+        <h3>Apply Coupon</h3>
+        <div>
+            <input type="text" placeholder="Enter Your Ccoupon">
+            <button class="normal">Apply</button>
+        </div>
+    </div> *@
+    <div id="subtotal" class="col-md-6 col-12">
+        <h3>Cart Totals</h3>
+        <table>
+            <tr>
+                <td>Cart Subtotal</td>
+                <td>$<span id="cartSubTotal">0.0</span></td>
+            </tr>
+            <tr>
+                <td>Shipping</td>
+                <td>
+                    <div class="dropdown-container">
+                        <select id="shipping" class="form-control" name="shipping">
+                            <option value="0">Free (Picking it from store)</option>
+                            <option value="30">Standard Shipping</option>
+                            <option value="50">Express Shipping</option>
+                        </select>
+                        <div class="dropdown-arrow"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Region</td>
+                <td>
+                    <div class="dropdown-container">
+                        <select id="shipping" class="form-control" name="shipping">
+                            <option value="0">Cairo</option>
+                            <option value="30">Out of cairo</option>
+                            @* <option value="50">Express Shipping</option> *@
+                        </select>
+                        <div class="dropdown-arrow"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td><strong>$ <span id="total">0.0</span></strong></td>
+            </tr>
+        </table>
+        @* <a class="" asp-action="CheckoutDetails" id="checkout">Proceed to Checkout</a> *@
+    </div>
+    <div id="subtotal" class="col-md-6 col-12">
+        <h3>Delivery Information</h3>
+        <table>
+            <tr>
+                <td><strong>Your Name</strong></td>
+                <td>
+                    <input class="form-control" type="text" placeholder="Your Name" required>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Contact Number</strong></td>
+                <td>
+                    <input class="form-control" type="text" placeholder="Phone Number" required>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Address</strong></td>
+                <td>
+                    <textarea class="form-control" type="text" placeholder="Address" required>
+                    </textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-12 text-center">
+        <a class="" asp-action="CheckoutDetails" id="checkout">Proceed to Checkout</a>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                 if(cart == [] || $("#cartNum").length==0){
+                     var cartt = $("#cartNum").length;
+                     $("#cartNum")[0].innerHTML= 0;
+                 }else{
+                     $("#cartNum")[0].innerHTML= cart.length;
+
+                cart.forEach(function(item) {
+                 AddNewRow(item);});
+                  };
+                $("#shipping").change(function() {
+                    var selectedValue = $(this).val();
+                    calcItems();
+
+                 });
+                 $("#checkout").click(function(event){
+                     debugger;
+                     event.preventDefault();
+                     submitCart()
+                 });
+
+            calcItems();
+
+        });
+        function submitCart(){
+                 const token = $('input[name="__RequestVerificationToken"]').val();
+                 var query = $('#PhoneNumber').val();
+                 var $url = "@Url.Action("CheckoutDetails", "Home")";
+                 var parameter = [{
+                         ProductName:"asf",
+                         Price:9
+                 },{
+                         ProductName:"asf",
+                         Price:9
+                 }];
+                 _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
+                     function (data) {
+                         debugger;
+                         var res = JSON.parse(data);
+                         if (res != null && res.IsSuccess==true) {
+                            MappingToFields(res);
+                         } else
+                             _SWAL.AlertWithoutNotification(res.Message);
+                     },
+                     function (xhr) {
+                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                     });
+         };
+         function AddNewRow(data){
+              var rowIndex = $('#cartTable tbody tr').length;
+             var newRowHtml = `
+                 <tr id="row-${rowIndex}">
+                 <td><a onclick="Delete(event)"><i class="ri-close-circle-line"></i></a></td>
+                 <td><img src="img/products/f1.jpg" alt=""></td>
+                 <td>
+                     <div class="d-flex align-items-center justify-content-center">
+                         <div class="font-weight-bold text-danger">${data.productName}</div>
+                         <input class="font-weight-bold text-danger product-input" name="productInput[${rowIndex}]" id="productInput[${rowIndex}]" value="${data.productName}" hidden>
+                     </div>
+                 </td>
+                 <td>
+                     $${data.productPrice}
+                     <input type="text" class="form-control price-input" id="priceInput[${rowIndex}]" name="priceInput[${rowIndex}]" value="${data.productPrice}" hidden>
+                 </td>
+                 <td class="text-danger d-flex justify-content-center">
+                 <input id="productInputId[${rowIndex}]" value="${data.productId}" data-id="${data.productId}" data-name="${data.productName}"
+                 data-value="${data.productPrice}" hidden>
+                 <button class="btn btn-white" type="button" id="button-plus-${rowIndex}" onclick="Add(event, ${rowIndex})"> + </button>
+                 <input type="number" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}">
+                 <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
+                 </td>
+                 <td class="text-danger">
+                <span class="itemPrice">$${parseFloat(data.quantity * data.productPrice).toFixed(2)}</span>
+                 <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}" hidden>
+                 </td>
+             </tr>
+         `;
+             $('#cartTable tbody').append(newRowHtml);
+            // reorderRows();
+         };
+         function calcItems(){
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var subTotal = 0;
+            cart.forEach(function(item){
+                subTotal += item.quantity * item.productPrice;
+            });
+            var shipping = $("#shipping")[0].value;
+            $("#total")[0].innerHTML= subTotal + parseInt(shipping);
+            $("#cartSubTotal")[0].innerHTML= subTotal;
+         }
+         function Add(event) {
+                       var addBtn = $(event.target);
+                       var inputField = addBtn.siblings('.stock-input');
+                       var productId = addBtn[0].id;
+                       var extractedIndex = productId.split('-').pop();
+                       var convertingId= parseInt(extractedIndex);
+
+                       var inputElement = document.getElementById(`productInputId[${convertingId}]`);
+
+                       var dataId = inputElement.dataset.id;
+                       var dataName = inputElement.dataset.name;
+                       var dataValue = inputElement.dataset.value;
+
+                       var inputValue = parseInt(inputField.val());
+                       inputField.val(inputValue + 1);
+                       $(".itemPrice")[convertingId].innerHTML = "$"+ ((inputValue+1) * parseInt(dataValue)) ;
+
+                       AddToCart(dataId,dataName,dataValue,inputValue + 1);
+                       calcItems();
+             };
+
+         async function Delete(event) {
+             var deleteBtn = $(event.target);
+             var rowToDelete = deleteBtn.closest('tr');
+             var productId = rowToDelete[0].id;
+             var extractedIndex = productId.split('-').pop();
+             var convertingId = parseInt(extractedIndex);
+             var inputElement = document.getElementById(`productInputId[${convertingId}]`);
+             var dataId = inputElement.dataset.id;
+             var result = await _SWAL.CustomAlertWithOwnMessage("Are you sure you want to Delete this item ???","Yes","No");
+             if(result){
+                 rowToDelete.remove();
+                 RemoveFromCart(dataId);
+                 calcItems();
+             }
+          };
+
+         function RemoveFromCart(productId) {
+               let cart = JSON.parse(localStorage.getItem('cart')) || [];
+               cart = cart.filter(item => item.productId !== productId);
+               localStorage.setItem('cart', JSON.stringify(cart));
+          }
+         function AddToCart(productId, productName, productPrice, Quantity) {
+                  debugger;
+                 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                 const existingProductIndex = cart.findIndex(item => item.productId === productId);
+
+                 if (existingProductIndex > -1) {
+                     cart[existingProductIndex].quantity = Quantity;
+                 } else {
+                     const newItem = {
+                         productId: productId,
+                         productName: productName,
+                         productPrice: productPrice,
+                         quantity: Quantity
+                     };
+                     cart.push(newItem);
+                 }
+                 localStorage.setItem('cart', JSON.stringify(cart));
+
+                 alert('Item added to cart!');
+             }
+
+         function Decrement(event) {
+                     debugger;
+                       var addBtn = $(event.target);
+                       var inputField = addBtn.siblings('.stock-input');
+                       var productId = addBtn[0].id;
+                       var extractedIndex = productId.split('-').pop();
+                       var convertingId= parseInt(extractedIndex);
+
+                       var inputElement = document.getElementById(`productInputId[${convertingId}]`);
+
+                       var dataId = inputElement.dataset.id;
+                       var dataName = inputElement.dataset.name;
+                       var dataValue = inputElement.dataset.value;
+
+                       var inputValue = parseInt(inputField.val());
+
+                       var inputValue = parseInt(inputField.val());
+                       inputField.val(inputValue - 1);
+                       $(".itemPrice")[convertingId].innerHTML = "$"+((inputValue-1) * parseInt(dataValue)) ;
+
+                       AddToCart(dataId, dataName, dataValue, inputValue - 1);
+                       calcItems();
+          };
+
+            // $('.price-input').each(function() {
+            //      debugger;
+            //      var price = parseInt($(this).val());
+            //      var row = $(this).closest('tr');
+            //      var quantity = row.find('.quantity-input').val();
+            //      var discount = row.find('.individualDiscount-input').val();
+            //      var discountSwitch = $('#discountSwitch');
+            // });
+    </script>
+}

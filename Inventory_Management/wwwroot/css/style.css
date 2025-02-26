@@ -112,6 +112,11 @@ position: relative;
 #navbar li a.active{
     color: #088178;
 }
+#checkout {
+    background-color: #088178;
+    color: #fff;
+    padding: 12px 20px;
+}
 
 #navbar li a.active::after,
 #navbar li a:hover::after{
@@ -959,8 +964,9 @@ object-fit: cover;
     padding: 12px 20px;
 }
 
+
 #subtotal{
-    width: 50%;
+    /*width: 50%;*/
     margin-bottom: 30px;
     border: 1px solid #e2e9e1;
     padding: 30px;

@@ -149,28 +149,23 @@
               // When a small image is clicked, update the big image
              document.querySelectorAll('.small-Img').forEach(img => {
                  img.addEventListener('click', function () {
-                     // Get the clicked small image source
                      const smallImageSrc = img.src;
-
-                     // Update the featured image
                      const featuredImage = document.getElementById('featured-image');
                      featuredImage.src = smallImageSrc;
-
-                     // Update the clicked image class to show it's the featured one
                      featuredImage.classList.add('big-Img');
-
-                     // Optionally remove the 'big-Img' class from any other images if necessary
                      document.querySelectorAll('.small-Img').forEach(small => {
                          small.classList.remove('big-Img');
                      });
-
-                     // Make the clicked image smaller and featured
                      img.classList.add('big-Img');
                  });
              });
 
-      
-        })
+             var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                 if(cart != [] || $("#cartNum").length!=0){
+                     var cartt = $("#cartNum").length;
+                     $("#cartNum")[0].innerHTML= cart.length;
+                 }
+             });
               function AddToCart(productId, productName, productPrice, Quantity) {
                   debugger;
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -187,7 +182,6 @@
                      };
                      cart.push(newItem);
                  }
-
                  localStorage.setItem('cart', JSON.stringify(cart));
 
                  alert('Item added to cart!');
