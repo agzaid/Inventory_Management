@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Application.Services.Intrerfaces;
+using Domain.Models;
 using Infrastructure.Data;
-using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -11,17 +11,18 @@ namespace Inventory_Management.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IProductService _productService;
+        private readonly IOnlineOrderService _onlineOrderService;
 
-        public HomeController(ILogger<HomeController> logger, IProductService productService)
+
+        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService)
         {
             _logger = logger;
-            _productService = productService;
+            _onlineOrderService = onlineOrderService;
         }
 
         public IActionResult Index()
         {
-            var products = _productService.GetAllProductsForPortal();
+            var products = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
             //{
             //    TempData["success"] = message;
@@ -34,7 +35,7 @@ namespace Inventory_Management.Controllers
         }
         public IActionResult Shop()
         {
-            var products = _productService.GetAllProductsForPortal();
+            var products = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
             //{
             //    TempData["success"] = message;
@@ -47,21 +48,22 @@ namespace Inventory_Management.Controllers
         }
         public IActionResult ProductDetails(int Id)
         {
-            var products = _productService.GetProductDetails(Id);
+            var products = _onlineOrderService.GetProductDetails(Id);
             
             return View(products);
         }
        
         public IActionResult Cart()
         {
+
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CheckoutDetails([FromBody]List<CartVM> data)
+        public IActionResult CheckoutDetails([FromBody]CartVM data)
         {
-
-            return View();
+            var cart = _onlineOrderService.CreateOrder(data);
+            return RedirectToAction("Index","Home");
         }
         public IActionResult Contact()
         {

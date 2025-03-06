@@ -20,6 +20,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IShippingFreightService, ShippingFreightService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOnlineOrderService, OnlineOrderService>();
 
 // Set up Serilog for file logging
 Log.Logger = new LoggerConfiguration()
@@ -46,7 +47,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
-app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
+// app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
