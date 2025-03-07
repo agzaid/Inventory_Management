@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Application.Services.Intrerfaces;
 using Domain.Models;
 using Infrastructure.Data;
+using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;

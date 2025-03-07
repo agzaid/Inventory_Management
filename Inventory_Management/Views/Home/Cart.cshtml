@@ -1,5 +1,37 @@
 ﻿@model Domain.Models.CartVM
 
+@section Styles {
+    <style>
+        .time-slot-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .time-slot {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            border-radius: 5px;
+        }
+
+            .time-slot:hover {
+                background-color: #45a049;
+            }
+
+            .time-slot.faded {
+                opacity: 0.5;
+                /* cursor: not-allowed; */
+            }
+    </style>
+}
+
 <section id="page-header" class="">
     <h2>#let's_meetup</h2>
     <p>Deleviry In Cairo and Around Egypt</p>
@@ -95,6 +127,14 @@
                         </td>
                     </tr>
                 </table>
+                <strong>Preferable Delivery Slots</strong>
+                <div class="time-slot-container d-flex">
+                    <button type="button" class="time-slot" onclick="selectSlot(this)">9:00- 10:00 AM</button>
+                    <button type="button" class="time-slot" onclick="selectSlot(this)">10:00- 11:00 AM</button>
+                    <button type="button" class="time-slot" onclick="selectSlot(this)">11:00- 12:00 PM</button>
+                    <button type="button" class="time-slot" onclick="selectSlot(this)">12:00- 1:00 PM</button>
+                    <button type="button" class="time-slot" onclick="selectSlot(this)">1:00- 2:00 PM</button>
+                </div>
             </div>
         </div>
         <div class="col-12 text-center">
@@ -321,6 +361,19 @@
                        AddToCart(dataId, dataName, dataValue, inputValue - 1);
                        calcItems();
           };
+         function selectSlot(button) {
+             debugger;
+                    // Check if the button is already faded (selected)
+                 if (button.classList.contains('faded')) {
+                   // If already faded, remove the faded class and enable the button again
+                   button.classList.remove('faded');
+                   // button.disabled = false;
+                 } else {
+                   // If not faded, add the faded class and disable the button
+                   button.classList.add('faded');
+                   // button.disabled = true;
+                 }
+        }
 
             // $('.price-input').each(function() {
             //      debugger;
