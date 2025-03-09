@@ -23,6 +23,8 @@ namespace Infrastructure.Data
         public DbSet<Image> Image { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<ShippingFreight> ShippingFreight { get; set; }
+        public DbSet<DeliverySlot> DeliverySlot { get; set; }
+        public DbSet<UserDeliverySlot> UserDeliverySlot { get; set; }
 
         public static void SeedData(ApplicationDbContext context)
         {
@@ -44,6 +46,26 @@ namespace Infrastructure.Data
 
                 context.SaveChanges();
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Define the composite primary key for the junction table
+            modelBuilder.Entity<UserDeliverySlot>()
+                .HasKey(uds => new { uds.UserId, uds.DeliverySlotId });
+
+            // Set up the many-to-many relationship
+            //modelBuilder.Entity<UserDeliverySlot>()
+            //    .HasOne(uds => uds.User)
+            //    .WithMany(u => u.UserDeliverySlots)
+            //    .HasForeignKey(uds => uds.UserId);
+
+            //modelBuilder.Entity<UserDeliverySlot>()
+            //    .HasOne(uds => uds.DeliverySlot)
+            //    .WithMany(ds => ds.UserDeliverySlots)
+            //    .HasForeignKey(uds => uds.SlotId);
         }
     }
 }

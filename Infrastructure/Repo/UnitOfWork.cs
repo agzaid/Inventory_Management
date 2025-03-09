@@ -18,6 +18,7 @@ namespace Infrastructure.Repo
         public IInvoiceRepository Invoice { get; private set; }
         public IShippingFreightRepository ShippingFreight { get; private set; }
         public ICustomerRepository Customer { get; private set; }
+        public IDeliverySlotRepository DeliverySlot { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -27,6 +28,7 @@ namespace Infrastructure.Repo
             Invoice = new InvoiceRepository(_db);
             ShippingFreight = new ShippingFreightRepository(_db);
             Customer = new CustomerRepository(_db);
+            DeliverySlot = new DeliverySlotRepository(_db);
         }
         public void Save()
         {

@@ -14,6 +14,7 @@ namespace Application.Common.Interfaces
         IInvoiceRepository Invoice { get; }
         IShippingFreightRepository ShippingFreight { get; }
         ICustomerRepository Customer { get; }
+        IDeliverySlotRepository DeliverySlot { get; }
         void Save();
 
     }

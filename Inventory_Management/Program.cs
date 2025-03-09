@@ -21,6 +21,7 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IShippingFreightService, ShippingFreightService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOnlineOrderService, OnlineOrderService>();
+builder.Services.AddScoped<IDeliverySlotService, DeliverySlotService>();
 
 // Set up Serilog for file logging
 Log.Logger = new LoggerConfiguration()
