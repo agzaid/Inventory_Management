@@ -11,7 +11,7 @@ namespace Application.Services.Intrerfaces
     public interface IOnlineOrderService
     {
         IEnumerable<ProductVM> GetAllProducts();
-        IEnumerable<ProductVM> GetAllProductsForPortal();
+        PortalVM GetAllProductsForPortal();
         ProductVM GetProductById(int id);
         ProductVM GetProductDetails(int id);
         Task<string[]> CreateProduct(ProductVM product);

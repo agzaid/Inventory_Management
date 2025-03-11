@@ -2,10 +2,11 @@ using System.Diagnostics;
 using Application.Services.Intrerfaces;
 using Domain.Models;
 using Infrastructure.Data;
-using Inventory_Management.Models;
+using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Inventory_Management.Models;
 
 namespace Inventory_Management.Controllers
 {
@@ -23,7 +24,7 @@ namespace Inventory_Management.Controllers
 
         public IActionResult Index()
         {
-            var products = _onlineOrderService.GetAllProductsForPortal();
+            var portal = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
             //{
             //    TempData["success"] = message;
@@ -32,7 +33,7 @@ namespace Inventory_Management.Controllers
             //{
             //    TempData["error"] = message;
             //}
-            return View(products);
+            return View(portal);
         }
         public IActionResult Shop()
         {

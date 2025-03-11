@@ -16,8 +16,10 @@ namespace Infrastructure.Data
         public DbSet<Product> Product { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Customer> Customer { get; set; }
-        public DbSet<InventoryLog> InventoryLog { get; set; }
         public DbSet<Invoice> Order { get; set; }
+        public DbSet<Inventory> Inventory { get; set; }
+        public DbSet<InventoryLog> InventoryLog { get; set; }
+        public DbSet<OnlineOrder> OnlineOrder { get; set; }
         public DbSet<InvoiceItem> InvoiceItem { get; set; }
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Image> Image { get; set; }
@@ -25,6 +27,7 @@ namespace Infrastructure.Data
         public DbSet<ShippingFreight> ShippingFreight { get; set; }
         public DbSet<DeliverySlot> DeliverySlot { get; set; }
         public DbSet<UserDeliverySlot> UserDeliverySlot { get; set; }
+
 
         public static void SeedData(ApplicationDbContext context)
         {
@@ -41,7 +44,7 @@ namespace Infrastructure.Data
             if (!context.ShippingFreight.Any())
             {
                 context.ShippingFreight.AddRange(
-                    new ShippingFreight { Area = "other", Region = "other", Price = 50}
+                    new ShippingFreight { Area = "other", Region = "other", Price = 50 }
                 );
 
                 context.SaveChanges();

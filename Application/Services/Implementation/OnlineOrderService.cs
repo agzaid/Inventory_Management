@@ -197,15 +197,16 @@ namespace Application.Services.Implementation
                 throw;  // Rethrow the exception after logging it
             }
         }
-        public IEnumerable<ProductVM> GetAllProductsForPortal()
+        public PortalVM GetAllProductsForPortal()
         {
             var retrievedImages = new List<string>();
             var image64 = new List<string>();
             var productVMs = new List<ProductVM>();
+            var portalVM = new PortalVM();
             try
             {
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images");
-
+                var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
                 foreach (var item in products)
                 {
                     retrievedImages.Clear();
@@ -229,8 +230,17 @@ namespace Application.Services.Implementation
                     };
                     productVMs.Add(productVM);
                 }
+                portalVM.ProductVMs = productVMs;
+                portalVM.CategoryVMs = categories.Select(s => new CategoryVM
+                {
+                    Id = s.Id,
+                    CategoryName = s.CategoryName?.ToUpper(),
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    Description = s.Description,
+                }).ToList();
+
                 _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", productVMs.Count);
-                return productVMs;
+                return portalVM;
             }
             catch (Exception ex)
             {
@@ -422,7 +432,7 @@ namespace Application.Services.Implementation
             var imagesToBeRemoved = new List<byte[]>();
             try
             {
-               // var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
+                // var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
                 if (cart == null)
                 {
                     return new string[] { "error", "Cart is empty" };
@@ -476,13 +486,13 @@ namespace Application.Services.Implementation
                     //    };
                     //    _unitOfWork.Product.Add(Newproduct);
                     //    _unitOfWork.Save();
-                    }
-                    return new string[] { "success", "Product Created Successfully" };
-                
+                }
+                return new string[] { "success", "Product Created Successfully" };
+
             }
             catch (Exception ex)
             {
-               // _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
+                // _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
                 //await FileExtensions.DeleteImages(imagesToBeDeleted);
 
                 return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it
