@@ -1,0 +1,85 @@
+﻿@model List<Domain.Models.DistrictVM>
+
+<div class="page-wrapper">
+    <div class="page-content">
+        <div class="row">
+            <div class="col">
+                <div class="d-flex justify-content-end mb-2">
+                    <a class="btn btn-primary mb-3 mb-lg-0" asp-action="Create" asp-controller="District">
+                        <i class="bx bxs-plus-square"></i>
+                        Add New District
+                    </a>
+                </div>
+                <div class="card radius-10">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example2" class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>District Name</th>
+                                        <th>Area</th>
+                                        <th>Price</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Name</td>
+                                            @* <td>@item.Region</td> *@
+                                            <td>@item.Price</td>
+                                            <td>@item.CreatedDate</td>
+                                            <td class="text-center" style="font-size:20px">
+                                                <a class="me-3" asp-action="Edit" asp-route-id="@item.Id">
+                                                    <i class="lni lni-eye"></i>
+                                                </a>
+                                                <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id">
+                                                    <i class="bx bx-message-square-edit"></i>
+                                                </a>
+                                                <a class="text-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                                    <i class="lni lni-cross-circle"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                               @*  <tfoot>
+                                    <tr>
+                                        <th>Category Name</th>
+                                        <th>Description</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </tfoot> *@
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        "></script>
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+          } );
+    </script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#example2').DataTable( {
+                lengthChange: false,
+                buttons: [ 'copy', 'excel', 'pdf', 'print']
+            } );
+
+            table.buttons().container()
+                .appendTo( '#example2_wrapper .col-md-6:eq(0)' );
+        } );
+    </script>
+
+}

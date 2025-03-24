@@ -15,6 +15,7 @@ namespace Application.Common.Interfaces
         IShippingFreightRepository ShippingFreight { get; }
         ICustomerRepository Customer { get; }
         IDeliverySlotRepository DeliverySlot { get; }
+        IDistrictRepository District { get; }
         void Save();
 
     }

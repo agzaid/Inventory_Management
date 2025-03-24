@@ -25,6 +25,7 @@ namespace Infrastructure.Data
         public DbSet<Image> Image { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<ShippingFreight> ShippingFreight { get; set; }
+        public DbSet<District> District { get; set; }
         public DbSet<DeliverySlot> DeliverySlot { get; set; }
         public DbSet<UserDeliverySlot> UserDeliverySlot { get; set; }
 
@@ -43,8 +44,12 @@ namespace Infrastructure.Data
             // Check if the data is already seeded to avoid duplication
             if (!context.ShippingFreight.Any())
             {
+                var districts = new List<District>
+                    {
+                        new District { Id = 1, Name = "other" },
+                    };
                 context.ShippingFreight.AddRange(
-                    new ShippingFreight { Area = "other", Region = "other", Price = 50 }
+                    new ShippingFreight { Area = "other", Price = 50, Districts = districts }
                 );
 
                 context.SaveChanges();

@@ -11,8 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -22,6 +24,7 @@ builder.Services.AddScoped<IShippingFreightService, ShippingFreightService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOnlineOrderService, OnlineOrderService>();
 builder.Services.AddScoped<IDeliverySlotService, DeliverySlotService>();
+builder.Services.AddScoped<IDistrictService, DistrictService>();
 
 // Set up Serilog for file logging
 Log.Logger = new LoggerConfiguration()

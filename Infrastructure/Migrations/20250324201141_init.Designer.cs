@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250113104609_ShippingFreightNaming")]
-    partial class ShippingFreightNaming
+    [Migration("20250324201141_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,6 +64,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Area")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
 
@@ -85,6 +88,75 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AM_PM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Create_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EndTime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("StartTime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeliverySlot");
+                });
+
+            modelBuilder.Entity("Domain.Entities.District", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Create_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShippingFreightId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShippingFreightId");
+
+                    b.ToTable("District");
                 });
 
             modelBuilder.Entity("Domain.Entities.Image", b =>
@@ -124,6 +196,57 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Image");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Inventory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("BuyingPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Create_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("DifferencePercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("MaximumDiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("OtherShopsPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly?>("ProductExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("QuantityInStock")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("SellingPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Inventory");
                 });
 
             modelBuilder.Entity("Domain.Entities.InventoryLog", b =>
@@ -173,11 +296,26 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("AllDiscountInput")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("AllProductItems")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<double?>("GrandTotalAmount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("InvoiceNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -188,8 +326,14 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<decimal?>("ProductsOnlyAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShippingNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("ShippingPrice")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -209,7 +353,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InvoiceId")
+                    b.Property<double?>("IndividualDiscount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("InvoiceId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -218,22 +365,87 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Price")
+                    b.Property<int?>("OnlineOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<double?>("ShippingPrice")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InvoiceId");
 
+                    b.HasIndex("OnlineOrderId");
+
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("InvoiceItem");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("AllDiscountInput")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("AllProductItems")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Create_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("GrandTotalAmount")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("ProductsOnlyAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShippingNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("ShippingPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("OnlineOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -327,9 +539,6 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
-                    b.Property<string>("Region")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("ShippingFreight");
@@ -366,10 +575,55 @@ namespace Infrastructure.Migrations
                     b.ToTable("Supplier");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliverySlotId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Create_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "DeliverySlotId");
+
+                    b.HasIndex("DeliverySlotId");
+
+                    b.ToTable("UserDeliverySlot");
+                });
+
+            modelBuilder.Entity("Domain.Entities.District", b =>
+                {
+                    b.HasOne("Domain.Entities.ShippingFreight", "ShippingFreight")
+                        .WithMany("Districts")
+                        .HasForeignKey("ShippingFreightId");
+
+                    b.Navigation("ShippingFreight");
+                });
+
             modelBuilder.Entity("Domain.Entities.Image", b =>
                 {
                     b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany("Images")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Inventory", b =>
+                {
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany()
                         .HasForeignKey("ProductId");
 
                     b.Navigation("Product");
@@ -390,9 +644,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entities.Customer", "Customer")
                         .WithMany("Invoices")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.Navigation("Customer");
                 });
@@ -400,20 +652,29 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.InvoiceItem", b =>
                 {
                     b.HasOne("Domain.Entities.Invoice", "Invoice")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("InvoiceId");
+
+                    b.HasOne("Domain.Entities.OnlineOrder", null)
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("OnlineOrderId");
 
                     b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany("InvoiceItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("Invoice");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -431,6 +692,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
+                {
+                    b.HasOne("Domain.Entities.DeliverySlot", "DeliverySlot")
+                        .WithMany("UserDeliverySlots")
+                        .HasForeignKey("DeliverySlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeliverySlot");
+                });
+
             modelBuilder.Entity("Domain.Entities.Category", b =>
                 {
                     b.Navigation("Products");
@@ -441,9 +713,19 @@ namespace Infrastructure.Migrations
                     b.Navigation("Invoices");
                 });
 
+            modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
+                {
+                    b.Navigation("UserDeliverySlots");
+                });
+
             modelBuilder.Entity("Domain.Entities.Invoice", b =>
                 {
-                    b.Navigation("OrderItems");
+                    b.Navigation("InvoiceItems");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
+                {
+                    b.Navigation("InvoiceItems");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -453,6 +735,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("InventoryLogs");
 
                     b.Navigation("InvoiceItems");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ShippingFreight", b =>
+                {
+                    b.Navigation("Districts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Supplier", b =>

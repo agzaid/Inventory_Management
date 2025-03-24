@@ -7,26 +7,26 @@ using System.Web.Mvc;
 
 namespace Application.Services.Implementation
 {
-    public class ShippingFreightService : IShippingFreightService
+    public class DistrictService : IDistrictService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<ShippingFreightService> _logger;  // Inject ILogger<ShippingFrieghtService>
+        private readonly ILogger<DistrictService> _logger;  // Inject ILogger<ShippingFrieghtService>
 
-        public ShippingFreightService(IUnitOfWork unitOfWork, ILogger<ShippingFreightService> logger)
+        public DistrictService(IUnitOfWork unitOfWork, ILogger<DistrictService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;  // Initialize the logger
         }
 
-        public Result<IEnumerable<ShippingFreightVM>> GetAllShippingFrieght()
+        public Result<IEnumerable<DistrictVM>> GetAllDistrics()
         {
             try
             {
-                var shippingFrieght = _unitOfWork.ShippingFreight.GetAll(s => s.IsDeleted == false);
-                var allShippingFrieght = shippingFrieght.Select(s => new ShippingFreightVM()
+                var shippingFrieght = _unitOfWork.District.GetAll(s => s.IsDeleted == false);
+                var allShippingFrieght = shippingFrieght.Select(s => new DistrictVM()
                 {
                     Id = s.Id,
-                    Area = s.Area,
+                    Name = s.Name,
                     //Region = s.Region,
                     Price = s.Price,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
@@ -34,7 +34,7 @@ namespace Application.Services.Implementation
 
                 _logger.LogInformation("GetAllShippingFrieght method completed. {allShippingFrieghtCount} allShippingFrieght retrieved.", allShippingFrieght.ToList().Count);
 
-                return Result<IEnumerable<ShippingFreightVM>>.Success(allShippingFrieght, "ShippingFrieght retrieved successfully."); ;
+                return Result<IEnumerable<DistrictVM>>.Success(allShippingFrieght, "ShippingFrieght retrieved successfully."); ;
             }
             catch (Exception ex)
             {
@@ -61,23 +61,22 @@ namespace Application.Services.Implementation
                 throw;
             }
         }
-        public async Task<Result<string>> CreateShippingFreight(ShippingFreightVM obj)
+        public async Task<Result<string>> CreateDistrict(DistrictVM obj)
         {
             try
             {
-                obj.Area = obj.Area?.ToLower();
-                obj.Region= obj.Region?.ToLower();
-                var lookForName = _unitOfWork.ShippingFreight.Get(s => s.Area == obj.Area);
+                obj.Name = obj.Name?.ToLower();
+                var lookForName = _unitOfWork.District.Get(s => s.Name == obj.Name);
                 if (lookForName == null)
                 {
-                    var newFreight = new ShippingFreight()
+                    var newFreight = new District()
                     {
-                        Area = obj.Area,
+                        Name = obj.Name,
                         Modified_Date = DateTime.Now,
                         //Region = obj.Region,
                         Price = obj.Price,
                     };
-                    _unitOfWork.ShippingFreight.Add(newFreight);
+                    _unitOfWork.District.Add(newFreight);
                      _unitOfWork.Save();
                     return Result<string>.Success("new Freight Created Successfully","Success");
                 }
@@ -86,21 +85,21 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating shippingFreight with Area: {Area}", obj.Area);
+                _logger.LogError(ex, "An error occurred while creating shippingFreight with Area: {Area}", obj.Name);
                 return Result<string>.Failure("Error Occured...!!!", "error");  // Rethrow the exception after logging it
             }
         }
 
-        public ShippingFreightVM GetShippingFreightById(int id)
+        public DistrictVM GetDistricById(int id)
         {
             try
             {
-                var shipping = _unitOfWork.ShippingFreight.Get(u => u.Id == id);
+                var shipping = _unitOfWork.District.Get(u => u.Id == id);
                 if (shipping != null)
                 {
-                    var shippingFrieghtVM = new ShippingFreightVM()
+                    var shippingFrieghtVM = new DistrictVM()
                     {
-                        Area = shipping.Area,
+                        Name = shipping.Name,
                         //Region = shipping.Region,
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd")
@@ -113,23 +112,22 @@ namespace Application.Services.Implementation
                 _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
                 throw;  // Rethrow the exception after logging it
             }
-            return new ShippingFreightVM();
+            return new DistrictVM();
         }
 
-        public async Task<bool> UpdateShippingFreight(ShippingFreightVM obj)
+        public async Task<bool> UpdateDistrict(DistrictVM obj)
         {
             try
             {
-                obj.Area = obj.Area?.ToLower();
-                obj.Region = obj.Region?.ToLower();
-                var oldCategory = _unitOfWork.ShippingFreight.Get(s => s.Id == obj.Id);
+                obj.Name = obj.Name?.ToLower();
+                var oldCategory = _unitOfWork.District.Get(s => s.Id == obj.Id);
                 if (oldCategory != null)
                 {
-                    oldCategory.Area = obj.Area;
+                    oldCategory.Name = obj.Name;
                     //oldCategory.Region= obj.Region;
                     oldCategory.Price= obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.ShippingFreight.Update(oldCategory);
+                    _unitOfWork.District.Update(oldCategory);
                      _unitOfWork.Save();
                     return true;
                 }
@@ -143,16 +141,16 @@ namespace Application.Services.Implementation
             }
         }
 
-        public async Task<bool> DeleteShippingFreight(int id)
+        public async Task<bool> DeleteDistrict(int id)
         {
             try
             {
-                var oldCategory = _unitOfWork.ShippingFreight.Get(s => s.Id == id);
+                var oldCategory = _unitOfWork.District.Get(s => s.Id == id);
                 if (oldCategory != null)
                 {
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.ShippingFreight.Update(oldCategory);
+                    _unitOfWork.District.Update(oldCategory);
                      _unitOfWork.Save();
                     return true;
                 }
