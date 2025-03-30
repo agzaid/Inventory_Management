@@ -35,7 +35,7 @@ namespace Inventory_Management.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            return View(_districtService.GetDistrictForCreateView());
         }
 
         [HttpPost]

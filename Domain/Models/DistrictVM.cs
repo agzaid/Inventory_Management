@@ -1,4 +1,7 @@
-﻿namespace Domain.Models
+﻿
+using System.Web.Mvc;
+
+namespace Domain.Models
 {
     public class DistrictVM
     {
@@ -6,5 +9,7 @@
         public string? Name { get; set; }
         public double? Price { get; set; }
         public string? CreatedDate { get; set; }
+        public int? AreaId { get; set; }
+        public ICollection<SelectListItem> Areas { get; set; }
     }
 }

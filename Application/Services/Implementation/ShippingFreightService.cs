@@ -66,7 +66,7 @@ namespace Application.Services.Implementation
             try
             {
                 obj.Area = obj.Area?.ToLower();
-                obj.Region= obj.Region?.ToLower();
+                //obj.Region = obj.Region?.ToLower();
                 var lookForName = _unitOfWork.ShippingFreight.Get(s => s.Area == obj.Area);
                 if (lookForName == null)
                 {
@@ -78,8 +78,8 @@ namespace Application.Services.Implementation
                         Price = obj.Price,
                     };
                     _unitOfWork.ShippingFreight.Add(newFreight);
-                     _unitOfWork.Save();
-                    return Result<string>.Success("new Freight Created Successfully","Success");
+                    _unitOfWork.Save();
+                    return Result<string>.Success("new Freight Created Successfully", "Success");
                 }
                 else
                     return Result<string>.Failure("new Freight Already Exists", "error");
@@ -95,13 +95,13 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var shipping = _unitOfWork.ShippingFreight.Get(u => u.Id == id);
+                var shipping = _unitOfWork.ShippingFreight.Get(u => u.Id == id, "Districts");
                 if (shipping != null)
                 {
                     var shippingFrieghtVM = new ShippingFreightVM()
                     {
                         Area = shipping.Area,
-                        //Region = shipping.Region,
+                        Districts = shipping.Districts?.Select(s=>s.Name).ToArray(),
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd")
                     };
@@ -121,16 +121,16 @@ namespace Application.Services.Implementation
             try
             {
                 obj.Area = obj.Area?.ToLower();
-                obj.Region = obj.Region?.ToLower();
+                //obj.Region = obj.Region?.ToLower();
                 var oldCategory = _unitOfWork.ShippingFreight.Get(s => s.Id == obj.Id);
                 if (oldCategory != null)
                 {
                     oldCategory.Area = obj.Area;
                     //oldCategory.Region= obj.Region;
-                    oldCategory.Price= obj.Price;
+                    oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.ShippingFreight.Update(oldCategory);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -153,7 +153,7 @@ namespace Application.Services.Implementation
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.ShippingFreight.Update(oldCategory);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else

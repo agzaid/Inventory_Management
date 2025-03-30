@@ -77,8 +77,8 @@ namespace Application.Services.Implementation
                         Price = obj.Price,
                     };
                     _unitOfWork.District.Add(newFreight);
-                     _unitOfWork.Save();
-                    return Result<string>.Success("new Freight Created Successfully","Success");
+                    _unitOfWork.Save();
+                    return Result<string>.Success("new Freight Created Successfully", "Success");
                 }
                 else
                     return Result<string>.Failure("new Freight Already Exists", "error");
@@ -125,10 +125,10 @@ namespace Application.Services.Implementation
                 {
                     oldCategory.Name = obj.Name;
                     //oldCategory.Region= obj.Region;
-                    oldCategory.Price= obj.Price;
+                    oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.District.Update(oldCategory);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -151,7 +151,7 @@ namespace Application.Services.Implementation
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.District.Update(oldCategory);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -161,6 +161,31 @@ namespace Application.Services.Implementation
             {
                 _logger.LogError(ex, "An error occurred while deleting ShippingFreight with Id: {Id}", id);
                 return false; // Rethrow the exception after logging it
+            }
+        }
+
+        public DistrictVM GetDistrictForCreateView()
+        {
+            try
+            {
+                var shippingFrieght = _unitOfWork.ShippingFreight.GetAll(s => s.IsDeleted == false);
+                var district = new DistrictVM()
+                {
+                    Areas = shippingFrieght.Select(s => new SelectListItem
+                    {
+                        Text = s.Area,
+                        Value = s.Id.ToString()
+                    }).ToList(),
+                };
+
+                //_logger.LogInformation("GetAllShippingFrieght method completed. {allShippingFrieghtCount} allShippingFrieght retrieved.", allShippingFrieght.ToList().Count);
+
+                return district;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving categories.");
+                throw;  // Rethrow the exception after logging it
             }
         }
     }

@@ -10,6 +10,7 @@ namespace Application.Services.Intrerfaces
 {
     public interface IDistrictService
     {
+        DistrictVM GetDistrictForCreateView();
         Result<IEnumerable<DistrictVM>> GetAllDistrics();
         DistrictVM GetDistricById(int id);
         Task<Result<string>> CreateDistrict(DistrictVM shippingFrieghtVM);
