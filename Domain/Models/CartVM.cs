@@ -1,4 +1,7 @@
-﻿namespace Domain.Models
+﻿
+using System.Web.Mvc;
+
+namespace Domain.Models
 {
     public class CartVM
     {
@@ -7,6 +10,9 @@
         public string? Shipping { get; set; }
         public string? Location { get; set; }
         public List<ItemsVM> ItemsVMs { get; set; } = new();
+        public int? AreaId { get; set; } = new();
+        public List<SelectListItem> Areas { get; set; } = new();
+
     }
     public class ItemsVM
     {

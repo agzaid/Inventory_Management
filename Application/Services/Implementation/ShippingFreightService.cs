@@ -26,7 +26,7 @@ namespace Application.Services.Implementation
                 var allShippingFrieght = shippingFrieght.Select(s => new ShippingFreightVM()
                 {
                     Id = s.Id,
-                    Area = s.Area,
+                    Area = s.ShippingArea,
                     //Region = s.Region,
                     Price = s.Price,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
@@ -67,12 +67,12 @@ namespace Application.Services.Implementation
             {
                 obj.Area = obj.Area?.ToLower();
                 //obj.Region = obj.Region?.ToLower();
-                var lookForName = _unitOfWork.ShippingFreight.Get(s => s.Area == obj.Area);
+                var lookForName = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == obj.Area);
                 if (lookForName == null)
                 {
                     var newFreight = new ShippingFreight()
                     {
-                        Area = obj.Area,
+                        ShippingArea = obj.Area,
                         Modified_Date = DateTime.Now,
                         //Region = obj.Region,
                         Price = obj.Price,
@@ -100,7 +100,7 @@ namespace Application.Services.Implementation
                 {
                     var shippingFrieghtVM = new ShippingFreightVM()
                     {
-                        Area = shipping.Area,
+                        Area = shipping.ShippingArea,
                         Districts = shipping.Districts?.Select(s=>s.Name).ToArray(),
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd")
@@ -125,7 +125,7 @@ namespace Application.Services.Implementation
                 var oldCategory = _unitOfWork.ShippingFreight.Get(s => s.Id == obj.Id);
                 if (oldCategory != null)
                 {
-                    oldCategory.Area = obj.Area;
+                    oldCategory.ShippingArea = obj.Area;
                     //oldCategory.Region= obj.Region;
                     oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;

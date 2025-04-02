@@ -9,7 +9,7 @@ namespace Domain.Entities
     public class ShippingFreight : BaseEntity
     {
         //Area > District 
-        public string? Area { get; set; }
+        public string? ShippingArea { get; set; }
         //public string? District { get; set; }
         public double? Price { get; set; }
 

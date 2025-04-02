@@ -53,7 +53,7 @@ namespace Inventory_Management.Areas.Admin.Controllers
                     TempData["success"] = result.Message;
                 return RedirectToAction(nameof(Index));
             }
-            return View();
+            return View(obj);
         }
 
         public IActionResult Edit(int id)

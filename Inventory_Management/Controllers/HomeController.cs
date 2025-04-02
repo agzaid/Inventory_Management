@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Inventory_Management.Models;
+using System.Web.Razor.Tokenizer.Symbols;
 
 namespace Inventory_Management.Controllers
 {
@@ -57,9 +58,13 @@ namespace Inventory_Management.Controllers
        
         public IActionResult Cart()
         {
-
-            return View();
+            var cartvm = new CartVM()
+            {
+                Areas = _onlineOrderService.ForCartView().Result
+            };
+            return View(cartvm);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CheckoutDetails([FromBody]CartVM data)

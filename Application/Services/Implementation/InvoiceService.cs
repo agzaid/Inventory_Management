@@ -42,7 +42,7 @@ namespace Application.Services.Implementation
                     Number = s.InvoiceNumber,
                     TotalAmount = (decimal)s.GrandTotalAmount,
                     PhoneNumber = s.Customer?.Phone,
-                    AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.Area?.ToString(),
+                    AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.ShippingArea?.ToString(),
                     ShippingNotes = s.ShippingNotes,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     AllProductsForIndexViewing = s.AllProductItems,
@@ -66,7 +66,7 @@ namespace Application.Services.Implementation
                 var productQuantityMap = new Dictionary<int, int>();
                 var customer = _unitOfWork.Customer.Get(s => s.Phone == invoiceVM.PhoneNumber);
                 var invoice = new Invoice();
-                var area = _unitOfWork.ShippingFreight.Get(s => s.Area == invoiceVM.shippingText);
+                var area = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == invoiceVM.shippingText);
                 for (int i = 0; i < invoiceVM.productInput?.Count; i++)
                 {
                     var product = _unitOfWork.Product.Get(s => s.ProductName == invoiceVM.productInput[i].ToLower());
@@ -204,7 +204,7 @@ namespace Application.Services.Implementation
                 var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
-                    Text = v.Area,
+                    Text = v.ShippingArea,
                     Value = v.Price.ToString()
                 }).ToList();
                 return productVM;
@@ -223,7 +223,7 @@ namespace Application.Services.Implementation
                 var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
-                    Text = v.Area,
+                    Text = v.ShippingArea,
                     Value = v.Price.ToString()
                 }).ToList();
                 return productVM;
@@ -317,7 +317,7 @@ namespace Application.Services.Implementation
                         CreatedDate = invoice.Create_Date?.ToString("yyyy-MM-dd"),
                         ListOfAreas = _unitOfWork.ShippingFreight.GetAll().Select(v => new SelectListItem
                         {
-                            Text = v.Area,
+                            Text = v.ShippingArea,
                             Value = v.Price.ToString()
                         }).ToList(),
 

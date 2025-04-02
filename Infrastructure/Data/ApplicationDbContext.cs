@@ -49,7 +49,7 @@ namespace Infrastructure.Data
                         new District { Id = 1, Name = "other" },
                     };
                 context.ShippingFreight.AddRange(
-                    new ShippingFreight { Area = "other", Price = 50, Districts = districts }
+                    new ShippingFreight { ShippingArea = "other", Price = 50, Districts = districts }
                 );
 
                 context.SaveChanges();

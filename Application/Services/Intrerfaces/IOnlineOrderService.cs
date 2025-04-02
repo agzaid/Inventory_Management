@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Application.Services.Intrerfaces
 {
     public interface IOnlineOrderService
     {
         IEnumerable<ProductVM> GetAllProducts();
+        Task<List<SelectListItem>> ForCartView();
         PortalVM GetAllProductsForPortal();
         ProductVM GetProductById(int id);
         ProductVM GetProductDetails(int id);

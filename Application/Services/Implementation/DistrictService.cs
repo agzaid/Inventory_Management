@@ -22,19 +22,19 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var shippingFrieght = _unitOfWork.District.GetAll(s => s.IsDeleted == false);
-                var allShippingFrieght = shippingFrieght.Select(s => new DistrictVM()
+                var district = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
+                var allDistricts = district.Select(s => new DistrictVM()
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    //Region = s.Region,
+                    AreaName= s.ShippingFreight?.ShippingArea,
                     Price = s.Price,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                 });
 
-                _logger.LogInformation("GetAllShippingFrieght method completed. {allShippingFrieghtCount} allShippingFrieght retrieved.", allShippingFrieght.ToList().Count);
+                _logger.LogInformation("GetAllShippingFrieght method completed. {allShippingFrieghtCount} allShippingFrieght retrieved.", allDistricts.ToList().Count);
 
-                return Result<IEnumerable<DistrictVM>>.Success(allShippingFrieght, "ShippingFrieght retrieved successfully."); ;
+                return Result<IEnumerable<DistrictVM>>.Success(allDistricts, "ShippingFrieght retrieved successfully."); ;
             }
             catch (Exception ex)
             {
@@ -72,8 +72,8 @@ namespace Application.Services.Implementation
                     var newFreight = new District()
                     {
                         Name = obj.Name,
+                        ShippingFreightId = obj.AreaId,
                         Modified_Date = DateTime.Now,
-                        //Region = obj.Region,
                         Price = obj.Price,
                     };
                     _unitOfWork.District.Add(newFreight);
@@ -100,9 +100,13 @@ namespace Application.Services.Implementation
                     var shippingFrieghtVM = new DistrictVM()
                     {
                         Name = shipping.Name,
-                        //Region = shipping.Region,
+                        AreaId = shipping.ShippingFreightId,
                         Price = shipping.Price,
-                        CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd")
+                        CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd"),
+                        Areas = _unitOfWork.ShippingFreight.GetAll().Select(s=>new SelectListItem { 
+                            Text=s.ShippingArea,
+                            Value=s.Id.ToString()
+                        }).ToList()
                     };
                     return shippingFrieghtVM;
                 }
@@ -173,7 +177,7 @@ namespace Application.Services.Implementation
                 {
                     Areas = shippingFrieght.Select(s => new SelectListItem
                     {
-                        Text = s.Area,
+                        Text = s.ShippingArea,
                         Value = s.Id.ToString()
                     }).ToList(),
                 };

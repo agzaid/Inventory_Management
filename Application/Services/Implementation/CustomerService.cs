@@ -54,8 +54,8 @@ namespace Application.Services.Implementation
                 var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
                 customerVM.ListOfAreas = freights.Select(s => new SelectListItem
                 {
-                    Text = s.Area,
-                    Value = s.Area
+                    Text = s.ShippingArea,
+                    Value = s.ShippingArea
                 }).ToList();
                 return customerVM;
             }

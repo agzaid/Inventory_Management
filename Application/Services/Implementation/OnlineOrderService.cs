@@ -100,6 +100,25 @@ namespace Application.Services.Implementation
                 return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it
             }
         }
+        public async Task<List<SelectListItem>> ForCartView()
+        {
+            try
+            {
+                var shipping = _unitOfWork.ShippingFreight.GetAll(s => s.IsDeleted == false);
+                var vm = shipping.Select(s => new SelectListItem()
+                {
+                    Text = s.ShippingArea,
+                    Value = s.Price.ToString()
+                }).ToList();
+                return vm;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
 
         public ProductVM CreateProductForViewingInCreate()
         {

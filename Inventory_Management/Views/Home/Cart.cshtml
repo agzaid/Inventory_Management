@@ -88,13 +88,19 @@
                     <tr>
                         <td>Region</td>
                         <td>
-                            <div class="dropdown-container">
+                            @*  <div class="dropdown-container">
                                 <select id="location" class="form-control" name="location">
                                     <option value="0">Cairo</option>
                                     <option value="30">Out of cairo</option>
-                                    @* <option value="50">Express Shipping</option> *@
+                                    @* <option value="50">Express Shipping</option> 
                                 </select>
                                 <div class="dropdown-arrow"></div>
+                            </div> *@
+                            <div class="dropdown-container">
+                                <select class="form-select mb-2" id="location" aria-label="multiple select example"
+                                        asp-for="AreaId" asp-items="@(new SelectList(Model.Areas, "Value", "Text"))" data-placeholder=" Choose Area...">
+                                    <option disabled>Please Select Area...</option>
+                                </select>
                             </div>
                         </td>
                     </tr>
