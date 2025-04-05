@@ -147,7 +147,7 @@ namespace Application.Services.Implementation
         {
             try
             {
-                Expression<Func<Category, bool>> filter = s => s.CategoryName == "rice";
+                Expression<Func<Category, bool>> filter = s => s.IsDeleted == false;
                 Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.CategoryName);
 
