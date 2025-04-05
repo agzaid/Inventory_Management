@@ -3,6 +3,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace Application.Services.Implementation
 {
@@ -57,7 +58,7 @@ namespace Application.Services.Implementation
                         Description = obj.Description,
                     };
                     _unitOfWork.Category.Add(category);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return "Category Created Successfully";
                 }
                 else
@@ -107,7 +108,7 @@ namespace Application.Services.Implementation
                     oldCategory.CategoryName = obj.CategoryName;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Category.Update(oldCategory);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -130,7 +131,7 @@ namespace Application.Services.Implementation
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Category.Update(oldCategory);
-                     _unitOfWork.Save();
+                    _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -141,6 +142,38 @@ namespace Application.Services.Implementation
                 _logger.LogError(ex, "An error occurred while deleting category with Id: {Id}", id);
                 return false; // Rethrow the exception after logging it
             }
+        }
+        public async Task<PaginatedResult<CategoryVM>> GetCategoryPaginated(int pageNumber, int pageSize)
+        {
+            try
+            {
+                Expression<Func<Category, bool>> filter = s => s.CategoryName == "rice";
+                Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy;
+                orderBy = s => s.OrderByDescending(s => s.CategoryName);
+
+                var categories = await _unitOfWork.Category.GetPaginatedAsync(pageNumber, pageSize,orderBy,filter);
+                var showCategories = categories.Items.Select(s => new CategoryVM()
+                {
+                    Id = s.Id,
+                    Description = s.Description,
+                    CategoryName = s.CategoryName,
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                }).ToList();
+                var paginatedResult = new PaginatedResult<CategoryVM>
+                {
+                    Items = showCategories,
+                    TotalCount = categories.TotalCount,
+                    PageNumber = categories.PageNumber,
+                    PageSize = categories.PageSize
+                };
+                return paginatedResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while Getting category paginated");
+                throw;
+            }
+
         }
     }
 }

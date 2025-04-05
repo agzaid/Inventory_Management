@@ -447,64 +447,59 @@ namespace Application.Services.Implementation
 
         public async Task<string[]> CreateOrder(CartVM cart)
         {
-            var imagesToBeDeleted = new List<string>();
-            var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                // var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
                 if (cart == null)
                 {
                     return new string[] { "error", "Cart is empty" };
                 }
                 else
                 {
-                    //product.ProductName = product.ProductName?.ToLower().Trim();
-                    //product.Description = product.Description?.ToLower().Trim();
-                    //product.ProductTags = product.ProductTags?.ToLower().Trim();
-                    //product.Barcode = product.Barcode?.ToLower().Trim();
-                    //product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
-                    //product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
-                    //var result = new List<string>();
-                    //var resultByteImage = new byte[0];
-                    //if (product?.ImagesFormFiles?.Count() > 0)
-                    //{
-                    //    //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
-                    //    foreach (var item in product.ImagesFormFiles)
-                    //    {
-                    //        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                    //        imagesToBeRemoved.Add(resultByteImage);
-                    //    }
-                    //}
-                    ////imagesToBeDeleted = result;
-                    //var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
-                    //{
-                    //    ImageByteArray = s ?? new byte[0],
-                    //    Create_Date = DateTime.Now,
-                    //}).ToList();
+                    var shipping = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == cart.ShippingAreaName);
+                    var customer = _unitOfWork.Customer.Get(s => s.Phone == cart.CustomerPhone);
+                    if (customer == null)
+                    {
+                        var newCustomer = new Customer()
+                        {
+                            CustomerName = cart.CustomerName,
+                            Address = cart.CustomerAddress,
+                            Phone = cart.CustomerPhone,
+                        };
+                        _unitOfWork.Customer.Add(newCustomer);
+                        customer = newCustomer;
+                    }
+                    var onlineOrder = new OnlineOrder()
+                    {
+                        IndividualProductsNames = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductName)),
+                        IndividualProductsPrices = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductPrice)),
+                        IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
+                        GrandTotalAmount = cart.TotalPrice,
+                        AmountBeforeShipping = cart.PriceBeforeShipping,
+                        CustomerId = customer?.Id,
+                        ShippingPrice = double.Parse(cart.ShippingAreaPrice),
+                        ShippingNotes = cart.CustomerAddress,
+                        DeliverySlots = cart.SelectedSlots,
+                        OrderStatus = Status.InProgress,
+                        AreaId = shipping?.Id,
+                    };
 
-                    //if (!(result == null && result.Contains("Error")))
-                    //{
-                    //    var Newproduct = new Product()
-                    //    {
-                    //        ProductName = product.ProductName,
-                    //        Description = product.Description,
-                    //        Barcode = product.Barcode,
-                    //        Create_Date = DateTime.Now,
-                    //        SellingPrice = product.SellingPrice,
-                    //        BuyingPrice = product.BuyingPrice,
-                    //        DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
-                    //        IsDeleted = false,
-                    //        MaximumDiscountPercentage = decimal.Parse(product.MaximumDiscountPercentage ?? "0.00"),
-                    //        OtherShopsPrice = product.OtherShopsPrice,
-                    //        StockQuantity = product.StockQuantity,
-                    //        ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "1-1-2000"),
-                    //        CategoryId = int.Parse(product.CategoryId),
-                    //        StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
-                    //        ProductTags = product.ProductTags ?? "",
-                    //        Images = listOfImages,
-                    //    };
-                    //    _unitOfWork.Product.Add(Newproduct);
-                    //    _unitOfWork.Save();
+                    foreach (var item in cart.ItemsVMs)
+                    {
+                        var product = _unitOfWork.Product.Get(s => s.Id == item.ProductId);
+                        if (product != null)
+                        {
+                            var invoiceItem = new InvoiceItem()
+                            {
+                                ProductId = product.Id,
+                                ProductName = product.ProductName,
+                                Price = product.SellingPrice,
+                                Quantity = item.Quantity,
+                            };
+                            onlineOrder.InvoiceItems.Add(invoiceItem);
+                        }
+                    }
+                    _unitOfWork.OnlineOrder.Add(onlineOrder);
+                    _unitOfWork.Save();
                 }
                 return new string[] { "success", "Product Created Successfully" };
 

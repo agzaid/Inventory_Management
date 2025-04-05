@@ -7,7 +7,12 @@ namespace Domain.Models
     {
         public double? TotalPrice { get; set; }
         public double? PriceBeforeShipping { get; set; }
-        public string? Shipping { get; set; }
+        public string? ShippingAreaPrice { get; set; }
+        public string? ShippingAreaName { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAddress { get; set; }
+        public string? CustomerPhone { get; set; }
+        public string[]? SelectedSlots { get; set; }
         public string? Location { get; set; }
         public List<ItemsVM> ItemsVMs { get; set; } = new();
         public int? AreaId { get; set; } = new();

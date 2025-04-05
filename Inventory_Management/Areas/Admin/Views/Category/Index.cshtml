@@ -10,6 +10,12 @@
                         Add New Category
                     </a>
                 </div>
+                <div class="d-flex justify-content-end mb-2">
+                    <a asp-action="GetPaginatedCategory"
+                       asp-controller="Category"
+                       asp-route-pageNumber="1"
+                       asp-route-pageSize="2">Next Page</a>
+                </div>
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="table-responsive">

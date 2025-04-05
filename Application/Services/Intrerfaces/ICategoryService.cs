@@ -14,5 +14,6 @@ namespace Application.Services.Intrerfaces
         Task<string> CreateCategory(CategoryVM category);
         Task<bool> UpdateCategory(CategoryVM category);
         Task<bool> DeleteCategory(int id);
+        Task<PaginatedResult<CategoryVM>> GetCategoryPaginated(int pageNumber, int pageSide);
     }
 }

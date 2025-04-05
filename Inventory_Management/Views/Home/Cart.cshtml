@@ -72,7 +72,7 @@
                         <td>Cart Subtotal</td>
                         <td>$<span id="cartSubTotal">0.0</span></td>
                     </tr>
-                    <tr>
+                   @*  <tr>
                         <td>Shipping</td>
                         <td>
                             <div class="dropdown-container">
@@ -84,9 +84,9 @@
                                 <div class="dropdown-arrow"></div>
                             </div>
                         </td>
-                    </tr>
+                    </tr> *@
                     <tr>
-                        <td>Region</td>
+                        <td>Shipping Area</td>
                         <td>
                             @*  <div class="dropdown-container">
                                 <select id="location" class="form-control" name="location">
@@ -97,7 +97,7 @@
                                 <div class="dropdown-arrow"></div>
                             </div> *@
                             <div class="dropdown-container">
-                                <select class="form-select mb-2" id="location" aria-label="multiple select example"
+                                <select class="form-select mb-2" aria-label="multiple select example"
                                         asp-for="AreaId" asp-items="@(new SelectList(Model.Areas, "Value", "Text"))" data-placeholder=" Choose Area...">
                                     <option disabled>Please Select Area...</option>
                                 </select>
@@ -152,6 +152,8 @@
 @section scripts {
     <script>
         $(document).ready(function() {
+                 var selectedSlotsValue = [];
+
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
@@ -163,7 +165,7 @@
                     AddNewRow(item);
                 });
                   };
-                $("#shipping").change(function() {
+                $("#AreaId").change(function() {
                     var selectedValue = $(this).val();
                     calcItems();
 
@@ -206,24 +208,26 @@
                  cart.forEach(function(item){
                      subTotal += item.quantity * item.productPrice;
                  });
-                 var shipping = $("#shipping")[0].value;
-                 var allTotal = subTotal + parseInt(shipping);
+                 var Area = $("#AreaId")[0].value;
+                 var allTotal = subTotal + parseInt(Area);
+
+                 var selectedSlots = selectedSlotsValue;
+                 var customerName = $("#customerName").val();
+                 var customerAddress = $("#customerAddress").val();
+                 var customerPhone = $("#customerPhone").val();
 
                  var $url = "@Url.Action("CheckoutDetails", "Home")";
                  var parameter =
                  {
                      TotalPrice: allTotal,
                      PriceBeforeShipping : subTotal,
-                     Shipping: shipping,
+                     ShippingAreaPrice: Area,
+                     CustomerName: customerName,
+                     CustomerAddress: customerAddress,
+                     CustomerPhone: customerPhone,
+                     SelectedSlots : selectedSlots,
                      ItemsVMs:cart
                  };
-                 // [{
-                 //         ProductName:"asf",
-                 //         Price:9
-                 // },{
-                 //         ProductName:"asf",
-                 //         Price:9
-                 // }];
                  _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
                      function (data) {
                          debugger;
@@ -277,8 +281,8 @@
             cart.forEach(function(item){
                 subTotal += item.quantity * item.productPrice;
             });
-            var shipping = $("#shipping")[0].value;
-            $("#total")[0].innerHTML= subTotal + parseInt(shipping);
+            var Area = $("#AreaId")[0].value;
+            $("#total")[0].innerHTML= subTotal + parseInt(Area);
             $("#cartSubTotal")[0].innerHTML= subTotal;
          }
          function Add(event) {
@@ -370,16 +374,16 @@
          function selectSlot(button) {
              debugger;
                     // Check if the button is already faded (selected)
-                 if (button.classList.contains('faded')) {
-                   // If already faded, remove the faded class and enable the button again
-                   button.classList.remove('faded');
-                   // button.disabled = false;
-                 } else {
-                   // If not faded, add the faded class and disable the button
-                   button.classList.add('faded');
-                   // button.disabled = true;
-                 }
-        }
+                    button.classList.toggle('faded');
+                    var selectedSlots = document.querySelectorAll('.time-slot.faded');
+            
+                    // Collect their text values (or innerText)
+                    selectedSlotsValue = [];
+                    selectedSlots.forEach(function(slot) {
+                        selectedSlotsValue.push(slot.innerText);
+                    });
+                    console.log(selectedSlotsValue);
+              }
 
             // $('.price-input').each(function() {
             //      debugger;

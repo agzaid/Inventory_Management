@@ -79,5 +79,11 @@ namespace Inventory_Management.Areas.admin.Controllers
                 TempData["error"] = result;
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> GetPaginatedCategory(int pageNumber = 1, int pageSize = 2)
+        {
+            var category = await _categoryService.GetCategoryPaginated(pageNumber, pageSize);
+            return View(category);
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Application.Common.Interfaces
         ICustomerRepository Customer { get; }
         IDeliverySlotRepository DeliverySlot { get; }
         IDistrictRepository District { get; }
+        IOnlineOrderRepository OnlineOrder { get; }
         void Save();
 
     }

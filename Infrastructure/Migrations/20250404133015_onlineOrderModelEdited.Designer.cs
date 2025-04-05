@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250404133015_onlineOrderModelEdited")]
+    partial class onlineOrderModelEdited
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -402,8 +405,8 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("AllDiscountInput")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<double?>("AmountBeforeShipping")
-                        .HasColumnType("float");
+                    b.Property<string>("AllProductItems")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("AreaId")
                         .HasColumnType("int");
@@ -414,23 +417,14 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.PrimitiveCollection<string>("DeliverySlots")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double?>("GrandTotalAmount")
                         .HasColumnType("float");
 
-                    b.Property<string>("IndividualProductsNames")
+                    b.Property<string>("IndividualProductsPrice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IndividualProductsPrices")
+                    b.Property<string>("IndividualProductsQuatity")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IndividualProductsQuatities")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("InvoiceId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -443,9 +437,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("OrderNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrderStatus")
-                        .HasColumnType("int");
 
                     b.Property<string>("ShippingNotes")
                         .HasColumnType("nvarchar(max)");

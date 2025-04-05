@@ -20,6 +20,7 @@ namespace Infrastructure.Repo
         public ICustomerRepository Customer { get; private set; }
         public IDeliverySlotRepository DeliverySlot { get; private set; }
         public IDistrictRepository District { get; private set; }
+        public IOnlineOrderRepository OnlineOrder { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -31,6 +32,7 @@ namespace Infrastructure.Repo
             Customer = new CustomerRepository(_db);
             DeliverySlot = new DeliverySlotRepository(_db);
             District = new DistrictRepository(_db);
+            OnlineOrder = new OnlineOrderRepository(_db);
         }
         public void Save()
         {
