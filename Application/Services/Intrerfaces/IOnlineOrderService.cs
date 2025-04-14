@@ -11,16 +11,12 @@ namespace Application.Services.Intrerfaces
 {
     public interface IOnlineOrderService
     {
-        IEnumerable<ProductVM> GetAllProducts();
         Task<List<SelectListItem>> ForCartView();
+        Task<Result<string>> CreateOrder(CartVM cart);
         PortalVM GetAllProductsForPortal();
-        ProductVM GetProductById(int id);
         ProductVM GetProductDetails(int id);
-        Task<string[]> CreateProduct(ProductVM product);
-        Task<string[]> CreateOrder(CartVM cart);
-        ProductVM CreateProductForViewingInCreate();
-        bool UpdateProduct(ProductVM productVM);
-        bool DeleteProduct(int id);
-        bool HardDeleteProduct(int id);
+        ProductVM GetProductById(int id);
+        Result<List<OnlineOrderVM>> GetAllOrdersToBeInvoiced();
+        Result<InvoiceVM> GetInvoiceForSpecificOnlineOrder(int id);
     }
 }

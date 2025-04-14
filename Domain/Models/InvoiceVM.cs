@@ -34,10 +34,11 @@ namespace Domain.Models
         public decimal? TotalAmount { get; set; }
         public string? AreaId { get; set; }
         public string? CreatedDate { get; set; }
+        public int? ProductId { get; set; }
+        public int? OnlineOrderId { get; set; }
         public List<SelectListItem>? ListOfAreas { get; set; }
         public List<ProductVM>? ListOfProductsVMs { get; set; }
 
 
-        public int? ProductId { get; set; }
     }
 }

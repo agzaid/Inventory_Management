@@ -23,7 +23,7 @@ namespace Inventory_Management.Controllers
             _onlineOrderService = onlineOrderService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? message)
         {
             var portal = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
@@ -70,7 +70,11 @@ namespace Inventory_Management.Controllers
         public IActionResult CheckoutDetails([FromBody]CartVM data)
         {
             var cart = _onlineOrderService.CreateOrder(data);
-            return RedirectToAction("Index","Home");
+            if (cart != null)
+            {
+                return RedirectToAction("Index", "Home", cart.Result.Message);
+            }else
+                return View(cart); 
         }
         public IActionResult Contact()
         {

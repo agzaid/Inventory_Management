@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace Domain.Models
@@ -9,8 +10,15 @@ namespace Domain.Models
         public double? PriceBeforeShipping { get; set; }
         public string? ShippingAreaPrice { get; set; }
         public string? ShippingAreaName { get; set; }
+
+        [Required(ErrorMessage = "Username is required.")]
         public string? CustomerName { get; set; }
+
+        [Required(ErrorMessage = "Address is required.")]
         public string? CustomerAddress { get; set; }
+
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits (only numbers allowed).")]
+        [Required(ErrorMessage = "Phone is required.")]
         public string? CustomerPhone { get; set; }
         public string[]? SelectedSlots { get; set; }
         public string? Location { get; set; }

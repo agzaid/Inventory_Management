@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250412205704_onlineOrderModelEdit")]
+    partial class onlineOrderModelEdit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -347,17 +350,8 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BarcodeFromProduct")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("BuyingPriceFromProduct")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("DifferencePercentageFromProduct")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<double?>("IndividualDiscount")
                         .HasColumnType("float");
@@ -368,23 +362,14 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<decimal?>("MaximumDiscountPercentageFromProduct")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("OnlineOrderId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("OtherShopsPriceFromProduct")
+                    b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PriceSoldToCustomer")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateOnly?>("ProductExpiryDateFromProduct")
-                        .HasColumnType("date");
 
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
@@ -392,20 +377,11 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductTagsFromProduct")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("SellingPriceFromProduct")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<double?>("ShippingPrice")
                         .HasColumnType("float");
-
-                    b.Property<int?>("StockQuantityFromProduct")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

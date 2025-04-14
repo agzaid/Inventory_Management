@@ -75,10 +75,10 @@ namespace Application.Services.Implementation
                         ProductName = product.ProductName,
                         ProductId = product.Id,
                         Quantity = int.Parse(invoiceVM.quantityInput[i]),
-                        Price = decimal.Parse(invoiceVM.priceInput[i]),
+                        PriceSoldToCustomer = decimal.Parse(invoiceVM.priceInput[i]),
                         ShippingPrice = invoiceVM.shippingInput,
                         IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] == null ? "0" : invoiceVM.individualDiscount[i]),
-                        // Product = product
+                        Product = product
                     };
                     if (productQuantityMap.ContainsKey(product.Id))
                     {
@@ -312,7 +312,7 @@ namespace Application.Services.Implementation
                         PhoneNumber = invoice.Customer?.Phone,
                         ShippingNotes = invoice.ShippingNotes,
                         productInput = invoice.InvoiceItems?.Select(s => s.ProductName).ToList(),
-                        priceInput = invoice.InvoiceItems?.Select(s => s.Price.ToString()).ToList(),
+                        priceInput = invoice.InvoiceItems?.Select(s => s.PriceSoldToCustomer.ToString()).ToList(),
                         quantityInput = invoice.InvoiceItems?.Select(s => s.Quantity.ToString()).ToList(),
                         CreatedDate = invoice.Create_Date?.ToString("yyyy-MM-dd"),
                         ListOfAreas = _unitOfWork.ShippingFreight.GetAll().Select(v => new SelectListItem

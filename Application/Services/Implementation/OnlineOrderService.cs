@@ -28,194 +28,6 @@ namespace Application.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<string[]> CreateProduct(ProductVM product)
-        {
-            var imagesToBeDeleted = new List<string>();
-            var imagesToBeRemoved = new List<byte[]>();
-            try
-            {
-                var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
-                if (lookForName != null)
-                {
-                    return new string[] { "error", "Product Already Exists" };
-                }
-                else
-                {
-                    product.ProductName = product.ProductName?.ToLower().Trim();
-                    product.Description = product.Description?.ToLower().Trim();
-                    product.ProductTags = product.ProductTags?.ToLower().Trim();
-                    product.Barcode = product.Barcode?.ToLower().Trim();
-                    product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
-                    product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
-                    var result = new List<string>();
-                    var resultByteImage = new byte[0];
-                    if (product?.ImagesFormFiles?.Count() > 0)
-                    {
-                        //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
-                        foreach (var item in product.ImagesFormFiles)
-                        {
-                            resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                            imagesToBeRemoved.Add(resultByteImage);
-                        }
-                    }
-                    //imagesToBeDeleted = result;
-                    var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
-                    {
-                        ImageByteArray = s ?? new byte[0],
-                        Create_Date = DateTime.Now,
-                    }).ToList();
-
-                    if (!(result == null && result.Contains("Error")))
-                    {
-                        var Newproduct = new Product()
-                        {
-                            ProductName = product.ProductName,
-                            Description = product.Description,
-                            Barcode = product.Barcode,
-                            Create_Date = DateTime.Now,
-                            SellingPrice = product.SellingPrice,
-                            BuyingPrice = product.BuyingPrice,
-                            DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
-                            IsDeleted = false,
-                            MaximumDiscountPercentage = decimal.Parse(product.MaximumDiscountPercentage ?? "0.00"),
-                            OtherShopsPrice = product.OtherShopsPrice,
-                            StockQuantity = product.StockQuantity,
-                            ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "1-1-2000"),
-                            CategoryId = int.Parse(product.CategoryId),
-                            StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
-                            ProductTags = product.ProductTags ?? "",
-                            Images = listOfImages,
-                        };
-                        _unitOfWork.Product.Add(Newproduct);
-                        _unitOfWork.Save();
-                    }
-                    return new string[] { "success", "Product Created Successfully" };
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
-                //await FileExtensions.DeleteImages(imagesToBeDeleted);
-
-                return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it
-            }
-        }
-        public async Task<List<SelectListItem>> ForCartView()
-        {
-            try
-            {
-                var shipping = _unitOfWork.ShippingFreight.GetAll(s => s.IsDeleted == false);
-                var vm = shipping.Select(s => new SelectListItem()
-                {
-                    Text = s.ShippingArea,
-                    Value = s.Price.ToString()
-                }).ToList();
-                return vm;
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
-        }
-
-        public ProductVM CreateProductForViewingInCreate()
-        {
-            try
-            {
-                var productVM = new ProductVM();
-                var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                productVM.ListOfCategory = category.Select(v => new SelectListItem
-                {
-                    Text = v.CategoryName,
-                    Value = v.Id.ToString()
-                }).ToList();
-                return productVM;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        public bool DeleteProduct(int id)
-        {
-            try
-            {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id);
-                if (oldProduct != null)
-                {
-                    oldProduct.IsDeleted = true;
-                    oldProduct.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.Product.Update(oldProduct);
-                    _unitOfWork.Save();
-                    return true;
-                }
-                else
-                    return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while deleting category with Id: {Id}", id);
-                return false; // Rethrow the exception after logging it
-            }
-        }
-        public bool HardDeleteProduct(int id)
-        {
-            try
-            {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id, "Images");
-                if (oldProduct != null)
-                {
-                    if (oldProduct.Images?.Count > 0)
-                    {
-                        foreach (var item in oldProduct.Images)
-                        {
-                            _unitOfWork.Image.Remove(item);
-                        }
-                    }
-                    _unitOfWork.Product.Remove(oldProduct);
-                    _unitOfWork.Save();
-                    return true;
-                }
-                else
-                    return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while deleting category with Id: {Id}", id);
-                return false; // Rethrow the exception after logging it
-            }
-        }
-
-        public IEnumerable<ProductVM> GetAllProducts()
-        {
-            try
-            {
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category");
-                var showProducts = products.Select(s => new ProductVM()
-                {
-                    Id = s.Id,
-                    ProductName = s.ProductName?.ToUpper(),
-                    Description = s.Description,
-                    CategoryName = s.Category?.CategoryName?.ToUpper(),
-                    SellingPrice = s.SellingPrice,
-                    StockQuantity = s.StockQuantity,
-                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
-                    Barcode = s.Barcode,
-                }).ToList();
-
-                _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", showProducts.Count);
-                return showProducts;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving categories.");
-                throw;  // Rethrow the exception after logging it
-            }
-        }
         public PortalVM GetAllProductsForPortal()
         {
             var retrievedImages = new List<string>();
@@ -264,6 +76,117 @@ namespace Application.Services.Implementation
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving categories.");
+                throw;  // Rethrow the exception after logging it
+            }
+        }
+        public async Task<List<SelectListItem>> ForCartView()
+        {
+            try
+            {
+                var shipping = _unitOfWork.ShippingFreight.GetAll(s => s.IsDeleted == false);
+                var vm = shipping.Select(s => new SelectListItem()
+                {
+                    Text = s.ShippingArea,
+                    Value = s.Price.ToString()
+                }).ToList();
+                return vm;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+        public async Task<Result<string>> CreateOrder(CartVM cart)
+        {
+            try
+            {
+                if (cart == null)
+                {
+                    return Result<string>.Failure("Cart is null", "error");
+                }
+                else
+                {
+                    var shipping = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == cart.ShippingAreaName);
+                    var customer = _unitOfWork.Customer.Get(s => s.Phone == cart.CustomerPhone);
+                    if (customer == null)
+                    {
+                        var newCustomer = new Customer()
+                        {
+                            CustomerName = cart.CustomerName,
+                            Address = cart.CustomerAddress,
+                            Phone = cart.CustomerPhone,
+                        };
+                        _unitOfWork.Customer.Add(newCustomer);
+                        customer = newCustomer;
+                    }
+                    var onlineOrder = new OnlineOrder()
+                    {
+                        IndividualProductsNames = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductName)),
+                        IndividualProductsPrices = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductPrice)),
+                        IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
+                        GrandTotalAmount = cart.TotalPrice,
+                        AmountBeforeShipping = cart.PriceBeforeShipping,
+                        CustomerId = customer?.Id,
+                        ShippingPrice = double.Parse(cart.ShippingAreaPrice),
+                        ShippingNotes = cart.CustomerAddress,
+                        DeliverySlots = cart.SelectedSlots,
+                        OrderStatus = Status.InProgress,
+                        OrderDate = DateTime.Now,
+                        AreaId = shipping?.Id,
+                        AllDiscountInput = 0,
+                        InvoiceId = 0
+                    };
+
+                    foreach (var item in cart.ItemsVMs)
+                    {
+                        var product = _unitOfWork.Product.Get(s => s.Id == item.ProductId);
+                        if (product != null)
+                        {
+                            var invoiceItem = new InvoiceItem()
+                            {
+                                ProductId = product.Id,
+                                ProductName = product.ProductName,
+                                PriceSoldToCustomer = product.SellingPrice,
+                                Quantity = item.Quantity,
+                                ShippingPrice = double.Parse(cart.ShippingAreaPrice),
+                                StockQuantityFromProduct = product.StockQuantity,
+                                DifferencePercentageFromProduct = product.DifferencePercentage,
+                                BuyingPriceFromProduct = product.BuyingPrice,
+                                MaximumDiscountPercentageFromProduct = product.MaximumDiscountPercentage,
+                                SellingPriceFromProduct = product.SellingPrice,
+                                OtherShopsPriceFromProduct = product.OtherShopsPrice,
+                                ProductExpiryDateFromProduct = product.ProductExpiryDate,
+                                ProductTagsFromProduct = product.ProductTags,
+                                BarcodeFromProduct = product.Barcode,
+                            };
+                            onlineOrder.InvoiceItems.Add(invoiceItem);
+                        }
+                    }
+                    _unitOfWork.OnlineOrder.Add(onlineOrder);
+                    _unitOfWork.Save();
+                }
+                return Result<string>.Success("success", "Online Order Created Successfully");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating online Order");
+                //await FileExtensions.DeleteImages(imagesToBeDeleted);
+                return Result<string>.Failure("Error Occured...", "error");
+            }
+        }
+        public ProductVM GetProductDetails(int id)
+        {
+            try
+            {
+                var product = GetProductById(id);
+                return product;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
                 throw;  // Rethrow the exception after logging it
             }
         }
@@ -325,278 +248,46 @@ namespace Application.Services.Implementation
             }
             return new ProductVM();
         }
-        public ProductVM GetProductDetails(int id)
+        public Result<List<OnlineOrderVM>> GetAllOrdersToBeInvoiced()
         {
             try
             {
-                var product = GetProductById(id);
-                return product;
+                var orders = _unitOfWork.OnlineOrder.GetAll(s => s.IsDeleted == false, "Customer,InvoiceItems");
+                var orderVMs = orders.Select(s => new OnlineOrderVM()
+                {
+                    Id = s.Id,
+                    OrderNumber = s.OrderNumber,
+                    CustomerName = s.Customer?.CustomerName,
+                    OrderDate = s.OrderDate.ToString("yyyy-MM-dd"),
+                    OrderStatus = s.OrderStatus.ToString(),
+                    GrandTotalAmount = s.GrandTotalAmount,
+                    Area = _unitOfWork.ShippingFreight.Get(d => d.Id == s.AreaId).ShippingArea,
+                }).ToList();
+                return Result<List<OnlineOrderVM>>.Success(orderVMs, "success");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
-                throw;  // Rethrow the exception after logging it
+                _logger.LogError(ex, "An error occurred while retrieving categories.");
+                return Result<List<OnlineOrderVM>>.Failure(ex.InnerException.ToString(), "error");
             }
         }
-        public bool UpdateProduct(ProductVM obj)
+        public Result<InvoiceVM> GetInvoiceForSpecificOnlineOrder(int id)
         {
             try
             {
-                // Prepare byte arrays for images
-                var imagesToBeInserted = new List<byte[]>();
-
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
-
-                // Remove old images if necessary
-                RemoveOldImages(oldProduct);
-
-                // Add new images from form files or old image bytes
-                AddNewImages(obj.ImagesFormFiles, obj.OldImagesBytes, imagesToBeInserted);
-
-                // Create Image entities from byte arrays
-                var listOfImages = CreateImageEntities(imagesToBeInserted);
-
-                // Update product properties
-                if (oldProduct != null)
+                var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.Id == id, "InvoiceItem");
+                if (onlineOrder != null)
                 {
-                    UpdateProductProperties(oldProduct, obj, listOfImages);
-
-                    // Save the updated product
-                    _unitOfWork.Product.Update(oldProduct);
-                    _unitOfWork.Save();
-                    return true;
+                    return Result<InvoiceVM>.Success(new InvoiceVM() { OnlineOrderId = id }, "success");
                 }
-
-                return false;
+                return Result<InvoiceVM>.Failure("error");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating product with Id: {Id}", obj.Id);
-                return false;
-            }
-        }
-
-
-        #region Update Product Private Methods
-
-        // Method to remove old images from the product
-        private void RemoveOldImages(Product oldProduct)
-        {
-            if (oldProduct?.Images?.Count > 0)
-            {
-                _logger.LogInformation("Removing old images for product with Id: {Id}", oldProduct.Id);
-                foreach (var item in oldProduct.Images)
-                {
-                    _unitOfWork.Image.Remove(item);
-                }
-                oldProduct.Images.Clear();
-                _logger.LogInformation("Old images removed.");
-            }
-        }
-        // Method to add new images (from form files and old image bytes)
-        private void AddNewImages(IList<IFormFile> newImages, IList<string> oldImages, List<byte[]> imagesToBeInserted)
-        {
-            if (newImages?.Count > 0)
-            {
-                foreach (var item in newImages)
-                {
-                    var byteImage = FileExtensions.ConvertImageToByteArray(item);
-                    imagesToBeInserted.Add(byteImage);
-                }
-            }
-
-            if (oldImages?.Count > 0)
-            {
-                foreach (var item in oldImages)
-                {
-                    var byteImage = FileExtensions.FromImageToByteArray(item);
-                    imagesToBeInserted.Add(byteImage);
-                }
-            }
-        }
-
-        // Method to create Image entities from byte arrays
-        private List<Domain.Entities.Image> CreateImageEntities(List<byte[]> imagesToBeInserted)
-        {
-            return imagesToBeInserted.Select(image => new Domain.Entities.Image()
-            {
-                ImageByteArray = image ?? new byte[0],
-                Create_Date = DateTime.Now,
-            }).ToList();
-        }
-
-        // Method to update product properties
-        private void UpdateProductProperties(Product oldProduct, ProductVM obj, List<Domain.Entities.Image> listOfImages)
-        {
-            oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
-            oldProduct.Description = obj.Description?.ToLower().Trim();
-            oldProduct.Barcode = obj.Barcode?.ToLower().Trim();
-            oldProduct.SellingPrice = obj.SellingPrice;
-            oldProduct.BuyingPrice = obj.BuyingPrice;
-            oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
-            oldProduct.StockQuantity = obj.StockQuantity;
-            oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
-            oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
-            oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
-            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
-            oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
-            oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
-            oldProduct.Modified_Date = DateTime.UtcNow;
-            oldProduct.Images = listOfImages;
-        }
-
-        public async Task<string[]> CreateOrder(CartVM cart)
-        {
-            try
-            {
-                if (cart == null)
-                {
-                    return new string[] { "error", "Cart is empty" };
-                }
-                else
-                {
-                    var shipping = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == cart.ShippingAreaName);
-                    var customer = _unitOfWork.Customer.Get(s => s.Phone == cart.CustomerPhone);
-                    if (customer == null)
-                    {
-                        var newCustomer = new Customer()
-                        {
-                            CustomerName = cart.CustomerName,
-                            Address = cart.CustomerAddress,
-                            Phone = cart.CustomerPhone,
-                        };
-                        _unitOfWork.Customer.Add(newCustomer);
-                        customer = newCustomer;
-                    }
-                    var onlineOrder = new OnlineOrder()
-                    {
-                        IndividualProductsNames = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductName)),
-                        IndividualProductsPrices = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductPrice)),
-                        IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
-                        GrandTotalAmount = cart.TotalPrice,
-                        AmountBeforeShipping = cart.PriceBeforeShipping,
-                        CustomerId = customer?.Id,
-                        ShippingPrice = double.Parse(cart.ShippingAreaPrice),
-                        ShippingNotes = cart.CustomerAddress,
-                        DeliverySlots = cart.SelectedSlots,
-                        OrderStatus = Status.InProgress,
-                        AreaId = shipping?.Id,
-                    };
-
-                    foreach (var item in cart.ItemsVMs)
-                    {
-                        var product = _unitOfWork.Product.Get(s => s.Id == item.ProductId);
-                        if (product != null)
-                        {
-                            var invoiceItem = new InvoiceItem()
-                            {
-                                ProductId = product.Id,
-                                ProductName = product.ProductName,
-                                Price = product.SellingPrice,
-                                Quantity = item.Quantity,
-                            };
-                            onlineOrder.InvoiceItems.Add(invoiceItem);
-                        }
-                    }
-                    _unitOfWork.OnlineOrder.Add(onlineOrder);
-                    _unitOfWork.Save();
-                }
-                return new string[] { "success", "Product Created Successfully" };
+                _logger.LogError(ex, "An error occurred while creating invoice for online order with Id: {Id}", id);
+                return Result<InvoiceVM>.Failure("error");
 
             }
-            catch (Exception ex)
-            {
-                // _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
-                //await FileExtensions.DeleteImages(imagesToBeDeleted);
-
-                return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it
-            }
         }
-
-
-        //public bool UpdateProduct(ProductVM obj)
-        //{
-        //    try
-        //    {
-        //        var resultByteImage = new byte[0];
-        //        var imagesToBeRemoved = new List<byte[]>();
-        //        var imagesToBeInserted = new List<byte[]>();
-        //        var oldImages = obj.OldImagesBytes;
-
-        //        var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
-
-        //        // Remove old images
-        //        if (oldProduct?.Images?.Count > 0)
-        //        {
-        //            _logger.LogInformation("Removing old images for product with Id: {Id}", obj.Id);
-        //            foreach (var item in oldProduct.Images)
-        //            {
-        //                _unitOfWork.Image.Remove(item);
-        //            }
-        //            oldProduct.Images.Clear();
-        //            _logger.LogInformation("Old images removed.");
-        //        }
-
-        //        // Add new images from form files
-        //        if (obj.ImagesFormFiles?.Count > 0)
-        //        {
-        //            foreach (var item in obj.ImagesFormFiles)
-        //            {
-        //                resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-        //                imagesToBeInserted.Add(resultByteImage);
-        //            }
-        //        }
-
-        //        // Add old images (if any)
-        //        if (obj.OldImagesBytes?.Count > 0)
-        //        {
-        //            foreach (var item in obj.OldImagesBytes)
-        //            {
-        //                var newImagesBytes = FileExtensions.FromImageToByteArray(item);
-        //                imagesToBeInserted.Add(newImagesBytes);
-        //            }
-        //        }
-
-        //        // Create new Image entities
-        //        var listOfImages = imagesToBeInserted.Select(s => new Domain.Entities.Image()
-        //        {
-        //            ImageByteArray = s ?? new byte[0],
-        //            Create_Date = DateTime.Now,
-        //        }).ToList();
-
-        //        // Update product
-        //        if (oldProduct != null)
-        //        {
-        //            oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
-        //            oldProduct.Description = obj.Description?.ToLower().Trim();
-        //            oldProduct.SellingPrice = obj.SellingPrice;
-        //            oldProduct.BuyingPrice = obj.BuyingPrice;
-        //            oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
-        //            oldProduct.StockQuantity = obj.StockQuantity;
-        //            oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
-        //            oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
-        //            oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
-        //            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
-        //            oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
-        //            oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
-        //            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
-        //            oldProduct.Modified_Date = DateTime.UtcNow;
-        //            oldProduct.Images = listOfImages;
-
-        //            _unitOfWork.Product.Update(oldProduct);
-        //            _unitOfWork.Save();
-        //            return true;
-        //        }
-        //        else
-        //            return false;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "An error occurred while updating product with Id: {Id}", obj.Id);
-        //        return false;  // Rethrow the exception after logging it
-        //    }
-
-        //}
-        #endregion
     }
 }

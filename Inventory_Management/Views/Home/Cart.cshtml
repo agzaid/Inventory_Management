@@ -117,19 +117,26 @@
                     <tr>
                         <td><strong>Your Name</strong></td>
                         <td>
-                            <input class="form-control" id="customerName" type="text" placeholder="Your Name" required>
+
+                            <input class="form-control" asp-for="CustomerName" type="text" placeholder="Your Name">
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Contact Number</strong></td>
                         <td>
-                            <input class="form-control" id="customerPhone" type="text" placeholder="Phone Number" required>
+                            <input class="form-control" asp-for="CustomerPhone" type="text" placeholder="Phone Number">
+                            <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Address</strong></td>
                         <td>
-                            <textarea cols="3" value="" class="form-control" id="customerAddress" type="text" placeholder="Address" required></textarea>
+                            <textarea cols="3" value="" class="form-control" asp-for="CustomerAddress" type="text" placeholder="Address"></textarea>
+                            <span asp-validation-for="CustomerAddress" class="text-danger"></span>
+
                         </td>
                     </tr>
                 </table>
@@ -150,6 +157,7 @@
 </section>
 
 @section scripts {
+    @* <partial name="_ValidationScriptsPartial"> *@
     <script>
         $(document).ready(function() {
                  var selectedSlotsValue = [];
@@ -185,21 +193,7 @@
             calcItems();
 
         });
-        function validateEntries(event){
-            var customerName = $("#customerName").val();
-            var customerAddress = $("#customerAddress");
-
-            if (customerAddress.val().trim() === "") {
-              event.preventDefault();
-
-              customerAddress[0].setCustomValidity("Please enter your address!");
-
-              // Optionally, trigger a validity check to show the error message
-              customerAddress[0].reportValidity();
-            } else {
-              customerAddress[0].setCustomValidity(""); // Reset custom validity if valid
-            }
-        }
+       
         function submitCart(){
                  const token = $('input[name="__RequestVerificationToken"]').val();
 
@@ -212,9 +206,9 @@
                  var allTotal = subTotal + parseInt(Area);
 
                  var selectedSlots = selectedSlotsValue;
-                 var customerName = $("#customerName").val();
-                 var customerAddress = $("#customerAddress").val();
-                 var customerPhone = $("#customerPhone").val();
+                 var customerName = $("#CustomerName").val();
+                 var customerAddress = $("#CustomerAddress").val();
+                 var customerPhone = $("#CustomerPhone").val();
 
                  var $url = "@Url.Action("CheckoutDetails", "Home")";
                  var parameter =
