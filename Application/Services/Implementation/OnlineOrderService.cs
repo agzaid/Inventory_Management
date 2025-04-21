@@ -177,6 +177,25 @@ namespace Application.Services.Implementation
                 return Result<string>.Failure("Error Occured...", "error");
             }
         }
+        public InvoiceVM CreateInvoiceForViewing()
+        {
+            try
+            {
+                var productVM = new InvoiceVM();
+                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                productVM.ListOfAreas = freights.Select(v => new SelectListItem
+                {
+                    Text = v.ShippingArea,
+                    Value = v.Price.ToString()
+                }).ToList();
+                return productVM;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
         public ProductVM GetProductDetails(int id)
         {
             try

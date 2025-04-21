@@ -34,23 +34,24 @@ namespace Inventory_Management.Areas.admin.Controllers
                 throw;
             }
         }
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
+        public IActionResult Create(string? orderNum="sdfsd545")//remove this later 
+        {
+            ViewBag.orderNum = orderNum;
+            return View(_onlineOrderService.CreateInvoiceForViewing());
+        }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(CategoryVM obj)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
+        [HttpPost]
+        public async Task<IActionResult> Create(CartVM obj)
+        {
+            if (ModelState.IsValid)
+            {
 
-        //        var result = await _categoryService.CreateCategory(obj);
-        //        TempData["success"] = result;
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View();
-        //}
+                var result = await _onlineOrderService.CreateOrder(obj);
+                TempData["success"] = result;
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
 
         //public IActionResult Edit(int id)
         //{
