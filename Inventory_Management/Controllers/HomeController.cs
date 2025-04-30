@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Inventory_Management.Models;
 using System.Web.Razor.Tokenizer.Symbols;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Inventory_Management.Controllers
 {
@@ -56,11 +58,12 @@ namespace Inventory_Management.Controllers
             return View(products);
         }
        
-        public IActionResult Cart()
+        public async Task<IActionResult> Cart()
         {
             var cartvm = new CartVM()
             {
-                Areas = _onlineOrderService.ForCartView().Result
+                Areas = await _onlineOrderService.ShippingFreightSelectList(),
+                DeliverySlotVMs = await _onlineOrderService.DeliverySlot(),
             };
             return View(cartvm);
         }
@@ -72,7 +75,7 @@ namespace Inventory_Management.Controllers
             var cart = _onlineOrderService.CreateOrder(data);
             if (cart != null)
             {
-                return RedirectToAction("Index", "Home", cart.Result.Message);
+                return Json(cart.Result);
             }else
                 return View(cart); 
         }
@@ -88,6 +91,8 @@ namespace Inventory_Management.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            var exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
+            ViewBag.ErrorMessage = exception?.Message;
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }

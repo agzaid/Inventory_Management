@@ -54,7 +54,10 @@ if (!app.Environment.IsDevelopment())
 // app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+app.UseMiddleware<ErrorHandlingMiddleware>(); // Global exception handler
+
+app.UseStaticFiles(); 
 
 app.UseRouting();
 

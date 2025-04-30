@@ -41,6 +41,15 @@ namespace Infrastructure.Data
 
                 context.SaveChanges();
             }
+            if (!context.DeliverySlot.Any())
+            {
+                context.DeliverySlot.AddRange(
+                    new DeliverySlot { StartTime = "7", EndTime = "8", AM_PM = "pm" },
+                    new DeliverySlot { StartTime = "8", EndTime = "9", AM_PM = "pm" }
+                );
+
+                context.SaveChanges();
+            }
             // Check if the data is already seeded to avoid duplication
             if (!context.ShippingFreight.Any())
             {
@@ -62,7 +71,7 @@ namespace Infrastructure.Data
 
             // Define the composite primary key for the junction table
             modelBuilder.Entity<UserDeliverySlot>()
-                .HasKey(uds => new { uds.UserId, uds.DeliverySlotId });
+                .HasKey(uds => new { uds.CustomerId, uds.DeliverySlotId });
 
             // Set up the many-to-many relationship
             //modelBuilder.Entity<UserDeliverySlot>()

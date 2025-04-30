@@ -15,5 +15,6 @@ namespace Domain.Entities
         public string? Address { get; set; }
 
         public ICollection<Invoice>? Invoices { get; set; } // Navigation property
+        public ICollection<UserDeliverySlot>? UserDeliverySlots { get; set; } // Navigation property
     }
 }

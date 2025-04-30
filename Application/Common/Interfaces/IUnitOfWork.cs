@@ -17,7 +17,7 @@ namespace Application.Common.Interfaces
         IDeliverySlotRepository DeliverySlot { get; }
         IDistrictRepository District { get; }
         IOnlineOrderRepository OnlineOrder { get; }
-        void Save();
+        Task Save();
 
     }
 }

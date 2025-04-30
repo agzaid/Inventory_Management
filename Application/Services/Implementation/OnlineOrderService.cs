@@ -4,16 +4,8 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Application.Services.Implementation
 {
@@ -75,11 +67,17 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving categories.");
-                throw;  // Rethrow the exception after logging it
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+                return new PortalVM();
+                //throw;  // Rethrow the exception after logging it
             }
         }
-        public async Task<List<SelectListItem>> ForCartView()
+        public async Task<List<SelectListItem>> ShippingFreightSelectList()
         {
             try
             {
@@ -93,8 +91,40 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+                return new List<SelectListItem>();
+            }
 
-                throw;
+        }
+        public async Task<List<DeliverySlotVM>> DeliverySlot()
+        {
+            try
+            {
+                var deliverySlot = _unitOfWork.DeliverySlot.GetAll().OrderBy(s => s.StartTime).ToList();
+                var vm = deliverySlot.Select(s => new DeliverySlotVM()
+                {
+                    AM_PM = s.AM_PM?.ToUpper(),
+                    EndTime = s.EndTime,
+                    StartTime = s.StartTime,
+                    IsAvailable = s.IsAvailable,
+                }).ToList();
+                return vm;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+
+                return null;
             }
 
         }
@@ -108,11 +138,18 @@ namespace Application.Services.Implementation
                 }
                 else
                 {
-                    var shipping = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == cart.ShippingAreaName);
+                    ShippingFreight shipping = null;
+                    IEnumerable<DeliverySlot> deliverySlot;
+                    double shippingPrice = 0;
+                    if (!string.IsNullOrWhiteSpace(cart.ShippingAreaPrice) && double.TryParse(cart.ShippingAreaPrice, out var parsedShippingPrice))
+                    {
+                        shippingPrice = parsedShippingPrice;
+                        shipping = _unitOfWork.ShippingFreight.Get(s => s.Price == parsedShippingPrice);
+                    }
                     var customer = _unitOfWork.Customer.Get(s => s.Phone == cart.CustomerPhone);
                     if (customer == null)
                     {
-                        var newCustomer = new Customer()
+                        var newCustomer = new Customer
                         {
                             CustomerName = cart.CustomerName,
                             Address = cart.CustomerAddress,
@@ -121,6 +158,26 @@ namespace Application.Services.Implementation
                         _unitOfWork.Customer.Add(newCustomer);
                         customer = newCustomer;
                     }
+                    var userDeliverySlot = new List<UserDeliverySlot>();
+                    if (cart.SelectedSlots?.Length > 0)
+                    {
+                        var deliverySlotVM = cart.SelectedSlots.Select(s => s.Split('-')[0].Trim());
+                        deliverySlot = _unitOfWork.DeliverySlot.GetAll(s => deliverySlotVM.Contains(s.StartTime));
+                        foreach (var item in deliverySlot)
+                        {
+
+                            //item.UserDeliverySlots ??= new List<UserDeliverySlot>();
+                            userDeliverySlot.Add(new UserDeliverySlot()
+                            {
+                                DeliverySlotId = item.Id,
+                                Customer = customer,
+                                //CustomerId = customer.Id
+                                //DeliverySlot = item,
+                                //UserId = customer.Id,
+                            });
+                        }
+                    }
+
                     var onlineOrder = new OnlineOrder()
                     {
                         IndividualProductsNames = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductName)),
@@ -128,16 +185,18 @@ namespace Application.Services.Implementation
                         IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
                         GrandTotalAmount = cart.TotalPrice,
                         AmountBeforeShipping = cart.PriceBeforeShipping,
-                        CustomerId = customer?.Id,
-                        ShippingPrice = double.Parse(cart.ShippingAreaPrice),
+                        //Customer = customer,
+                        ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
                         ShippingNotes = cart.CustomerAddress,
-                        DeliverySlots = cart.SelectedSlots,
+                        DeliverySlotsAsString = cart.SelectedSlots,
+                      //  UserDeliverySlots = userDeliverySlot,
                         OrderStatus = Status.InProgress,
                         OrderDate = DateTime.Now,
                         AreaId = shipping?.Id,
                         AllDiscountInput = 0,
                         InvoiceId = 0
                     };
+
 
                     foreach (var item in cart.ItemsVMs)
                     {
@@ -150,7 +209,7 @@ namespace Application.Services.Implementation
                                 ProductName = product.ProductName,
                                 PriceSoldToCustomer = product.SellingPrice,
                                 Quantity = item.Quantity,
-                                ShippingPrice = double.Parse(cart.ShippingAreaPrice),
+                                ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
                                 StockQuantityFromProduct = product.StockQuantity,
                                 DifferencePercentageFromProduct = product.DifferencePercentage,
                                 BuyingPriceFromProduct = product.BuyingPrice,
@@ -161,19 +220,23 @@ namespace Application.Services.Implementation
                                 ProductTagsFromProduct = product.ProductTags,
                                 BarcodeFromProduct = product.Barcode,
                             };
-                            onlineOrder.InvoiceItems.Add(invoiceItem);
+                              onlineOrder.InvoiceItems?.Add(invoiceItem);
                         }
                     }
                     _unitOfWork.OnlineOrder.Add(onlineOrder);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Save();
                 }
                 return Result<string>.Success("success", "Online Order Created Successfully");
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating online Order");
-                //await FileExtensions.DeleteImages(imagesToBeDeleted);
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
                 return Result<string>.Failure("Error Occured...", "error");
             }
         }
@@ -192,7 +255,13 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                throw;
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+                return new InvoiceVM();
             }
 
         }
@@ -205,8 +274,13 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
-                throw;  // Rethrow the exception after logging it
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+                return null;
             }
         }
 
@@ -262,8 +336,12 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving category with Id: {Id}", id);
-                throw;  // Rethrow the exception after logging it
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
             }
             return new ProductVM();
         }
@@ -286,7 +364,13 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving categories.");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+
                 return Result<List<OnlineOrderVM>>.Failure(ex.InnerException.ToString(), "error");
             }
         }
@@ -303,7 +387,12 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating invoice for online order with Id: {Id}", id);
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
                 return Result<InvoiceVM>.Failure("error");
 
             }

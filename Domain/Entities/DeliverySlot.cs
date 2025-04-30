@@ -13,6 +13,8 @@ namespace Domain.Entities
         public string? AM_PM { get; set; }
         public bool IsAvailable { get; set; } = true;
 
-        public ICollection<UserDeliverySlot> UserDeliverySlots { get; set; }
+        
+        public ICollection<UserDeliverySlot>? UserDeliverySlots { get; set; }
+        //public ICollection<OnlineOrder>? OnlineOrders { get; set; }
     }
 }

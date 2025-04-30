@@ -11,7 +11,8 @@ namespace Application.Services.Intrerfaces
 {
     public interface IOnlineOrderService
     {
-        Task<List<SelectListItem>> ForCartView();
+        Task<List<SelectListItem>> ShippingFreightSelectList();
+        Task<List<DeliverySlotVM>> DeliverySlot();
         InvoiceVM CreateInvoiceForViewing();
         Task<Result<string>> CreateOrder(CartVM cart);
         PortalVM GetAllProductsForPortal();

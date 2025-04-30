@@ -72,7 +72,7 @@
                         <td>Cart Subtotal</td>
                         <td>$<span id="cartSubTotal">0.0</span></td>
                     </tr>
-                   @*  <tr>
+                    @*  <tr>
                         <td>Shipping</td>
                         <td>
                             <div class="dropdown-container">
@@ -142,11 +142,10 @@
                 </table>
                 <strong>Preferable Delivery Slots</strong>
                 <div class="time-slot-container d-flex">
-                    <button type="button" class="time-slot" onclick="selectSlot(this)">9-10 AM</button>
-                    <button type="button" class="time-slot" onclick="selectSlot(this)">10-11 AM</button>
-                    <button type="button" class="time-slot" onclick="selectSlot(this)">11-12 PM</button>
-                    <button type="button" class="time-slot" onclick="selectSlot(this)">12-1 PM</button>
-                    <button type="button" class="time-slot" onclick="selectSlot(this)">1-2 PM</button>
+                    @foreach (var delivery in @Model.DeliverySlotVMs)
+                    {
+                        <button type="button" class="time-slot" onclick="selectSlot(this)">@delivery.StartTime - @delivery.EndTime @delivery.AM_PM</button>
+                    }
                 </div>
             </div>
         </div>
@@ -159,8 +158,8 @@
 @section scripts {
     @* <partial name="_ValidationScriptsPartial"> *@
     <script>
+        var selectedSlotsValue = [];
         $(document).ready(function() {
-                 var selectedSlotsValue = [];
 
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == [] || $("#cartNum").length==0){
@@ -193,7 +192,7 @@
             calcItems();
 
         });
-       
+
         function submitCart(){
                  const token = $('input[name="__RequestVerificationToken"]').val();
 
@@ -209,6 +208,7 @@
                  var customerName = $("#CustomerName").val();
                  var customerAddress = $("#CustomerAddress").val();
                  var customerPhone = $("#CustomerPhone").val();
+                 var customerPhone = $("#CustomerPhone").val();
 
                  var $url = "@Url.Action("CheckoutDetails", "Home")";
                  var parameter =
@@ -222,11 +222,13 @@
                      SelectedSlots : selectedSlots,
                      ItemsVMs:cart
                  };
-                 _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
+                 if(customerName!="" && customerAddress!="" && customerPhone!=""){
+                    _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
                      function (data) {
                          debugger;
                          var res = JSON.parse(data);
                          if (res != null && res.IsSuccess==true) {
+                             debugger;
                             MappingToFields(res);
                          } else
                          debugger;
@@ -236,6 +238,7 @@
                          debugger;
                          _SWAL.AlertWithoutNotification("Something went wrong..!!");
                      });
+                 }
          };
          function AddNewRow(data){
               var rowIndex = $('#cartTable tbody tr').length;
@@ -366,11 +369,10 @@
                        calcItems();
           };
          function selectSlot(button) {
-             debugger;
                     // Check if the button is already faded (selected)
                     button.classList.toggle('faded');
                     var selectedSlots = document.querySelectorAll('.time-slot.faded');
-            
+
                     // Collect their text values (or innerText)
                     selectedSlotsValue = [];
                     selectedSlots.forEach(function(slot) {

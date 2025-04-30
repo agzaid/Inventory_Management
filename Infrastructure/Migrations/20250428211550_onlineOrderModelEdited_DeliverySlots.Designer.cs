@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250428211550_onlineOrderModelEdited_DeliverySlots")]
+    partial class onlineOrderModelEdited_DeliverySlots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +50,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
@@ -84,7 +87,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer", (string)null);
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
@@ -114,13 +117,18 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("OnlineOrderId")
+                        .HasColumnType("int");
+
                     b.Property<string>("StartTime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliverySlot", (string)null);
+                    b.HasIndex("OnlineOrderId");
+
+                    b.ToTable("DeliverySlot");
                 });
 
             modelBuilder.Entity("Domain.Entities.District", b =>
@@ -153,7 +161,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ShippingFreightId");
 
-                    b.ToTable("District", (string)null);
+                    b.ToTable("District");
                 });
 
             modelBuilder.Entity("Domain.Entities.Image", b =>
@@ -192,7 +200,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Image", (string)null);
+                    b.ToTable("Image");
                 });
 
             modelBuilder.Entity("Domain.Entities.Inventory", b =>
@@ -243,7 +251,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Inventory", (string)null);
+                    b.ToTable("Inventory");
                 });
 
             modelBuilder.Entity("Domain.Entities.InventoryLog", b =>
@@ -282,7 +290,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InventoryLog", (string)null);
+                    b.ToTable("InventoryLog");
                 });
 
             modelBuilder.Entity("Domain.Entities.Invoice", b =>
@@ -336,7 +344,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Invoice", (string)null);
+                    b.ToTable("Invoice");
                 });
 
             modelBuilder.Entity("Domain.Entities.InvoiceItem", b =>
@@ -415,7 +423,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InvoiceItem", (string)null);
+                    b.ToTable("InvoiceItem");
                 });
 
             modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
@@ -484,7 +492,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("OnlineOrder", (string)null);
+                    b.ToTable("OnlineOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -552,7 +560,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Product", (string)null);
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShippingFreight", b =>
@@ -580,7 +588,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShippingFreight", (string)null);
+                    b.ToTable("ShippingFreight");
                 });
 
             modelBuilder.Entity("Domain.Entities.Supplier", b =>
@@ -611,12 +619,12 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Supplier", (string)null);
+                    b.ToTable("Supplier");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
                 {
-                    b.Property<int>("CustomerId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int>("DeliverySlotId")
@@ -634,16 +642,18 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("OnlineOrderId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CustomerId", "DeliverySlotId");
+                    b.HasKey("UserId", "DeliverySlotId");
 
                     b.HasIndex("DeliverySlotId");
 
-                    b.HasIndex("OnlineOrderId");
+                    b.ToTable("UserDeliverySlot");
+                });
 
-                    b.ToTable("UserDeliverySlot", (string)null);
+            modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
+                {
+                    b.HasOne("Domain.Entities.OnlineOrder", null)
+                        .WithMany("DeliverySlots")
+                        .HasForeignKey("OnlineOrderId");
                 });
 
             modelBuilder.Entity("Domain.Entities.District", b =>
@@ -738,29 +748,13 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
                 {
-                    b.HasOne("Domain.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.DeliverySlot", "DeliverySlot")
                         .WithMany("UserDeliverySlots")
                         .HasForeignKey("DeliverySlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.OnlineOrder", "OnlineOrder")
-                        .WithMany("UserDeliverySlots")
-                        .HasForeignKey("OnlineOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
                     b.Navigation("DeliverySlot");
-
-                    b.Navigation("OnlineOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -785,9 +779,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
                 {
-                    b.Navigation("InvoiceItems");
+                    b.Navigation("DeliverySlots");
 
-                    b.Navigation("UserDeliverySlots");
+                    b.Navigation("InvoiceItems");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
