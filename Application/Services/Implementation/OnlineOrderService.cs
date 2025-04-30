@@ -240,16 +240,25 @@ namespace Application.Services.Implementation
                 return Result<string>.Failure("Error Occured...", "error");
             }
         }
-        public InvoiceVM CreateInvoiceForViewing()
+        public InvoiceVM CreateInvoiceForViewing(string orderNum)
         {
             try
             {
+                var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum, "InvoiceItems");
+                
                 var productVM = new InvoiceVM();
                 var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
                     Text = v.ShippingArea,
                     Value = v.Price.ToString()
+                }).ToList();
+                productVM.ListInvoiceItemVMs = onlineOrder.InvoiceItems?.Select(s => new InvoiceItemVM()
+                {
+                    ProductName = s.ProductName,
+                    Quantity = s.Quantity,
+                    PriceSoldToCustomer = s.PriceSoldToCustomer,
+                    ShippingPrice = s.ShippingPrice,
                 }).ToList();
                 return productVM;
             }

@@ -9,7 +9,7 @@
                         <form asp-action="Create" asp-controller="Invoice" id="myForm" enctype="multipart/form-data">
                             <div class="d-flex justify-content-between">
                                 <h5 class="card-title">Create Invoice</h5>
-                                @if (ViewBag.orderNum != "")
+                                @if (ViewBag.orderNum != null)
                                 {
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
                                         Peak Oreders
@@ -76,7 +76,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Shipping Notes</label>
                                             <textarea class="form-control" asp-for="ShippingNotes" placeholder="Detailed Address...">
-                                             </textarea>
+                                            </textarea>
                                             <span asp-validation-for="ShippingNotes" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -163,14 +163,27 @@
 
                     <div class="modal-body">
                         <table class="table table-striped">
-                            <tr>
-                                <td>hello world</td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <td>hello world</td>
-                                <td>5</td>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                    <th>ShippingPrice</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ListInvoiceItemVMs.Count > 0)
+                                {
+
+                                    @foreach (var item in Model.ListInvoiceItemVMs)
+                                    {
+                                        <tr>
+                                            <td>@item.ProductName</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.ShippingPrice</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
                         </table>
                     </div>
 
@@ -303,7 +316,7 @@
              debugger;
              var totalPrice = 0;
              var totalProductItems=0;
-             var shipping=55;
+             var shipping = 55;
              var allDiscountInput = $('#allDiscountInput').val();
 
              $('.price-input').each(function() {

@@ -36,7 +36,7 @@
                                             <td>@item.CustomerName</td>
                                             <td>@item.OrderDate</td>
                                             <td class="text-center" style="font-size:20px">
-                                                <a class="me-3" asp-action="Create" asp-route-id="@item.OrderNumber">
+                                                <a class="me-3" asp-action="Create" asp-route-orderNum="@item.OrderNumber">
                                                     <i class="lni lni-eye"></i>
                                                 </a>
                                                 <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id">

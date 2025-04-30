@@ -38,6 +38,7 @@ namespace Domain.Models
         public int? OnlineOrderId { get; set; }
         public List<SelectListItem>? ListOfAreas { get; set; }
         public List<ProductVM>? ListOfProductsVMs { get; set; }
+        public List<InvoiceItemVM>? ListInvoiceItemVMs{ get; set; }
 
 
     }

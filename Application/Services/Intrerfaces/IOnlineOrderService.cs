@@ -13,7 +13,7 @@ namespace Application.Services.Intrerfaces
     {
         Task<List<SelectListItem>> ShippingFreightSelectList();
         Task<List<DeliverySlotVM>> DeliverySlot();
-        InvoiceVM CreateInvoiceForViewing();
+        InvoiceVM CreateInvoiceForViewing(string orderNum);
         Task<Result<string>> CreateOrder(CartVM cart);
         PortalVM GetAllProductsForPortal();
         ProductVM GetProductDetails(int id);

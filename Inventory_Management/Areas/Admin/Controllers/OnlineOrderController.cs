@@ -34,10 +34,11 @@ namespace Inventory_Management.Areas.admin.Controllers
                 throw;
             }
         }
-        public IActionResult Create(string? orderNum="sdfsd545")//remove this later 
+       // [Route("admin/onlineOrder/create/{orderNum?}")]
+        public IActionResult Create(string? orderNum)//remove this later 
         {
             ViewBag.orderNum = orderNum;
-            return View(_onlineOrderService.CreateInvoiceForViewing());
+            return View(_onlineOrderService.CreateInvoiceForViewing(orderNum));
         }
 
         [HttpPost]
