@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace Application.Services.Implementation
@@ -75,6 +76,55 @@ namespace Application.Services.Implementation
                     _logger.LogError(ex, ex.Message);
                 return new PortalVM();
                 //throw;  // Rethrow the exception after logging it
+            }
+        }
+        public Task<Result<List<ProductVM>>> GetProductsByCategory(int categoryId)
+        {
+            try
+            {
+                var retrievedImages = new List<string>();
+                var image64 = new List<string>();
+                var productVMs = new List<ProductVM>();
+
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && s.CategoryId == categoryId, "Category,Images");
+                var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                foreach (var item in products)
+                {
+                    retrievedImages.Clear();
+                    if (item.Images?.Count() > 0)
+                    {
+                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                        retrievedImages.AddRange(image64);
+                    }
+                    var productVM = new ProductVM()
+                    {
+                        Id = item.Id,
+                        ProductName = item.ProductName?.ToUpper(),
+                        Description = item.Description,
+                        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                        SellingPrice = item.SellingPrice,
+                        StockQuantity = item.StockQuantity,
+                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                        Barcode = item.Barcode,
+                        ListOfRetrievedImages = image64,
+                    };
+                    productVMs.Add(productVM);
+                }
+
+                return Task.FromResult(Result<List<ProductVM>>.Success(productVMs, "success"));
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                {
+                    _logger.LogError(ex, ex.Message);
+                }
+                return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
         }
         public async Task<List<SelectListItem>> ShippingFreightSelectList()
@@ -189,7 +239,7 @@ namespace Application.Services.Implementation
                         ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
                         ShippingNotes = cart.CustomerAddress,
                         DeliverySlotsAsString = cart.SelectedSlots,
-                      //  UserDeliverySlots = userDeliverySlot,
+                        //  UserDeliverySlots = userDeliverySlot,
                         OrderStatus = Status.InProgress,
                         OrderDate = DateTime.Now,
                         AreaId = shipping?.Id,
@@ -220,7 +270,7 @@ namespace Application.Services.Implementation
                                 ProductTagsFromProduct = product.ProductTags,
                                 BarcodeFromProduct = product.Barcode,
                             };
-                              onlineOrder.InvoiceItems?.Add(invoiceItem);
+                            onlineOrder.InvoiceItems?.Add(invoiceItem);
                         }
                     }
                     _unitOfWork.OnlineOrder.Add(onlineOrder);
@@ -245,7 +295,7 @@ namespace Application.Services.Implementation
             try
             {
                 var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum, "InvoiceItems");
-                
+
                 var productVM = new InvoiceVM();
                 var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem

@@ -1,0 +1,34 @@
+﻿@using Domain.Models
+@model List<ProductVM>
+
+<div class="pro-container">
+    @if (Model.Count() > 0)
+    {
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            @* var product = Model[i]; *@
+            <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model[i].Id">
+                <div class="pro">
+                    <img src="@(Model[i].ListOfRetrievedImages?.Count > 0 ? Model[i].ListOfRetrievedImages[0]:"")" alt="">
+                    <div class="des">
+                        <span>@Model[i].CategoryName</span>
+                        <h5>@Model[i].ProductName</h5>
+                        <div class="star">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                        </div>
+                        <h4>$@Model[i].SellingPrice</h4>
+                    </div>
+                    <a href="#"><i class="ri-shopping-cart-2-line cart"></i></a>
+                </div>
+            </a>
+        }
+    }
+    else
+    {
+        <h2>No Products For This Category</h2>
+    }
+</div>

@@ -2,6 +2,7 @@
 using Application.Services.Intrerfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
@@ -34,11 +35,16 @@ namespace Inventory_Management.Areas.admin.Controllers
                 throw;
             }
         }
-       // [Route("admin/onlineOrder/create/{orderNum?}")]
+        // [Route("admin/onlineOrder/create/{orderNum?}")]
         public IActionResult Create(string? orderNum)//remove this later 
         {
-            ViewBag.orderNum = orderNum;
-            return View(_onlineOrderService.CreateInvoiceForViewing(orderNum));
+            if (!orderNum.IsNullOrEmpty())
+            {
+                ViewBag.orderNum = orderNum;
+                return View(_onlineOrderService.CreateInvoiceForViewing(orderNum));
+            }
+            else
+               return RedirectToAction("Index");
         }
 
         [HttpPost]

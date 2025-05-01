@@ -39,7 +39,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     CustomerName = s.Customer?.CustomerName,
-                    Number = s.InvoiceNumber,
+                    InvoiceNumber = s.InvoiceNumber,
                     TotalAmount = (decimal)s.GrandTotalAmount,
                     PhoneNumber = s.Customer?.Phone,
                     AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.ShippingArea?.ToString(),
@@ -300,7 +300,7 @@ namespace Application.Services.Implementation
                     var invoiceVM = new InvoiceVM()
                     {
                         CustomerName = invoice.Customer?.CustomerName,
-                        Number = invoice.InvoiceNumber,
+                        InvoiceNumber = invoice.InvoiceNumber,
                         AllProductsForIndexViewing = invoice.AllProductItems,
                         allDiscountInput = invoice.AllDiscountInput.ToString(),
                         grandTotalInput = invoice.GrandTotalAmount,

@@ -36,13 +36,13 @@
                                             <td>@item.CustomerName</td>
                                             <td>@item.OrderDate</td>
                                             <td class="text-center" style="font-size:20px">
-                                                <a class="me-3" asp-action="Create" asp-route-orderNum="@item.OrderNumber">
+                                                <a class="me-3" asp-action="Create" asp-route-orderNum="@item.OrderNumber" title="Create Order" >
                                                     <i class="lni lni-eye"></i>
                                                 </a>
-                                                <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id">
+                                               @*  <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id" title="Create Order">
                                                     <i class="bx bx-message-square-edit"></i>
-                                                </a>
-                                                <a class="text-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                                </a> *@
+                                                <a class="text-danger" asp-action="Delete" asp-route-id="@item.Id" title="Delete Order">
                                                     <i class="lni lni-cross-circle"></i>
                                                 </a>
                                             </td>

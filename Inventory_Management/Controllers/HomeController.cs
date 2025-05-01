@@ -10,6 +10,7 @@ using Inventory_Management.Models;
 using System.Web.Razor.Tokenizer.Symbols;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
+using Application.Services.Implementation;
 
 namespace Inventory_Management.Controllers
 {
@@ -50,6 +51,11 @@ namespace Inventory_Management.Controllers
             //    TempData["error"] = message;
             //}
             return View(products);
+        }
+        public async Task<IActionResult> GetProductsByCategory(int categoryId)
+        {
+            var products = await _onlineOrderService.GetProductsByCategory(categoryId);
+            return PartialView("_ProductListPartial", products.Data);
         }
         public IActionResult ProductDetails(int Id)
         {

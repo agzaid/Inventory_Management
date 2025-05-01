@@ -6,7 +6,7 @@
     <section id="feature" class="section-p1">
         @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
         {
-            <div class="fe-box" style="cursor:pointer;">
+            <div class="category-dropdown fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
                 <img src="img/features/f1.png" alt="">
                 <h6>@Model.CategoryVMs[i].CategoryName</h6>
             </div>
@@ -15,28 +15,8 @@
     <section id="product1" class="section-p1">
         <h2>Featured Products</h2>
         <p>Summer Collection New Modern Design</p>
-        <div class="pro-container">
-            @for (int i = 0; i < Model.ProductVMs?.Count; i++)
-            {
-                <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model.ProductVMs[i].Id">
-                    <div class="pro">
-                        <img src="@(Model.ProductVMs[i].ListOfRetrievedImages.Count > 0 ?Model.ProductVMs[i].ListOfRetrievedImages[0]:"")" alt="">
-                        <div class="des">
-                            <span>@Model.ProductVMs[i].CategoryName</span>
-                            <h5>@Model.ProductVMs[i].ProductName</h5>
-                            <div class="star">
-                                <i class="ri-star-fill"></i>
-                                <i class="ri-star-fill"></i>
-                                <i class="ri-star-fill"></i>
-                                <i class="ri-star-fill"></i>
-                                <i class="ri-star-fill"></i>
-                            </div>
-                            <h4>$@Model.ProductVMs[i].SellingPrice</h4>
-                        </div>
-                        <a href="#"><i class="ri-shopping-cart-2-line cart"></i></a>
-                    </div>
-                </a>
-            }
+        <div id="products-container">
+            <partial name="_ProductListPartial" model="Model.ProductVMs" />
         </div>
     </section>
 
@@ -232,6 +212,21 @@
                  }else{
                      $("#cartNum")[0].innerHTML= cart.length;
                  }
+
+
+                      $('.category-dropdown').on('click', function () {
+                          debugger;
+                            var categoryId = $(this).data('value');
+                            $.ajax({
+                                url: '/Home/GetProductsByCategory',
+                                type: 'GET',
+                                data: { categoryId: categoryId },
+                                success: function (data) {
+                                    $('#products-container').html(data);
+                                }
+                            });
+            });
+
             });
         </script>
     }
