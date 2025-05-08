@@ -233,14 +233,7 @@
            });
            $('#AreaId').on('change',function() {
                 debugger;
-                var selectedOption = $(this).find('option:selected');
-                var selectedText = selectedOption[0].text;
-                var selectedValue = parseFloat(selectedOption.val());
-                $('#shipping').text('$' + selectedValue.toFixed(2));
-                $('#shipping').attr('data-value', selectedValue);
-                $('#shipping').attr('data-text', selectedText);
-                $('#shippingInput').val(selectedValue);
-                $('#shippingText').val(selectedText);
+                updateShippingPriceHtml($('#AreaId'));
                 updateTotalPrice();
             });
 
@@ -277,7 +270,7 @@
                 updateTotalPrice();
            });
 
-
+           updateShippingPriceHtml($('#AreaId'));
 
          });
 
@@ -320,7 +313,7 @@
              debugger;
              var totalPrice = 0;
              var totalProductItems=0;
-             var shipping = 55;
+             var shipping = 0;
              var allDiscountInput = $('#allDiscountInput').val();
 
              $('.price-input').each(function() {
@@ -334,7 +327,8 @@
                  if(discountSwitch.checked || discountSwitch[0].checked){
                      discount = '';
                  }
-                 shipping = parseFloat( $('#shipping').attr('data-value'));
+                 var selectedAreaId = $('#AreaId').find('option:selected');
+                 shipping = parseFloat(selectedAreaId);
                 // var productTotal = quantity * price + shipping;
                 var productItemsTotal = 0;
                 if  (discount!=""){
@@ -498,6 +492,16 @@
               $('#listOfPurchases tbody .no-data-row').closest('tr').remove();
              //$('#listOfPurchases tbody .no-data-row').remove();
          }
+         }
+         function updateShippingPriceHtml($select){
+                var selectedOption = $select.find('option:selected');
+                var selectedText = selectedOption[0].text;
+                var selectedValue = parseFloat(selectedOption.val());
+                $('#shipping').text('$' + selectedValue.toFixed(2));
+                $('#shipping').attr('data-value', selectedValue);
+                $('#shipping').attr('data-text', selectedText);
+                $('#shippingInput').val(selectedValue);
+                $('#shippingText').val(selectedText);
          }
     </script>
 }

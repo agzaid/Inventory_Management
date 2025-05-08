@@ -294,7 +294,7 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum, "InvoiceItems");
+                var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum, "InvoiceItems,Customer");
 
                 var productVM = new InvoiceVM();
                 var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
@@ -417,6 +417,7 @@ namespace Application.Services.Implementation
                     OrderDate = s.OrderDate.ToString("yyyy-MM-dd"),
                     OrderStatus = s.OrderStatus.ToString(),
                     GrandTotalAmount = s.GrandTotalAmount,
+                    Status = s.OrderStatus,
                     Area = _unitOfWork.ShippingFreight.Get(d => d.Id == s.AreaId).ShippingArea,
                 }).ToList();
                 return Result<List<OnlineOrderVM>>.Success(orderVMs, "success");

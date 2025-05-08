@@ -25,6 +25,7 @@
                                         <th>Order Number</th>
                                         <th>Customer Name</th>
                                         <th>Order Date</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -35,6 +36,7 @@
                                             <td>@item.OrderNumber</td>
                                             <td>@item.CustomerName</td>
                                             <td>@item.OrderDate</td>
+                                            <td>@item.Status.ToString()</td>
                                             <td class="text-center" style="font-size:20px">
                                                 <a class="me-3" asp-action="Create" asp-route-orderNum="@item.OrderNumber" title="Create Order" >
                                                     <i class="lni lni-eye"></i>

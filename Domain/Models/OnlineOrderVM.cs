@@ -1,4 +1,6 @@
-﻿namespace Domain.Models
+﻿using Domain.Enums;
+
+namespace Domain.Models
 {
     public class OnlineOrderVM
     {
@@ -9,6 +11,7 @@
         public double? GrandTotalAmount { get; set; }
         public string? Area { get; set; }
         public string? OrderStatus { get; set; }
+        public Status Status { get; set; }
 
     }
 }

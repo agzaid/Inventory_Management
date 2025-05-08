@@ -131,7 +131,7 @@ namespace Application.Services.Implementation
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Category.Update(oldCategory);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Save();
                     return true;
                 }
                 else
@@ -151,7 +151,7 @@ namespace Application.Services.Implementation
                 Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.CategoryName);
 
-                var categories = await _unitOfWork.Category.GetPaginatedAsync(pageNumber, pageSize,orderBy,filter);
+                var categories = await _unitOfWork.Category.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter);
                 var showCategories = categories.Items.Select(s => new CategoryVM()
                 {
                     Id = s.Id,
