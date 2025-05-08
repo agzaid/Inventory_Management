@@ -1,13 +1,21 @@
 $(function () {
     "use strict";
-    new PerfectScrollbar(".app-container"),
-        new PerfectScrollbar(".header-message-list"),
-        new PerfectScrollbar(".header-notifications-list"),
+    const element = document.querySelector('.app-container');
+    if (element) {
+        new PerfectScrollbar(".app-container");
+    }
+    const element2 = document.querySelector('.header-message-list');
+    if (element2) {
+        new PerfectScrollbar(".header-message-list");
+    }
+    const element3 = document.querySelector('.header-notifications-list');
+    if (element3) {
+        new PerfectScrollbar(".header-notifications-list");
+    }
 
-
-        $(".mobile-search-icon").on("click", function () {
-            $(".search-bar").addClass("full-search-bar")
-        }),
+    $(".mobile-search-icon").on("click", function () {
+        $(".search-bar").addClass("full-search-bar")
+    }),
 
         $(".search-close").on("click", function () {
             $(".search-bar").removeClass("full-search-bar")
@@ -110,8 +118,8 @@ $(function () {
         }),
 
 
-    // sidebar colors 
-    $('#sidebarcolor1').click(theme1);
+        // sidebar colors 
+        $('#sidebarcolor1').click(theme1);
     $('#sidebarcolor2').click(theme2);
     $('#sidebarcolor3').click(theme3);
     $('#sidebarcolor4').click(theme4);
