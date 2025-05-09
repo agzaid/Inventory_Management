@@ -3,6 +3,7 @@ using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
 using Infrastructure.Data;
 using Infrastructure.Repo;
+using Inventory_Management.DependencyInjection;
 using Inventory_Management.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -15,16 +16,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IImageService, ImageService>();
-builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-builder.Services.AddScoped<IShippingFreightService, ShippingFreightService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IOnlineOrderService, OnlineOrderService>();
-builder.Services.AddScoped<IDeliverySlotService, DeliverySlotService>();
-builder.Services.AddScoped<IDistrictService, DistrictService>();
+// adding Dependency Injection
+builder.Services.AddAppDI();
+
 
 // Set up Serilog for file logging
 Log.Logger = new LoggerConfiguration()

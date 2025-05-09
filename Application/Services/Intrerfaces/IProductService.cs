@@ -16,6 +16,7 @@ namespace Application.Services.Intrerfaces
         ProductVM GetProductDetails(int id);
         Task<string[]> CreateProduct(ProductVM product);
         ProductVM CreateProductForViewingInCreate();
+        ProductVM CreateProductForViewingInCreate(ProductVM productVM);
         bool UpdateProduct(ProductVM productVM);
         bool DeleteProduct(int id);
         bool HardDeleteProduct(int id);

@@ -119,6 +119,23 @@ namespace Application.Services.Implementation
                 throw;
             }
         }
+        public ProductVM CreateProductForViewingInCreate(ProductVM productVM)
+        {
+            try
+            {
+                var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                productVM.ListOfCategory = category.Select(v => new SelectListItem
+                {
+                    Text = v.CategoryName,
+                    Value = v.Id.ToString()
+                }).ToList();
+                return productVM;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         public bool DeleteProduct(int id)
         {

@@ -55,7 +55,7 @@ namespace Inventory_Management.Areas.admin.Controllers
                     //TempData["error"] = result[1];
                     return RedirectToAction(nameof(Index), new { status = "error", message = result[1] });
             }
-            return View(obj);
+            return View(_productService.CreateProductForViewingInCreate(obj));
         }
 
         public IActionResult Edit(int id)
