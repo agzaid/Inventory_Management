@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace Domain.Models
@@ -23,7 +24,9 @@ namespace Domain.Models
         public string? AllProductsForIndexViewing { get; set; }
         public string? allDiscountInput { get; set; }
         public bool? discountSwitch { get; set; }
+        [Required(ErrorMessage = "Customer Name is required.")]
         public string? CustomerName { get; set; }
+        [Required(ErrorMessage = "Phone is required.")]
         public string? PhoneNumber { get; set; }
         public string? ShippingNotes { get; set; }
         public string? InvoiceNumber { get; set; }

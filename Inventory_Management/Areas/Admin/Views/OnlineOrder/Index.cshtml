@@ -10,12 +10,12 @@
                         Add New Category
                     </a>
                 </div> *@
-                <div class="d-flex justify-content-end mb-2">
+              @*   <div class="d-flex justify-content-end mb-2">
                     <a asp-action="GetPaginatedCategory"
                        asp-controller="Category"
                        asp-route-pageNumber="1"
                        asp-route-pageSize="2">Next Page</a>
-                </div>
+                </div> *@
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -38,7 +38,7 @@
                                             <td>@item.OrderDate</td>
                                             <td>@item.Status.ToString()</td>
                                             <td class="text-center" style="font-size:20px">
-                                                <a class="me-3" asp-action="Create" asp-route-orderNum="@item.OrderNumber" title="Create Order" >
+                                                <a class="me-3" asp-action="ViewOrder" asp-route-orderNum="@item.OrderNumber" title="Create Order">
                                                     <i class="lni lni-eye"></i>
                                                 </a>
                                                @*  <a class="me-3 text-warning" asp-action="Edit" asp-route-id="@item.Id" title="Create Order">

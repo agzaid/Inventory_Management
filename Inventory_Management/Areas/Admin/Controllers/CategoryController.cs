@@ -1,5 +1,6 @@
 ﻿using Application.Services.Intrerfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Areas.admin.Controllers
@@ -9,11 +10,13 @@ namespace Inventory_Management.Areas.admin.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly ILogger<CategoryController> _logger;
+        private readonly IAntiforgery _antiforgery;
 
-        public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger)
+        public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger, IAntiforgery antiforgery)
         {
             _categoryService = categoryService;
             _logger = logger;
+            _antiforgery = antiforgery;
         }
         public IActionResult Index()
         {
@@ -34,14 +37,19 @@ namespace Inventory_Management.Areas.admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryVM obj)
         {
-            if (ModelState.IsValid)
+            var savedToken = TempData["FormToken"];
+            if (obj.FormToken?.Trim() == savedToken?.ToString()?.Trim())
             {
-
-                var result = await _categoryService.CreateCategory(obj);
-                TempData["success"] = result;
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var result = await _categoryService.CreateCategory(obj);
+                    TempData["success"] = result;
+                    TempData["FormToken"] = null;
+                    return RedirectToAction(nameof(Index));
+                }
             }
             return View();
         }

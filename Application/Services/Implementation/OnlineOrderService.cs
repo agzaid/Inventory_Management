@@ -309,6 +309,8 @@ namespace Application.Services.Implementation
                     Quantity = s.Quantity,
                     PriceSoldToCustomer = s.PriceSoldToCustomer,
                     ShippingPrice = s.ShippingPrice,
+                    CustomerName = onlineOrder.Customer?.CustomerName,
+                    MobileNumber = onlineOrder.Customer?.Phone,
                 }).ToList();
                 return productVM;
             }

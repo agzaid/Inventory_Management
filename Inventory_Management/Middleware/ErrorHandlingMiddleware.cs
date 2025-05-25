@@ -36,7 +36,9 @@ namespace Inventory_Management.Middleware
                 var result = JsonSerializer.Serialize(new
                 {
                     error = "An unexpected error occurred.",
-                    details = exception.Message // For production, avoid exposing internal messages
+                    details = exception.Message // For production, avoid exposing internal messages better to use the next line
+                    //details = app.Environment.IsDevelopment() ? exception.Message : "Something went wrong. Please contact support."
+
                 });
 
                 context.Response.ContentType = "application/json";
@@ -46,7 +48,7 @@ namespace Inventory_Management.Middleware
             }
             else
             {
-                 context.Response.Redirect("/Home/Error");
+                 //context.Response.Redirect("/Home/Error");
                 return Task.CompletedTask;
             }
         }

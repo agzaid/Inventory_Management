@@ -117,6 +117,8 @@ namespace Application.Services.Implementation
 
                 _unitOfWork.Invoice.Add(invoice);
                 _unitOfWork.Save();
+                
+                // add invoice number from order number and make a relation between invoice and order
 
                 return new string[] { "success", "Invoice Created Successfully" };
             }

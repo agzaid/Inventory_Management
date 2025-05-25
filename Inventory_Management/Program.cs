@@ -29,13 +29,24 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
-// Seed data when the application starts
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    ApplicationDbContext.SeedData(dbContext);
-}
+app.UseMiddleware<ErrorHandlingMiddleware>(); // Global exception handler
 
+try
+{
+
+    // Seed data when the application starts
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        ApplicationDbContext.SeedData(dbContext);
+    }
+
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "An error occurred while seeding the database.");
+    throw;
+}
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -43,13 +54,16 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+}
 
 // Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
 // app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<ErrorHandlingMiddleware>(); // Global exception handler
 
 app.UseStaticFiles(); 
 

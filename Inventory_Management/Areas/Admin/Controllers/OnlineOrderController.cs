@@ -36,7 +36,7 @@ namespace Inventory_Management.Areas.admin.Controllers
             }
         }
         // [Route("admin/onlineOrder/create/{orderNum?}")]
-        public IActionResult Create(string? orderNum)//remove this later 
+        public IActionResult ViewOrder(string? orderNum)//remove this later 
         {
             if (!orderNum.IsNullOrEmpty())
             {
@@ -47,18 +47,18 @@ namespace Inventory_Management.Areas.admin.Controllers
                return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(CartVM obj)
-        {
-            if (ModelState.IsValid)
-            {
+        //[HttpPost]
+        //public async Task<IActionResult> Create(CartVM obj)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
 
-                var result = await _onlineOrderService.CreateOrder(obj);
-                TempData["success"] = result;
-                return RedirectToAction(nameof(Index));
-            }
-            return View();
-        }
+        //        var result = await _onlineOrderService.CreateOrder(obj);
+        //        TempData["success"] = result;
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View();
+        //}
 
         //public IActionResult Edit(int id)
         //{

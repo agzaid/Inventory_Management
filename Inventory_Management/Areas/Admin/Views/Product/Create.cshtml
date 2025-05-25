@@ -109,7 +109,13 @@
         </div>
     </div>
 </div>
+
+
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
     <script>
         $(document).ready(function () {
             $('#ImagesFormFiles').imageuploadify();
@@ -150,7 +156,6 @@
                 }
             }
         })
-        
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
     </script>
 }
