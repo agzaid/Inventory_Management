@@ -8,8 +8,8 @@
         {
             @* var product = Model[i]; *@
             <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model[i].Id">
-                <div class="pro">
-                    <img src="@(Model[i].ListOfRetrievedImages?.Count > 0 ? Model[i].ListOfRetrievedImages[0]:"")" alt="">
+                <div class="pro mx-1">
+                    <img height="240vh" src="@(Model[i].ListOfRetrievedImages?.Count > 0 ? Model[i].ListOfRetrievedImages[0]:"")" alt="">
                     <div class="des">
                         <span>@Model[i].CategoryName</span>
                         <h5>@Model[i].ProductName</h5>
@@ -20,7 +20,9 @@
                             <i class="ri-star-fill"></i>
                             <i class="ri-star-fill"></i>
                         </div>
-                        <h4>$@Model[i].SellingPrice</h4>
+
+                        <h4>$@Model[i].SellingPrice<br/><br/><del class="text-danger">$@Model[i].OtherShopsPrice</del></h4>
+                        <h6>@Model[i].DifferencePercentage % discount</h6>
                     </div>
                     <a href="#"><i class="ri-shopping-cart-2-line cart"></i></a>
                 </div>

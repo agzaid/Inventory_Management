@@ -91,6 +91,7 @@
                                                 <div class="col-12">
                                                     <label class="form-label">Product Tags</label>
                                                     <input type="text" class="form-control" asp-for="ProductTags" placeholder="Enter Product Tags">
+                                                    <span asp-validation-for="ProductTags" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="d-grid">
@@ -112,9 +113,10 @@
 
 
 @section Scripts {
-    @{
+    @* @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    } *@
+    <partial name="_ValidationScriptsPartial">
 
     <script>
         $(document).ready(function () {

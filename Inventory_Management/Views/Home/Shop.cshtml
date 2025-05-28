@@ -2,7 +2,7 @@
 <section id="feature" class="section-p1">
     @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
     {
-        <div class="fe-box" style="cursor:pointer;">
+        <div class="fe-box mx-1" style="cursor:pointer;">
             <img src="img/features/f1.png" alt="">
             <h6>@Model.CategoryVMs[i].CategoryName</h6>
         </div>
@@ -15,8 +15,8 @@
         @for (int i = 0; i < Model.ProductVMs?.Count; i++)
         {
             <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model.ProductVMs[i].Id">
-                <div class="pro">
-                    <img src="@(Model.ProductVMs[i].ListOfRetrievedImages.Count > 0 ?Model.ProductVMs[i].ListOfRetrievedImages[0]:"")" alt="">
+                <div class="pro mx-1">
+                    <img src="@(Model.ProductVMs[i].ListOfRetrievedImages?.Count > 0 ?Model.ProductVMs[i].ListOfRetrievedImages?[0]:"")" alt="">
                     <div class="des">
                         <span>@Model.ProductVMs[i].CategoryName</span>
                         <h5>@Model.ProductVMs[i].ProductName</h5>

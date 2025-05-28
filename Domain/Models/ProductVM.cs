@@ -22,21 +22,27 @@ namespace Domain.Models
               }).ToList();
         }
         public int? Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Product Name is required.")]
         public string? ProductName { get; set; }
+        [Required(ErrorMessage = "Description is required.")]
         public string? Description { get; set; }
         public string? Barcode { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
+        [Required(ErrorMessage = "Selling Price is required.")]
         public decimal? SellingPrice { get; set; }
         public decimal? OtherShopsPrice { get; set; }
         public string? DifferencePercentage { get; set; }
         public string? MaximumDiscountPercentage { get; set; }
         public decimal? DiscPerceForCreateInvoice { get; set; }
         public decimal? BuyingPrice{ get; set; }
+
+        [Required(ErrorMessage = "Quantity is required.")]
         public int? StockQuantity { get; set; }
         public string? CreatedDate { get; set; }
         public string? ExpiryDate { get; set; }
         public Status? ProductStatus { get; set; }
+
+        [Required(ErrorMessage = "Tags is required.")]
         public string? ProductTags { get; set; }
         public int? InputQuantity { get; set; }
         public string? StatusId{ get; set; }

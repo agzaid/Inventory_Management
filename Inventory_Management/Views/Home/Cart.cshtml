@@ -290,8 +290,7 @@
                        var convertingId= parseInt(extractedIndex);
 
                        var inputElement = document.getElementById(`productInputId[${convertingId}]`);
-
-                       var dataId = inputElement.dataset.id;
+                       var dataId = parseInt(inputElement.dataset.id);
                        var dataName = inputElement.dataset.name;
                        var dataValue = inputElement.dataset.value;
 
@@ -304,6 +303,7 @@
              };
 
          async function Delete(event) {
+             debugger;
              var deleteBtn = $(event.target);
              var rowToDelete = deleteBtn.closest('tr');
              var productId = rowToDelete[0].id;
@@ -320,10 +320,10 @@
           };
 
          function RemoveFromCart(productId) {
-               let cart = JSON.parse(localStorage.getItem('cart')) || [];
-               cart = cart.filter(item => item.productId !== productId);
-               localStorage.setItem('cart', JSON.stringify(cart));
-          }
+                      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                        cart = cart.filter(item => String(item.productId) !== String(productId));
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                  }
          function AddToCart(productId, productName, productPrice, Quantity) {
                   debugger;
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -341,8 +341,6 @@
                      cart.push(newItem);
                  }
                  localStorage.setItem('cart', JSON.stringify(cart));
-
-                 alert('Item added to cart!');
              }
 
          function Decrement(event) {
@@ -352,19 +350,18 @@
                        var productId = addBtn[0].id;
                        var extractedIndex = productId.split('-').pop();
                        var convertingId= parseInt(extractedIndex);
-
                        var inputElement = document.getElementById(`productInputId[${convertingId}]`);
-
-                       var dataId = inputElement.dataset.id;
+                       var dataId = parseInt(inputElement.dataset.id);
                        var dataName = inputElement.dataset.name;
                        var dataValue = inputElement.dataset.value;
-
-                       var inputValue = parseInt(inputField.val());
-
                        var inputValue = parseInt(inputField.val());
                        inputField.val(inputValue - 1);
                        $(".itemPrice")[convertingId].innerHTML = "$"+((inputValue-1) * parseInt(dataValue)) ;
 
+                       if  (inputValue - 1 <= 0) {
+                           Delete(event);
+                           return;
+                       }
                        AddToCart(dataId, dataName, dataValue, inputValue - 1);
                        calcItems();
           };

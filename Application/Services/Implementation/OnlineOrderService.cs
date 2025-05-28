@@ -46,6 +46,8 @@ namespace Application.Services.Implementation
                         Description = item.Description,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,
+                        OtherShopsPrice = item.OtherShopsPrice,
+                        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
                         StockQuantity = item.StockQuantity,
                         ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
                         CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
@@ -103,6 +105,8 @@ namespace Application.Services.Implementation
                         Description = item.Description,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,
+                        OtherShopsPrice = item.OtherShopsPrice,
+                        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
                         StockQuantity = item.StockQuantity,
                         ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
                         CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
@@ -134,7 +138,7 @@ namespace Application.Services.Implementation
                 var shipping = _unitOfWork.ShippingFreight.GetAll(s => s.IsDeleted == false);
                 var vm = shipping.Select(s => new SelectListItem()
                 {
-                    Text = s.ShippingArea,
+                    Text = $"{s.ShippingArea} ({s.Price})",
                     Value = s.Price.ToString()
                 }).ToList();
                 return vm;
@@ -354,6 +358,7 @@ namespace Application.Services.Implementation
                 {
                     var productVM = new ProductVM()
                     {
+                        Id = product.Id,
                         ProductName = product.ProductName ?? "",
                         Description = product.Description ?? "",
                         Barcode = product.Barcode ?? "",
