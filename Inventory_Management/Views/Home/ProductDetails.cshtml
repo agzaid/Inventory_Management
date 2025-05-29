@@ -58,6 +58,7 @@
                         @Model.Description
                     </p>
 
+                    <h6>@Model.DifferencePercentage % discount</h6>
                     <hr />
 
                     <div class="row mb-4">
@@ -100,6 +101,11 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+               const productId = $('[data-product-id]').data('product-id');
+               if(isInCart(productId)){
+                  var num = cartQuantity(productId);
+                  $('.quantity-input').val(num);
+               }
                  // Just update input field values — no localStorage
                $('.button-plus').on('click', function () {
                     const parent = $(this).closest('.product-quantity');
@@ -138,10 +144,18 @@
                       $('#cartNum').text(JSON.parse(localStorage.getItem('cart')).length);
                       });
                  });
+
            function isInCart(productId) {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             return cart.some(item => item.productId === productId);
              }
+
+            function cartQuantity(productId) {
+                   const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                   const item = cart.find(item => item.productId === productId);
+                   return item ? item.quantity : 0;
+                 }
+
              function updateCartStorage(productId, productName, productPrice, quantity) {
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
                  const index = cart.findIndex(item => item.productId === productId);

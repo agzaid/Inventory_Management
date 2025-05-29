@@ -139,7 +139,7 @@ position: relative;
 }
 
 #hero {
-    background-image: url('../images/hero4.png');
+    background-image: url('../images/chatGptMe.png');
     height: 91vh;
     width: 100%;
     background-size: cover;
@@ -241,7 +241,7 @@ position: relative;
 #product1 .pro{
     position: relative;
     width: 20%;
-    height:40%;
+    /*height:40%;*/
     min-width: 250px;
     padding: 10px 12px;
     border: 1px solid #cce7d0;

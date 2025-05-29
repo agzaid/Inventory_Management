@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250429181749_onlineOrderModelEdited_DeliverySlots_1")]
-    partial class onlineOrderModelEdited_DeliverySlots_1
+    [Migration("20250529120550_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,16 +117,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("OnlineOrderId")
-                        .HasColumnType("int");
-
                     b.Property<string>("StartTime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OnlineOrderId");
 
                     b.ToTable("DeliverySlot");
                 });
@@ -506,6 +501,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Barcode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Brand")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<decimal?>("BuyingPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -624,7 +623,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<int>("DeliverySlotId")
@@ -642,20 +641,16 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserId", "DeliverySlotId");
+                    b.Property<int>("OnlineOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomerId", "DeliverySlotId");
 
                     b.HasIndex("DeliverySlotId");
 
+                    b.HasIndex("OnlineOrderId");
+
                     b.ToTable("UserDeliverySlot");
-                });
-
-            modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
-                {
-                    b.HasOne("Domain.Entities.OnlineOrder", "OnlineOrder")
-                        .WithMany("DeliverySlots")
-                        .HasForeignKey("OnlineOrderId");
-
-                    b.Navigation("OnlineOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.District", b =>
@@ -750,13 +745,29 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
                 {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany("UserDeliverySlots")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.DeliverySlot", "DeliverySlot")
                         .WithMany("UserDeliverySlots")
                         .HasForeignKey("DeliverySlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.OnlineOrder", "OnlineOrder")
+                        .WithMany("UserDeliverySlots")
+                        .HasForeignKey("OnlineOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
                     b.Navigation("DeliverySlot");
+
+                    b.Navigation("OnlineOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -767,6 +778,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Invoices");
+
+                    b.Navigation("UserDeliverySlots");
                 });
 
             modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
@@ -781,9 +794,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
                 {
-                    b.Navigation("DeliverySlots");
-
                     b.Navigation("InvoiceItems");
+
+                    b.Navigation("UserDeliverySlots");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>

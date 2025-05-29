@@ -80,7 +80,7 @@ namespace Application.Services.Implementation
                 //throw;  // Rethrow the exception after logging it
             }
         }
-        public Task<Result<List<ProductVM>>> GetProductsByCategory(int categoryId)
+        public Task<Result<List<ProductVM>>> GetProductsByCategory(int? categoryId)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Application.Services.Implementation
                 var image64 = new List<string>();
                 var productVMs = new List<ProductVM>();
 
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && s.CategoryId == categoryId, "Category,Images");
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images");
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
                 foreach (var item in products)
                 {

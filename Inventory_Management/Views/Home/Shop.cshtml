@@ -1,8 +1,28 @@
 ﻿@model Domain.Models.PortalVM
+
+
+<div class="container mt-3">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8">
+            <div class="fm-search">
+                <div class="mb-0">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent" id="porductSearch" style="cursor:pointer"><i class='bx bx-search'></i></span>
+                        <input id="inputSearch" type="text" class="form-control" placeholder="Search products">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section id="feature" class="section-p1">
+    <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
+        <h6>All Products</h6>
+    </div>
     @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
     {
-        <div class="fe-box mx-1" style="cursor:pointer;">
+        <div class="category-dropdown mx-1 fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
             <img src="img/features/f1.png" alt="">
             <h6>@Model.CategoryVMs[i].CategoryName</h6>
         </div>
@@ -10,9 +30,11 @@
 </section>
 <section id="product1" class="section-p1">
     <h2>Featured Products</h2>
-    <p>Summer Collection New Modern Design</p>
-    <div class="pro-container">
-        @for (int i = 0; i < Model.ProductVMs?.Count; i++)
+    @* <p>Summer Collection New Modern Design</p> *@
+    <div id="products-container">
+        <partial name="_ProductListPartial" model="Model.ProductVMs" />
+
+        @*  @for (int i = 0; i < Model.ProductVMs?.Count; i++)
         {
             <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model.ProductVMs[i].Id">
                 <div class="pro mx-1">
@@ -32,10 +54,10 @@
                     <a href="#"><i class="ri-shopping-cart-2-line cart"></i></a>
                 </div>
             </a>
-        }
+        } *@
     </div>
 </section>
-
+@* 
 <section id="banner" class="section-m1">
     <h4>Repair Services</h4>
     <h2>Up to <span>70% off</span> - All t-Shirts & Accessories</h2>
@@ -216,4 +238,33 @@
         <input type="text" placeholder="Your email address">
         <button class="normal">Sign Up</button>
     </div>
-</section>
+</section> *@
+@section scripts {
+    <script>
+        //
+        $(document).ready(function() {
+             var cart = JSON.parse(localStorage.getItem('cart')) || [];
+             if(cart == [] || $("#cartNum").length==0){
+                 var cartt = $("#cartNum").length;
+                 $("#cartNum")[0].innerHTML= 0;
+             }else{
+                 $("#cartNum")[0].innerHTML= cart.length;
+             }
+
+
+                  $('.category-dropdown').on('click', function () {
+                      debugger;
+                        var categoryId = $(this).data('value');
+                        $.ajax({
+                            url: '/Home/GetProductsByCategory',
+                            type: 'GET',
+                            data: { categoryId: categoryId },
+                            success: function (data) {
+                                $('#products-container').html(data);
+                            }
+                        });
+             });
+
+        });
+    </script>
+}

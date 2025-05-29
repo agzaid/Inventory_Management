@@ -26,6 +26,8 @@ namespace Domain.Models
         public string? ProductName { get; set; }
         [Required(ErrorMessage = "Description is required.")]
         public string? Description { get; set; }
+        [Required(ErrorMessage = "Brand is required.")]
+        public string? Brand { get; set; }
         public string? Barcode { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
         [Required(ErrorMessage = "Selling Price is required.")]

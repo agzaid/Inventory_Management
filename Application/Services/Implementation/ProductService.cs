@@ -43,6 +43,7 @@ namespace Application.Services.Implementation
                 {
                     product.ProductName = product.ProductName?.ToLower().Trim();
                     product.Description = product.Description?.ToLower().Trim();
+                    product.Brand = product.Brand?.ToLower().Trim();
                     product.ProductTags = product.ProductTags?.ToLower().Trim();
                     product.Barcode = product.Barcode?.ToLower().Trim();
                     product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
@@ -71,6 +72,7 @@ namespace Application.Services.Implementation
                         {
                             ProductName = product.ProductName,
                             Description = product.Description,
+                            Brand = product.Brand,
                             Barcode = product.Barcode,
                             Create_Date = DateTime.Now,
                             SellingPrice = product.SellingPrice,
@@ -196,6 +198,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     ProductName = s.ProductName?.ToUpper(),
+                    Brand = s.Brand?.ToUpper(),
                     Description = s.Description,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
@@ -236,6 +239,7 @@ namespace Application.Services.Implementation
                         Id = item.Id,
                         ProductName = item.ProductName?.ToUpper(),
                         Description = item.Description,
+                        Brand = item.Brand,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,
                         StockQuantity = item.StockQuantity,
@@ -267,6 +271,7 @@ namespace Application.Services.Implementation
                     {
                         ProductName = product.ProductName ?? "",
                         Description = product.Description ?? "",
+                        Brand = product.Brand ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
                         SellingPrice = product.SellingPrice ?? decimal.Parse("0.00"),

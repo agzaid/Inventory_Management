@@ -498,6 +498,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Barcode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Brand")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<decimal?>("BuyingPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -739,7 +743,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
                 {
                     b.HasOne("Domain.Entities.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("UserDeliverySlots")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -771,6 +775,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Invoices");
+
+                    b.Navigation("UserDeliverySlots");
                 });
 
             modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>

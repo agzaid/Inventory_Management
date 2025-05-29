@@ -52,7 +52,7 @@ namespace Inventory_Management.Controllers
             //}
             return View(products);
         }
-        public async Task<IActionResult> GetProductsByCategory(int categoryId)
+        public async Task<IActionResult> GetProductsByCategory(int? categoryId)
         {
             var products = await _onlineOrderService.GetProductsByCategory(categoryId);
             return PartialView("_ProductListPartial", products.Data);

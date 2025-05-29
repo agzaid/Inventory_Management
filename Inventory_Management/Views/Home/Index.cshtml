@@ -13,14 +13,14 @@
         }
     </section>
     <section id="product1" class="section-p1">
-        <h2>Featured Products</h2>
-        <p>Summer Collection New Modern Design</p>
+        <h2>Featured <span id="productSpecified">Products</span></h2>
+        @* <p>Summer Collection New Modern Design</p> *@
         <div id="products-container">
             <partial name="_ProductListPartial" model="Model.ProductVMs" />
         </div>
     </section>
 
-    <section id="banner" class="section-m1">
+    @* <section id="banner" class="section-m1">
         <h4>Repair Services</h4>
         <h2>Up to <span>70% off</span> - All t-Shirts & Accessories</h2>
         <button class="normal">Expore More</button>
@@ -200,7 +200,7 @@
             <input type="text" placeholder="Your email address">
             <button class="normal">Sign Up</button>
         </div>
-    </section>
+    </section> *@
     @section scripts {
         <script>
             //
@@ -217,6 +217,8 @@
                       $('.category-dropdown').on('click', function () {
                           debugger;
                             var categoryId = $(this).data('value');
+                            var categoryName = $(this).innerText;
+                            $('#productSpecified').text(categoryName);
                             $.ajax({
                                 url: '/Home/GetProductsByCategory',
                                 type: 'GET',
