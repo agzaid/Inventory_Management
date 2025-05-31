@@ -165,8 +165,10 @@
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
                      $("#cartNum")[0].innerHTML= 0;
+                     $("#cartNum1")[0].innerHTML= 0;
                  }else{
                      $("#cartNum")[0].innerHTML= cart.length;
+                     $("#cartNum1")[0].innerHTML= cart.length;
 
                 cart.forEach(function(item) {
                     AddNewRow(item);

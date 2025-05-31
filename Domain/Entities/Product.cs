@@ -11,8 +11,8 @@ namespace Domain.Entities
     public class Product : BaseEntity
     {
         public string? ProductName { get; set; }
-        //[MaxLength(100)]
-        //public string? Brand { get; set; }
+        [MaxLength(100)]
+        public string? Brand { get; set; }
         public string? Description { get; set; }
         public decimal? SellingPrice { get; set; }
         public decimal? OtherShopsPrice { get; set; }

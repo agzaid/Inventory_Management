@@ -73,6 +73,23 @@ var _Ajax = {
             },
             error: function (xhr, textStatus, errorThrown) { $errorcallBack(xhr); }
         });
+    },
+    ReturnHTML: function ($url, $params, $method, $beforecallBack, $successcallBack, $errorcallBack) {
+        debugger;
+        $.ajax({
+            type: $method,
+            url: $url,
+            contentType: 'application/json; charset=utf-8',
+            data: $params,
+            dataType: 'html',
+            beforeSend: function () {
+                $beforecallBack();
+            },
+            success: function (data) {
+                $successcallBack(data);
+            },
+            error: function (xhr, textStatus, errorThrown) { $errorcallBack(xhr); }
+        });
     }
 }
 

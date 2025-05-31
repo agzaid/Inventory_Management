@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="~/css/style.css" rel="stylesheet" />
     @RenderSection("Styles", required: false)
 </head>
@@ -107,8 +107,10 @@
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
                      $("#cartNum")[0].innerHTML= 0;
+                     $("#cartNum1")[0].innerHTML= 0;
                  }else{
                      $("#cartNum")[0].innerHTML= cart.length;
+                     $("#cartNum1")[0].innerHTML= cart.length;
                  }
 
             });

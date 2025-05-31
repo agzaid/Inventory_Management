@@ -1,18 +1,25 @@
-﻿<section id="header">
+﻿@{
+    var currentAction = ViewContext.RouteData.Values["action"] as string;
+    var currentController = ViewContext.RouteData.Values["controller"] as string;
+}
+
+<section id="header">
     <a asp-action="index"> <img src="~/images/logo.png" /> </a>
     <div>
         <ul id="navbar">
-            <li><a class="active" asp-action="index">Home</a></li>
-            <li><a asp-action="Shop">Shop</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a asp-action="Contact" asp-controller="Home">Contact</a></li>
-            <li id="lg-bag"><a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum" class="badge rounded-pill bg-danger"></span></i></a></li>
+            <li><a class="@(currentAction == "Index" && currentController == "Home" ? "active" : "")" asp-action="index">Home</a></li>
+            <li><a class=" @(currentAction == "Shop" && currentController == "Home" ? "active" : "")" asp-action="Shop">Shop</a></li>
+            @*   <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li> *@
+            <li><a asp-action="Contact" asp-controller="Home" class=" @(currentAction == "Contact" && currentController == "Home" ? "active" : "")">Contact</a></li>
+            <li id="lg-bag" class=" @(currentAction == "Cart" && currentController == "Home" ? "active" : "")">
+                <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum" class="badge rounded-pill bg-danger"></span></i></a>
+            </li>
             <a href="#" id="close"><i class="ri-close-large-fill"></i></a>
         </ul>
     </div>
     <div id="mobile">
-        <a href="cart.html"><i class="ri-shopping-bag-line"></i></a>
+        <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum1" style="font-size: .60em;" class="badge rounded-pill bg-danger"></span></i></a>
         <i id="bar" class="ri-menu-fold-3-fill"></i>
     </div>
 </section>
@@ -24,8 +31,11 @@
             debugger;
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == []){
-                     $("cartNum").innerHTML= 0;
+                     $("#cartNum").innerHTML= 0;
+                     $("#cartNum1").innerHTML= 0;
                  }else{
+                        $("#cartNum").innerHTML = cart.length;
+                        $("#cartNum1").innerHTML = cart.length;
              }
         });
     </script>

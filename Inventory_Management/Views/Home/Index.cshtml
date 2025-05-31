@@ -4,6 +4,9 @@
     <!--start feature -->
     @* <partial name="_Feature"> *@
     <section id="feature" class="section-p1">
+        <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
+            <h6>All Products</h6>
+        </div>
         @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
         {
             <div class="category-dropdown mx-1 fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
@@ -209,8 +212,10 @@
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
                      $("#cartNum")[0].innerHTML= 0;
+                     $("#cartNum1")[0].innerHTML= 0;
                  }else{
                      $("#cartNum")[0].innerHTML= cart.length;
+                     $("#cartNum1")[0].innerHTML= cart.length;
                  }
 
 

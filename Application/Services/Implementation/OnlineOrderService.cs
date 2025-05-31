@@ -131,6 +131,57 @@ namespace Application.Services.Implementation
                 return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
         }
+        public Task<Result<List<ProductVM>>> GetProductsByName(string? name)
+        {
+            try
+            {
+                var retrievedImages = new List<string>();
+                var image64 = new List<string>();
+                var productVMs = new List<ProductVM>();
+
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && s.ProductName.Contains(name), "Category,Images");
+                var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                foreach (var item in products)
+                {
+                    retrievedImages.Clear();
+                    if (item.Images?.Count() > 0)
+                    {
+                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                        retrievedImages.AddRange(image64);
+                    }
+                    var productVM = new ProductVM()
+                    {
+                        Id = item.Id,
+                        ProductName = item.ProductName?.ToUpper(),
+                        Description = item.Description,
+                        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                        SellingPrice = item.SellingPrice,
+                        OtherShopsPrice = item.OtherShopsPrice,
+                        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                        StockQuantity = item.StockQuantity,
+                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                        Barcode = item.Barcode,
+                        ListOfRetrievedImages = image64,
+                    };
+                    productVMs.Add(productVM);
+                }
+
+                return Task.FromResult(Result<List<ProductVM>>.Success(productVMs, "success"));
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                {
+                    _logger.LogError(ex, ex.Message);
+                }
+                return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
+            }
+        }
         public async Task<List<SelectListItem>> ShippingFreightSelectList()
         {
             try

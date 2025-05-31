@@ -7,7 +7,7 @@
             <div class="fm-search">
                 <div class="mb-0">
                     <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent" id="porductSearch" style="cursor:pointer"><i class='bx bx-search'></i></span>
+                        <span class="input-group-text bg-transparent" id="porductSearch" style="cursor:pointer"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <input id="inputSearch" type="text" class="form-control" placeholder="Search products">
                     </div>
                 </div>
@@ -15,6 +15,8 @@
         </div>
     </div>
 </div>
+
+<h5 class="mt-5 text-center"> Welcome to our Shop where best prices is under your hand </h5>
 
 <section id="feature" class="section-p1">
     <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
@@ -253,18 +255,47 @@
 
 
                   $('.category-dropdown').on('click', function () {
-                      debugger;
-                        var categoryId = $(this).data('value');
-                        $.ajax({
-                            url: '/Home/GetProductsByCategory',
-                            type: 'GET',
-                            data: { categoryId: categoryId },
-                            success: function (data) {
-                                $('#products-container').html(data);
-                            }
-                        });
+                      var categoryId = $(this).data('value');
+                      var url = '@Url.Action("GetProductsByCategory", "Home")';
+                      Search(categoryId,url);
              });
 
-        });
+                  $('#inputSearch').on('input', function () {
+                      debugger;
+                      var query = $(this).val();
+                      if (query.length > 2) {
+                       var url = '@Url.Action("GetProductsByName", "Home")';
+                      SearchProduct(query,url);
+                      }
+                 });
+             });
+             function Search(inputSearch, url){
+                 debugger;
+                 var $url = url;
+                 var parameter = {
+                     categoryId: inputSearch
+                 };
+                 _Ajax.ReturnHTML($url, parameter, "GET", function () { },
+                     function (data) {
+                         $('#products-container').html(data);
+                     },
+                     function (xhr) {
+                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                     });
+             };
+             function SearchProduct(inputSearch, url){
+                 debugger;
+                 var $url = url;
+                 var parameter = {
+                     name: inputSearch
+                 };
+                 _Ajax.ReturnHTML($url, parameter, "GET", function () { },
+                     function (data) {
+                         $('#products-container').html(data);
+                     },
+                     function (xhr) {
+                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                     });
+                    };
     </script>
 }
