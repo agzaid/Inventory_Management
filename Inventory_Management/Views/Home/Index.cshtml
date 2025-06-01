@@ -2,7 +2,7 @@
 <partial name="_Hero">
     <!--end Hero -->
     <!--start feature -->
-    @* <partial name="_Feature"> *@
+@* <partial name="_Feature"> *@
     <section id="feature" class="section-p1">
         <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
             <h6>All Products</h6>
@@ -19,11 +19,19 @@
         <h2>Featured <span id="productSpecified">Products</span></h2>
         @* <p>Summer Collection New Modern Design</p> *@
         <div id="products-container">
-            <partial name="_ProductListPartial" model="Model.ProductVMs" />
+            <div class="pro-container" id="pro-container">
+                <partial name="_ProductListPartial" model="Model.ProductVMs" />
+            </div>
         </div>
     </section>
+    <section id="banner" style="height:0px" class="section-m1">
+        <button class="normal" style="background-color: #088178; color: #fff;" id="exploreMore">
+            Explore More
+        </button>
+    </section>
 
-    @* <section id="banner" class="section-m1">
+
+@* <section id="banner" class="section-m1">
         <h4>Repair Services</h4>
         <h2>Up to <span>70% off</span> - All t-Shirts & Accessories</h2>
         <button class="normal">Expore More</button>
@@ -204,10 +212,13 @@
             <button class="normal">Sign Up</button>
         </div>
     </section> *@
-    @section scripts {
+@section scripts {
         <script>
             //
             $(document).ready(function() {
+                 var pageNumber = 1;
+                 var pageSize = 10;
+
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
@@ -229,11 +240,26 @@
                                 type: 'GET',
                                 data: { categoryId: categoryId },
                                 success: function (data) {
-                                    $('#products-container').html(data);
+                                    $('#pro-container').html(data);
                                 }
                             });
                  });
+                      $('#exploreMore').on('click', function () {
+                          debugger;
+                             var $url = "@Url.Action("GetPaginatedProducts", "Home")";
+                             var parameter = {
+                                 pageNumber: pageNumber,
+                                 pageSize: pageSize
+                             };
+                             _Ajax.ReturnHTML($url, parameter, "GET", function () { },
+                                 function (data) {
+                                     $('#pro-container').append(data);
+                                 },
+                                 function (xhr) {
+                                     _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                                 });
+                         });
 
             });
         </script>
-    }
+}

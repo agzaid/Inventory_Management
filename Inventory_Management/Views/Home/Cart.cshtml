@@ -180,12 +180,10 @@
 
                  });
                  // $("#checkout").click(function(event){
-                 //     debugger;
                  //     event.preventDefault();
                  //    // submitCart();
                  // });
                   $('#customerForm').submit(function(event) {
-                    debugger;
                     event.preventDefault();
                     //validateEntries(event);
                     submitCart();
@@ -227,17 +225,13 @@
                  if(customerName!="" && customerAddress!="" && customerPhone!=""){
                     _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
                      function (data) {
-                         debugger;
                          var res = JSON.parse(data);
                          if (res != null && res.IsSuccess==true) {
-                             debugger;
                             MappingToFields(res);
                          } else
-                         debugger;
                              _SWAL.AlertWithoutNotification(res.Message);
                      },
                      function (xhr) {
-                         debugger;
                          _SWAL.AlertWithoutNotification("Something went wrong..!!");
                      });
                  }
@@ -305,7 +299,6 @@
              };
 
          async function Delete(event) {
-             debugger;
              var deleteBtn = $(event.target);
              var rowToDelete = deleteBtn.closest('tr');
              var productId = rowToDelete[0].id;
@@ -327,7 +320,6 @@
                         localStorage.setItem('cart', JSON.stringify(cart));
                   }
          function AddToCart(productId, productName, productPrice, Quantity) {
-                  debugger;
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
                  const existingProductIndex = cart.findIndex(item => item.productId === productId);
 
@@ -346,7 +338,6 @@
              }
 
          function Decrement(event) {
-                     debugger;
                        var addBtn = $(event.target);
                        var inputField = addBtn.siblings('.stock-input');
                        var productId = addBtn[0].id;

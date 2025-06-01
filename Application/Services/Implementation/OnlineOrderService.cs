@@ -6,6 +6,7 @@ using Domain.Enums;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Web.Mvc;
 
 namespace Application.Services.Implementation
@@ -181,6 +182,49 @@ namespace Application.Services.Implementation
                 }
                 return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
+        }
+        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize)
+        {
+            try
+            {
+                Expression<Func<Product, bool>> filter = s => s.IsDeleted == false;
+                Expression<Func<Product, object>> includes = x => x.Images;
+                Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy;
+                orderBy = s => s.OrderByDescending(s => s.ProductName);
+
+                var products = await _unitOfWork.Product.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter,includes);
+
+                var showProducts = products.Items.Select(s => new ProductVM()
+                {
+                    Id = s.Id,
+                    ProductName = s.ProductName?.ToUpper(),
+                    Description = s.Description,
+                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    SellingPrice = s.SellingPrice,
+                    OtherShopsPrice = s.OtherShopsPrice,
+                    DifferencePercentage = Math.Ceiling(s.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                    StockQuantity = s.StockQuantity,
+                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    Barcode = s.Barcode,
+                    ListOfRetrievedImages = s.Images?.Select(a => FileExtensions.ByteArrayToImageBase64(a.ImageByteArray)).ToList(),
+                }).ToList();
+                var paginatedResult = new PaginatedResult<ProductVM>
+                {
+                    Items = showProducts,
+                    TotalCount = products.TotalCount,
+                    PageNumber = products.PageNumber,
+                    PageSize = products.PageSize
+                };
+                return Result<PaginatedResult<ProductVM>>.Success(paginatedResult, "success");
+               // return paginatedResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while Getting products paginated");
+                throw;
+            }
+
         }
         public async Task<List<SelectListItem>> ShippingFreightSelectList()
         {

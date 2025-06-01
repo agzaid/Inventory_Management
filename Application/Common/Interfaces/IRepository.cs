@@ -15,6 +15,6 @@ namespace Application.Common.Interfaces
         void Add(T entity);
         bool Any(Expression<Func<T, bool>> filter);
         void Remove(T entity);
-        Task<PaginatedResult<T>> GetPaginatedAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Expression<Func<T, bool>> filter = null);
+        Task<PaginatedResult<T>> GetPaginatedAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes);
     }
 }

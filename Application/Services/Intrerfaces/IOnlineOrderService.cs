@@ -22,5 +22,6 @@ namespace Application.Services.Intrerfaces
         ProductVM GetProductById(int id);
         Result<List<OnlineOrderVM>> GetAllOrdersToBeInvoiced();
         Result<InvoiceVM> GetInvoiceForSpecificOnlineOrder(int id);
+        Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize);
     }
 }

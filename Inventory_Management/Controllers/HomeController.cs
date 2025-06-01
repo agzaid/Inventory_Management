@@ -1,16 +1,17 @@
-using System.Diagnostics;
+using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
+using Domain.Entities;
+using Domain.Models;
 using Domain.Models;
 using Infrastructure.Data;
-using Domain.Models;
+using Inventory_Management.Models;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Inventory_Management.Models;
-using System.Web.Razor.Tokenizer.Symbols;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Diagnostics;
-using Application.Services.Implementation;
+using System.Web.Razor.Tokenizer.Symbols;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Inventory_Management.Controllers
 {
@@ -91,6 +92,11 @@ namespace Inventory_Management.Controllers
                 return Json(cart.Result);
             }else
                 return View(cart); 
+        }
+        public async Task<IActionResult> GetPaginatedProducts(int pageNumber = 1, int pageSize = 10)
+        {
+            var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize);
+            return PartialView("_ProductListPartial", product.Data.Items);
         }
         public IActionResult Contact()
         {

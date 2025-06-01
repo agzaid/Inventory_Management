@@ -34,9 +34,11 @@
     <h2>Featured Products</h2>
     @* <p>Summer Collection New Modern Design</p> *@
     <div id="products-container">
-        <partial name="_ProductListPartial" model="Model.ProductVMs" />
+        <div class="pro-container">
 
-        @*  @for (int i = 0; i < Model.ProductVMs?.Count; i++)
+            <partial name="_ProductListPartial" model="Model.ProductVMs" />
+
+            @*  @for (int i = 0; i < Model.ProductVMs?.Count; i++)
         {
             <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model.ProductVMs[i].Id">
                 <div class="pro mx-1">
@@ -57,6 +59,7 @@
                 </div>
             </a>
         } *@
+        </div>
     </div>
 </section>
 @* 
@@ -277,7 +280,7 @@
                  };
                  _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                      function (data) {
-                         $('#products-container').html(data);
+                         $('#pro-container').html(data);
                      },
                      function (xhr) {
                          _SWAL.AlertWithoutNotification("Something went wrong..!!");
@@ -291,7 +294,7 @@
                  };
                  _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                      function (data) {
-                         $('#products-container').html(data);
+                         $('#pro-container').html(data);
                      },
                      function (xhr) {
                          _SWAL.AlertWithoutNotification("Something went wrong..!!");

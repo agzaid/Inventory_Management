@@ -89,7 +89,9 @@ namespace Infrastructure.Repo
         {
             dbSet.Remove(entity);
         }
-        public async Task<PaginatedResult<T>> GetPaginatedAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Expression<Func<T, bool>> filter = null)
+        public async Task<PaginatedResult<T>> GetPaginatedAsync(int pageNumber, int pageSize, Func<IQueryable<T>
+            , IOrderedQueryable<T>> orderBy = null, Expression<Func<T, bool>> filter = null
+            , params Expression<Func<T, object>>[] includes)
         {
             var query = dbSet.AsQueryable();
 
@@ -101,6 +103,13 @@ namespace Infrastructure.Repo
             if (orderBy != null)
             {
                 query = orderBy(query);
+            }
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             var totalCount = await query.CountAsync();
