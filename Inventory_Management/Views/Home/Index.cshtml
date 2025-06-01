@@ -253,6 +253,7 @@
                              };
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                                  function (data) {
+                                     pageNumber++;
                                      $('#pro-container').append(data);
                                  },
                                  function (xhr) {

@@ -115,7 +115,7 @@ namespace Infrastructure.Repo
             var totalCount = await query.CountAsync();
 
             var items = await query
-                .Skip((pageNumber-1)*pageSize)
+                .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
