@@ -1,0 +1,34 @@
+﻿<section id="banner" style="height:0px" class="section-m1">
+    <button class="normal" style="background-color: #088178; color: #fff;" id="exploreMore">
+        Explore More
+    </button>
+</section>
+
+<h1>hello gamal Explore more</h1>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            console.log("Explore More Section Loaded");
+            var pageNumber = 2;
+            var pageSize = 10;
+
+            $('#exploreMore').on('click', function () {
+                debugger;
+                var $url = "@Url.Action("GetPaginatedProducts", "Home")";
+                var parameter = {
+                    pageNumber: pageNumber,
+                    pageSize: pageSize
+                };
+                _Ajax.ReturnHTML($url, parameter, "GET", function () { },
+                    function (data) {
+                        pageNumber++;
+                        $('#pro-container').append(data);
+                    },
+                    function (xhr) {
+                        _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                    });
+            });
+        });
+    </script>
+}
