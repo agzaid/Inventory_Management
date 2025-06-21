@@ -2,16 +2,20 @@ using Application.Common.Interfaces;
 using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
 using Infrastructure.Data;
+using Infrastructure.Localization;
 using Infrastructure.Repo;
 using Inventory_Management.DependencyInjection;
 using Inventory_Management.Middleware;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Serilog;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -19,6 +23,31 @@ option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection
 // adding Dependency Injection
 builder.Services.AddAppDI();
 
+// localization setup
+#region localization setup
+var env = builder.Environment;
+var localizationFilePath = Path.Combine(env.ContentRootPath, "Resources", "localization.json");
+
+builder.Services.AddSingleton<IStringLocalizerFactory>(new Infrastructure.Localization.JsonStringLocalizerFactory(localizationFilePath));
+builder.Services.AddSingleton<IStringLocalizer>(provider =>
+{
+    var factory = provider.GetRequiredService<IStringLocalizerFactory>();
+    return factory.Create(null!);
+});
+builder.Services.AddLocalization();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+
+var supportedCultures = new[] { "en", "ar" };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+});
+#endregion localization setup
+//end
 
 // Set up Serilog for file logging
 Log.Logger = new LoggerConfiguration()
@@ -65,7 +94,9 @@ else
 app.UseHttpsRedirection();
 
 
-app.UseStaticFiles(); 
+app.UseStaticFiles();
+
+app.UseRequestLocalization();
 
 app.UseRouting();
 

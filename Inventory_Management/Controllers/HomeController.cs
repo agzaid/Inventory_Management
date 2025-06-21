@@ -7,6 +7,7 @@ using Infrastructure.Data;
 using Inventory_Management.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -19,12 +20,13 @@ namespace Inventory_Management.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IOnlineOrderService _onlineOrderService;
+        private readonly IStringLocalizer _localizer;
 
-
-        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService)
+        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService, IStringLocalizer localizer)
         {
             _logger = logger;
             _onlineOrderService = onlineOrderService;
+            _localizer = localizer;
         }
 
         public IActionResult Index(string? message)
@@ -38,6 +40,7 @@ namespace Inventory_Management.Controllers
             //{
             //    TempData["error"] = message;
             //}
+            //ViewData["Greeting"] = _localizer["Greeting"];
             return View(portal);
         }
         public IActionResult Shop()

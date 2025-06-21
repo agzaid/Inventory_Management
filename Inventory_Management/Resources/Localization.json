@@ -1,0 +1,12 @@
+{
+  "en": {
+    "Greeting": "Hello",
+    "Welcome": "Welcome to the site",
+    "AllProducts": "All Products"
+  },
+  "ar": {
+    "Greeting": "كيف حالك",
+    "Welcome": "مرحبا",
+    "AllProducts": "جميع المنتجات"
+  }
+}
