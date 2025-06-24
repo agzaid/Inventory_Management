@@ -2,7 +2,17 @@
     var currentAction = ViewContext.RouteData.Values["action"] as string;
     var currentController = ViewContext.RouteData.Values["controller"] as string;
 }
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
 
+    var cultureItems = LocalizationOptions.Value.SupportedUICultures
+    .Select(c => new SelectListItem { Value = c.Name, Text = c.Name })
+    .ToList();
+
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path)
+    ? "~/"
+    : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
+}
 <section id="header">
     <a asp-action="index"> <img src="~/images/logo.png" /> </a>
     <div>
@@ -15,9 +25,25 @@
             <li id="lg-bag" class=" @(currentAction == "Cart" && currentController == "Home" ? "active" : "")">
                 <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum" class="badge rounded-pill bg-danger"></span></i></a>
             </li>
+            <li class="nav-item dropdown">
+               @*  <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="ri-global-line"></i>
+                </a> *@
+                <ul class="">
+                    <form asp-controller="Culture" asp-action="SetCulture" asp-route-returnUrl="@returnUrl" class="px-3">
+                        <select name="culture"
+                                onchange="this.form.submit();"
+                                asp-for="@requestCulture.RequestCulture.UICulture.Name"
+                                asp-items="cultureItems"
+                                class="form-select form-select-sm">
+                        </select>
+                    </form>
+                </ul>
+            </li>
             <a href="#" id="close"><i class="ri-close-large-fill"></i></a>
         </ul>
     </div>
+
     <div id="mobile">
         <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum1" style="font-size: .60em;" class="badge rounded-pill bg-danger"></span></i></a>
         <i id="bar" class="ri-menu-fold-3-fill"></i>

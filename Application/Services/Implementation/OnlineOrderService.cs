@@ -6,6 +6,7 @@ using Domain.Enums;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 
@@ -24,6 +25,8 @@ namespace Application.Services.Implementation
 
         public PortalVM GetAllProductsForPortal()
         {
+            //var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
             var retrievedImages = new List<string>();
             var image64 = new List<string>();
             var productVMs = new List<ProductVM>();

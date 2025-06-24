@@ -4,3 +4,10 @@
 
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer Localizer
+
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+
+@inject IOptions<RequestLocalizationOptions> LocalizationOptions
+
+
