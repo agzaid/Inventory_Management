@@ -25,7 +25,7 @@ namespace Application.Services.Implementation
 
         public PortalVM GetAllProductsForPortal()
         {
-            //var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 
             var retrievedImages = new List<string>();
             var image64 = new List<string>();

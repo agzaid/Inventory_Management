@@ -17,11 +17,11 @@
     <a asp-action="index"> <img src="~/images/logo.png" /> </a>
     <div>
         <ul id="navbar">
-            <li><a class="@(currentAction == "Index" && currentController == "Home" ? "active" : "")" asp-action="index">Home</a></li>
-            <li><a class=" @(currentAction == "Shop" && currentController == "Home" ? "active" : "")" asp-action="Shop">Shop</a></li>
+            <li><a class="@(currentAction == "Index" && currentController == "Home" ? "active" : "")" asp-action="index">@Localizer["Home"]</a></li>
+            <li><a class=" @(currentAction == "Shop" && currentController == "Home" ? "active" : "")" asp-action="Shop">@Localizer["Shop"]</a></li>
             @*   <li><a href="blog.html">Blog</a></li>
             <li><a href="about.html">About</a></li> *@
-            <li><a asp-action="Contact" asp-controller="Home" class=" @(currentAction == "Contact" && currentController == "Home" ? "active" : "")">Contact</a></li>
+            <li><a asp-action="Contact" asp-controller="Home" class=" @(currentAction == "Contact" && currentController == "Home" ? "active" : "")">@Localizer["ContactUs"]</a></li>
             <li id="lg-bag" class=" @(currentAction == "Cart" && currentController == "Home" ? "active" : "")">
                 <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum" class="badge rounded-pill bg-danger"></span></i></a>
             </li>

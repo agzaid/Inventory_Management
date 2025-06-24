@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<h5 class="mt-5 text-center"> Welcome to our Shop where best prices is under your hand </h5>
+<h5 class="mt-5 text-center">@Localizer["WelcomeToOurShop"]</h5>
 
 <section id="feature" class="section-p1">
     <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
@@ -31,7 +31,7 @@
     }
 </section>
 <section id="product1" class="section-p1">
-    <h2>Featured Products</h2>
+    <h2>@Localizer["FeaturedProducts"]</h2>
     @* <p>Summer Collection New Modern Design</p> *@
     <div id="products-container">
         <div class="pro-container" id="pro-container">
@@ -64,7 +64,7 @@
 </section>
 <section id="banner" style="height:0px" class="section-m1">
     <button class="normal" style="cursor:pointer;background-color: #088178; color: #fff;" id="exploreMore">
-        Explore More
+        @Localizer["ExploreMore"]
     </button>
 </section>
 @* 
@@ -307,7 +307,8 @@
                          $('#pro-container').html(data);
                      },
                      function (xhr) {
-                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                         _SWAL.AlertWithoutNotification("@Localizer["SomethingWentWrong"]");
+                         // _SWAL.AlertWithoutNotification(`@Html.Raw(Localizer["SomethingWentWrong"])`);
                      });
              };
              function SearchProduct(inputSearch, url){

@@ -2,11 +2,28 @@
   "en": {
     "Greeting": "Hello",
     "Welcome": "Welcome to the site",
-    "AllProducts": "All Products"
+    "AllProducts": "All Products",
+    "FeaturedProducts": "Featured Products",
+    "ExploreMore": "Explore More",
+    "Discount": "Discount",
+    "ShopNow": "Shop Now",
+    "Home": "Home",
+    "Shop": "Shop",
+    "ContactUs": "Contact Us",
+    "WelcomeToOurShop": "Welcome to our Shop where best prices is under your hand"
+
   },
   "ar": {
     "Greeting": "كيف حالك",
     "Welcome": "مرحبا",
-    "AllProducts": "جميع المنتجات"
+    "AllProducts": "جميع المنتجات",
+    "FeaturedProducts": "المنتجات المميزة",
+    "ExploreMore": "استكشف المزيد",
+    "Discount": "خصم",
+    "ShopNow": "تسوق الآن",
+    "Home": "الرئيسية",
+    "Shop": "تسوق",
+    "ContactUs": "اتصل بنا",
+    "WelcomeToOurShop": "مرحبًا بكم في متجرنا حيث أفضل الأسعار في متناول يدك"
   }
 }
