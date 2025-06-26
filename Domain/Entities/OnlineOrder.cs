@@ -1,6 +1,7 @@
 ﻿using Domain.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +14,13 @@ namespace Domain.Entities
         {
             OrderNumber = Generate12DigitSerialNumber();
         }
+        [MaxLength(100)]
         public string? OrderNumber { get; private set; }
+        [MaxLength(100)]
         public string? IndividualProductsNames { get; set; }
+        [MaxLength(100)]
         public string? IndividualProductsPrices { get; set; }
+        [MaxLength(100)]
         public string? IndividualProductsQuatities { get; set; }
         public double? GrandTotalAmount { get; set; }
         public double? AmountBeforeShipping{ get; set; }

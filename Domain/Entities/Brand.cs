@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Category : BaseEntity
+    public class Brand : BaseEntity
     {
         [MaxLength(100)]
-        public string? CategoryName { get; set; }
+        public string? BrandName { get; set; }
         [MaxLength(100)]
-        public string? CategoryNameAr { get; set; }
+        public string? BrandNameAr { get; set; }
         [MaxLength(800)]
         public string? Description { get; set; }
 

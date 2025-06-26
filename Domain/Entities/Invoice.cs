@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Entities
 {
     public class Invoice : BaseEntity
     {
@@ -6,6 +8,7 @@
         {
             InvoiceNumber = Generate12DigitSerialNumber();
         }
+        [MaxLength(200)]
         public string? InvoiceNumber { get; private set; }
         public string? AllProductItems { get; set; }
         public decimal? ProductsOnlyAmount { get; set; }

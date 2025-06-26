@@ -10,7 +10,9 @@
     "Home": "Home",
     "Shop": "Shop",
     "ContactUs": "Contact Us",
-    "WelcomeToOurShop": "Welcome to our Shop where best prices is under your hand"
+    "WelcomeToOurShop": "Welcome to our Shop where best prices is under your hand",
+    "letstalk": "let's_talk",
+    "WeAreHereToChat": "We are here to chat together"
 
   },
   "ar": {
@@ -24,6 +26,8 @@
     "Home": "الرئيسية",
     "Shop": "تسوق",
     "ContactUs": "اتصل بنا",
-    "WelcomeToOurShop": "مرحبًا بكم في متجرنا حيث أفضل الأسعار في متناول يدك"
+    "WelcomeToOurShop": "مرحبًا بكم في متجرنا حيث أفضل الأسعار في متناول يدك",
+    "letstalk": "دعنا نتحدث",
+    "WeAreHereToChat": "نحن هنا للدردشة معًا"
   }
 }

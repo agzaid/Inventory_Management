@@ -72,7 +72,7 @@ namespace Application.Services.Implementation
                         {
                             ProductName = product.ProductName,
                             Description = product.Description,
-                            Brand = product.Brand,
+                            BrandId = 1,
                             Barcode = product.Barcode,
                             Create_Date = DateTime.Now,
                             SellingPrice = product.SellingPrice,
@@ -193,12 +193,12 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category");
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Brand");
                 var showProducts = products.Select(s => new ProductVM()
                 {
                     Id = s.Id,
                     ProductName = s.ProductName?.ToUpper(),
-                    Brand = s.Brand?.ToUpper(),
+                    //Brand = s.Brand?.ToUpper(),
                     Description = s.Description,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
@@ -224,7 +224,7 @@ namespace Application.Services.Implementation
             var productVMs = new List<ProductVM>();
             try
             {
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images");
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images,Brand");
 
                 foreach (var item in products)
                 {
@@ -239,7 +239,7 @@ namespace Application.Services.Implementation
                         Id = item.Id,
                         ProductName = item.ProductName?.ToUpper(),
                         Description = item.Description,
-                        Brand = item.Brand,
+                        //Brand = item.Brand,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,
                         StockQuantity = item.StockQuantity,
@@ -264,14 +264,14 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var product = _unitOfWork.Product.Get(u => u.Id == id, "Images");
+                var product = _unitOfWork.Product.Get(u => u.Id == id, "Images,Brand");
                 if (product != null)
                 {
                     var productVM = new ProductVM()
                     {
                         ProductName = product.ProductName ?? "",
                         Description = product.Description ?? "",
-                        Brand = product.Brand ?? "",
+                        //Brand = product.Brand ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
                         SellingPrice = product.SellingPrice ?? decimal.Parse("0.00"),

@@ -1,8 +1,12 @@
-﻿namespace Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Entities
 {
     public class Image : BaseEntity
     {
+        [MaxLength(600)]
         public string? ImageName { get; set; }
+        [MaxLength(800)]
         public string? FilePath { get; set; }
         public byte[]? ImageByteArray { get; set; }
         public int? ViewingOrder { get; set; }

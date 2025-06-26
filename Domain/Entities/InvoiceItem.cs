@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,16 +12,16 @@ namespace Domain.Entities
         private string? productName;
 
         // here you will put all other properties that are not there in other entities
+        [MaxLength(200)]
         public string? ProductName
         {
             get { return productName; }
-            set { productName = value.ToLower(); }
+            set { productName = value?.ToLower(); }
         }
         public double? IndividualDiscount { get; set; }
         public int? Quantity { get; set; }
         public decimal? PriceSoldToCustomer { get; set; }
         public double? ShippingPrice { get; set; }
-
 
         public int? StockQuantityFromProduct { get; set; }
         public decimal? DifferencePercentageFromProduct { get; set; }
