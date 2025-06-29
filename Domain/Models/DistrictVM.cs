@@ -10,6 +10,8 @@ namespace Domain.Models
         [Required]
         public string? Name { get; set; }
         [Required]
+        public string? NameAr { get; set; }
+        [Required]
         public double? Price { get; set; }
         public string? CreatedDate { get; set; }
         public string? AreaName { get; set; }

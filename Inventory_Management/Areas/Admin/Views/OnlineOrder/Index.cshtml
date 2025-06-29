@@ -36,7 +36,10 @@
                                             <td>@item.OrderNumber</td>
                                             <td>@item.CustomerName</td>
                                             <td>@item.OrderDate</td>
-                                            <td>@item.Status.ToString()</td>
+                                            @* <td>@item.Status.ToString()</td> *@
+                                            <td class="@(item.Status.ToString() == "InProgress" ? "text-warning" : item.Status.ToString() == "ReadyToBeDelivered" ? "text-info" : item.Status.ToString().ToLowerInvariant() == "completed" ? "text-info" : "")">
+                                                @item.Status
+                                            </td>
                                             <td class="text-center" style="font-size:20px">
                                                 <a class="me-3" asp-action="ViewOrder" asp-route-orderNum="@item.OrderNumber" title="Create Order">
                                                     <i class="lni lni-eye"></i>

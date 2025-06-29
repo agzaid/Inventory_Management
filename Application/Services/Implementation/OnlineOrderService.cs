@@ -195,7 +195,7 @@ namespace Application.Services.Implementation
                 Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.ProductName);
 
-                var products = await _unitOfWork.Product.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter,includes);
+                var products = await _unitOfWork.Product.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter, includes);
 
                 var showProducts = products.Items.Select(s => new ProductVM()
                 {
@@ -220,7 +220,7 @@ namespace Application.Services.Implementation
                     PageSize = products.PageSize
                 };
                 return Result<PaginatedResult<ProductVM>>.Success(paginatedResult, "success");
-               // return paginatedResult;
+                // return paginatedResult;
             }
             catch (Exception ex)
             {
@@ -293,6 +293,7 @@ namespace Application.Services.Implementation
                     ShippingFreight shipping = null;
                     IEnumerable<DeliverySlot> deliverySlot;
                     double shippingPrice = 0;
+                    var grandTotalPrice = 0;
                     if (!string.IsNullOrWhiteSpace(cart.ShippingAreaPrice) && double.TryParse(cart.ShippingAreaPrice, out var parsedShippingPrice))
                     {
                         shippingPrice = parsedShippingPrice;
@@ -337,7 +338,7 @@ namespace Application.Services.Implementation
                         IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
                         GrandTotalAmount = cart.TotalPrice,
                         AmountBeforeShipping = cart.PriceBeforeShipping,
-                        //Customer = customer,
+                        CustomerId = customer.Id,
                         ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
                         ShippingNotes = cart.CustomerAddress,
                         DeliverySlotsAsString = cart.SelectedSlots,
@@ -372,9 +373,11 @@ namespace Application.Services.Implementation
                                 ProductTagsFromProduct = product.ProductTags,
                                 BarcodeFromProduct = product.Barcode,
                             };
+                            grandTotalPrice += (int)(decimal.Parse(onlineOrder.IndividualProductsQuatities) * product.SellingPrice);
                             onlineOrder.InvoiceItems?.Add(invoiceItem);
                         }
                     }
+                    onlineOrder.GrandTotalAmount = grandTotalPrice + onlineOrder.ShippingPrice;
                     _unitOfWork.OnlineOrder.Add(onlineOrder);
                     await _unitOfWork.Save();
                 }
@@ -519,7 +522,7 @@ namespace Application.Services.Implementation
                     Id = s.Id,
                     OrderNumber = s.OrderNumber,
                     CustomerName = s.Customer?.CustomerName,
-                    OrderDate = s.OrderDate.ToString("yyyy-MM-dd"),
+                    OrderDate = s.OrderDate.ToString("yyyy-MM-dd:HH:mm:ss"),
                     OrderStatus = s.OrderStatus.ToString(),
                     GrandTotalAmount = s.GrandTotalAmount,
                     Status = s.OrderStatus,

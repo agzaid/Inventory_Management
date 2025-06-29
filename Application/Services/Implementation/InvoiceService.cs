@@ -39,6 +39,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     CustomerName = s.Customer?.CustomerName,
+                    CustomerNameAr = s.Customer?.CustomerNameAr,
                     InvoiceNumber = s.InvoiceNumber,
                     TotalAmount = (decimal)s.GrandTotalAmount,
                     PhoneNumber = s.Customer?.Phone,
@@ -78,7 +79,7 @@ namespace Application.Services.Implementation
                         PriceSoldToCustomer = decimal.Parse(invoiceVM.priceInput[i]),
                         ShippingPrice = invoiceVM.shippingInput,
                         IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] == null ? "0" : invoiceVM.individualDiscount[i]),
-                        Product = product
+                        //Product = product
                     };
                     if (productQuantityMap.ContainsKey(product.Id))
                     {
@@ -102,6 +103,7 @@ namespace Application.Services.Implementation
                         _unitOfWork.Product.Update(productUpdate); // Update product only once
                     }
                 }
+                invoice.InvoiceNumber = invoiceVM.InvoiceNumber;
                 invoice.AreaId = area?.Id;
                 //invoice.Customer = customer;
                 invoice.CustomerId = customer?.Id;
@@ -112,12 +114,17 @@ namespace Application.Services.Implementation
                 invoice.AllProductItems = string.Join(',', invoiceVM.productInput);
                 invoice.ShippingNotes = invoiceVM.ShippingNotes;
                 invoice.ShippingPrice = double.Parse(invoiceVM.AreaId);
+                
+                //change onlineOrderStatus
+                var onlineOrder = _unitOfWork.OnlineOrder.Get(s=>s.OrderNumber == invoice.InvoiceNumber);
+                onlineOrder.OrderStatus = Status.ReadyToBeDelivered;
+                _unitOfWork.OnlineOrder.Update(onlineOrder);
 
                 //delete from quantity products
-
                 _unitOfWork.Invoice.Add(invoice);
-                _unitOfWork.Save();
-                
+                await _unitOfWork.Save();
+
+
                 // add invoice number from order number and make a relation between invoice and order
 
                 return new string[] { "success", "Invoice Created Successfully" };
@@ -337,7 +344,7 @@ namespace Application.Services.Implementation
                              StockQuantity = s.StockQuantity,
                              CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                              Barcode = s.Barcode,
-                             
+
                              //ListOfRetrievedImages = s.Images?.Select(v => FileExtensions.ByteArrayToImageBase64(v.ImageByteArray)).ToList()
                          })
                          .ToList();

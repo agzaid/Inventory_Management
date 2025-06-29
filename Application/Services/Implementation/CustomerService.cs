@@ -30,6 +30,7 @@ namespace Application.Services.Implementation
                     Address = s.Address,
                     Area = s.Area,
                     CustomerName = s.CustomerName,
+                    CustomerNameAr = s.CustomerNameAr,
                     Email = s.Email,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                 }).ToList();
@@ -78,6 +79,7 @@ namespace Application.Services.Implementation
                     var customer = new Customer()
                     {
                         CustomerName = obj.CustomerName,
+                        CustomerNameAr = obj.CustomerNameAr,
                         Area = obj.Area,
                         Address = obj.Address,
                         Email = obj.Email,
@@ -108,7 +110,8 @@ namespace Application.Services.Implementation
                     var customerVM = new CustomerVM()
                     {
                         CustomerName = customer.CustomerName,
-                         AreaId = customer.Area,
+                        CustomerNameAr = customer.CustomerNameAr,
+                        AreaId = customer.Area,
                         Address = customer.Address,
                         Email = customer.Email,
                         Phone = customer.Phone,
@@ -139,6 +142,7 @@ namespace Application.Services.Implementation
                 if (oldCustomer != null)
                 {
                     oldCustomer.CustomerName = obj.CustomerName;
+                    oldCustomer.CustomerNameAr = obj.CustomerNameAr;
                     oldCustomer.Area = obj.AreaId;
                     oldCustomer.Phone = obj.Phone;
                     oldCustomer.Email = obj.Email;

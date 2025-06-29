@@ -60,7 +60,7 @@
                                                 <span class="input-group-text bg-transparent" id="phoneSearch" style="cursor:pointer"><i class='bx bx-search'></i></span>
                                                 <input class="form-control" asp-for="PhoneNumber">
                                             </div>
-                                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
 
                                         </div>
                                         <div class="mb-3">
@@ -217,10 +217,19 @@
              updateTotalPrice();
            $('#myForm').on('submit', function (event) {
                debugger;
+               var phoneNum = $('#PhoneNumber').val();
+               var customerName = $('#CustomerName').val();
+               if(phoneNum === "" || customerName === "") {
+                   event.preventDefault(); // Prevent form submission
+                   _SWAL.AlertWithoutNotification("Please fill in all required fields.");
+                   return;
+               }else
+               userTyping = true;
+
                if (!userTyping) {
                   event.preventDefault();
                }else
-                 userTyping=false;
+                 userTyping = false;
              });
 
            $('#inputSearch').on('input', function() {
@@ -230,7 +239,6 @@
            $('#ImagesFormFiles').imageuploadify();
 
             $('#porductSearch').on('click', function(event) {
-                  debugger;
                   SearchProduct();
            });
            $('#inputSearch').on('keydown', function(event) {
@@ -240,7 +248,6 @@
                }
            });
            $('#AreaId').on('change',function() {
-                debugger;
                 updateShippingPriceHtml($('#AreaId'));
                 updateTotalPrice();
             });
@@ -271,7 +278,7 @@
 
 
            $('.individualDiscount-input').on('input',function() {
-               debugger;
+               
                updateTotalPrice();
            });
            $('#allDiscountInput').on('change',function() {
@@ -291,7 +298,7 @@
                  };
                  _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
                      function (data) {
-                         debugger;
+                         
                          var res = JSON.parse(data);
                          if (res != null && res.IsSuccess==true) {
                             MappingToFields(res);
@@ -304,7 +311,7 @@
          };
 
         async function MappingToFields(res){
-            debugger;
+            
                var result = await _SWAL.CustomAlertWithOwnMessage("A Customer Was Found, Do you want to use that customer???","Yes","No");
               if(result){
                    $('#CustomerName').val(res.Data.CustomerName);
@@ -318,14 +325,14 @@
          }
 
          function updateTotalPrice() {
-             debugger;
+             
              var totalPrice = 0;
              var totalProductItems=0;
              var shipping = 0;
              var allDiscountInput = $('#allDiscountInput').val();
 
              $('.price-input').each(function() {
-                 debugger;
+                 
                  var price = parseInt($(this).val());
                  var row = $(this).closest('tr');
                  var quantity = row.find('.quantity-input').val();
@@ -352,7 +359,7 @@
                  $('#totalAmountInput').val(totalProductItems);
              });
 
-             debugger;
+             
              if(allDiscountInput != "" && (discountSwitch.checked || discountSwitch[0].checked)){
                     allDiscountInput = parseFloat(allDiscountInput);
                     totalProductItems = totalProductItems - (totalProductItems * allDiscountInput / 100);
@@ -431,29 +438,35 @@
                  });
             }
          function Add(event) {
-                     debugger;
+                     
+
                        var addBtn = $(event.target);  // Get the clicked button
                        var inputField = addBtn.siblings('.quantity-input');  // Get the input field that is a sibling of the clicked button
+                       var stockQuan = inputField.attr('max');  // Get the input field that is a sibling of the clicked button
 
                        // Get the current value of the input field and parse it as an integer
                        var currentValue = parseInt(inputField.val());
+                       if(currentValue < parseInt(stockQuan)){
 
                        // Increment the value by 1
                        inputField.val(currentValue + 1);
                        updateTotalPrice();
+                       }
              };
 
           function Decrement(event) {
-                     debugger;
+                     
                     var addBtn = $(event.target);  // Get the clicked button
                     var inputField = addBtn.siblings('.quantity-input');  // Get the input field that is a sibling of the clicked button
 
                     // Get the current value of the input field and parse it as an integer
                     var currentValue = parseInt(inputField.val());
+                    if(currentValue > 1){
 
                     // Decrement the value by 1
                     inputField.val(currentValue - 1);
                     updateTotalPrice();
+                    }
           };
           function SearchProduct() {
                  var query = $('#inputSearch').val();
@@ -478,7 +491,7 @@
              };
          //window.Delete =
           function Delete(event) {
-              debugger;
+              
                   var deleteBtn = $(event.target);
                   var rowToDelete = deleteBtn.closest('tr');
                   rowToDelete.remove();
@@ -496,7 +509,7 @@
              $('#listOfPurchases tbody .no-data-row').show();
          } else {
              // If rows are added, remove the "No data found yet" row
-             //debugger;
+             //
               $('#listOfPurchases tbody .no-data-row').closest('tr').remove();
              //$('#listOfPurchases tbody .no-data-row').remove();
          }

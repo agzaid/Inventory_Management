@@ -27,6 +27,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     Name = s.Name,
+                    NameAr = s.NameAr,
                     AreaName= s.ShippingFreight?.ShippingArea,
                     Price = s.Price,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
@@ -72,12 +73,13 @@ namespace Application.Services.Implementation
                     var newFreight = new District()
                     {
                         Name = obj.Name,
+                        NameAr = obj.NameAr,
                         ShippingFreightId = obj.AreaId,
                         Modified_Date = DateTime.Now,
                         Price = obj.Price,
                     };
                     _unitOfWork.District.Add(newFreight);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Save();
                     return Result<string>.Success("new Freight Created Successfully", "Success");
                 }
                 else
@@ -100,6 +102,7 @@ namespace Application.Services.Implementation
                     var shippingFrieghtVM = new DistrictVM()
                     {
                         Name = shipping.Name,
+                        NameAr = shipping.NameAr,
                         AreaId = shipping.ShippingFreightId,
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd"),
@@ -128,6 +131,7 @@ namespace Application.Services.Implementation
                 if (oldCategory != null)
                 {
                     oldCategory.Name = obj.Name;
+                    oldCategory.NameAr = obj.NameAr;
                     //oldCategory.Region= obj.Region;
                     oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;

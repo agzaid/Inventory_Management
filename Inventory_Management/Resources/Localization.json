@@ -12,8 +12,24 @@
     "ContactUs": "Contact Us",
     "WelcomeToOurShop": "Welcome to our Shop where best prices is under your hand",
     "letstalk": "let's_talk",
-    "WeAreHereToChat": "We are here to chat together"
-
+    "WeAreHereToChat": "We are here to chat together",
+    "Delivery": "Deleviry In Cairo and Around Egypt",
+    "LetsMeetUp": "let's_meetup",
+    "Remove": "Remove",
+    "Image": "Image",
+    "Product": "Product",
+    "Price": "Price",
+    "Quantity": "Quantity",
+    "Subtotal": "Subtotal",
+    "CartTotals": "Cart Totals",
+    "CartSubtotal": "Cart Subtotal",
+    "PleaseSelectArea": "Please Select Area...",
+    "DeliveryInformation": "Delivery Information",
+    "YourName": "Your Name",
+    "ContactNumber": "Contact Number",
+    "Address": "Address",
+    "PreferableDeliverySlots": "Preferable Delivery Slots",
+    "ProceedToCheckout": "Proceed To Checkout"
   },
   "ar": {
     "Greeting": "كيف حالك",
@@ -28,6 +44,23 @@
     "ContactUs": "اتصل بنا",
     "WelcomeToOurShop": "مرحبًا بكم في متجرنا حيث أفضل الأسعار في متناول يدك",
     "letstalk": "دعنا نتحدث",
-    "WeAreHereToChat": "نحن هنا للدردشة معًا"
+    "WeAreHereToChat": "نحن هنا للدردشة معًا",
+    "Delivery": "التوصيل في القاهرة وحول مصر",
+    "LetsMeetUp": "دعنا نلتقي",
+    "Remove": "إزالة",
+    "Image": "صورة",
+    "Product": "المنتج",
+    "Price": "السعر",
+    "Quantity": "الكمية",
+    "Subtotal": "المجموع الفرعي",
+    "CartTotals": "إجمالي السلة",
+    "CartSubtotal": "المجموع الفرعي للسلة",
+    "PleaseSelectArea": "الرجاء اختيار المنطقة...",
+    "DeliveryInformation": "معلومات التوصيل",
+    "YourName": "اسمك",
+    "ContactNumber": "رقم الاتصال",
+    "Address": "العنوان",
+    "PreferableDeliverySlots": "فترات التوصيل المفضلة",
+    "ProceedToCheckout": "المتابعة إلى الدفع"
   }
 }

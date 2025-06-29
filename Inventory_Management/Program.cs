@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Serilog;
+using Serilog.Events;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 // Set up Serilog for file logging
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)  // Only log warnings+ from framework
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
+    .MinimumLevel.Information() // Your app logs info and higher
     .WriteTo.File("Logs/myapp.txt", rollingInterval: RollingInterval.Day)  // Log file path and roll over every day
     .CreateLogger();
 // Use Serilog for logging

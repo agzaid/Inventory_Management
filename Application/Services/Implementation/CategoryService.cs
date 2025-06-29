@@ -54,6 +54,7 @@ namespace Application.Services.Implementation
                     var category = new Category()
                     {
                         CategoryName = obj.CategoryName,
+                        CategoryNameAr = obj.CategoryNameAr,
                         Modified_Date = DateTime.Now,
                         Description = obj.Description,
                     };
@@ -81,6 +82,7 @@ namespace Application.Services.Implementation
                     var categoryVM = new CategoryVM()
                     {
                         CategoryName = category.CategoryName,
+                        CategoryNameAr = category.CategoryNameAr,
                         Description = category.Description,
                         CreatedDate = category.Create_Date?.ToString("yyyy-MM-dd")
                     };
@@ -104,6 +106,7 @@ namespace Application.Services.Implementation
                 var oldCategory = _unitOfWork.Category.Get(s => s.Id == obj.Id);
                 if (oldCategory != null)
                 {
+                    oldCategory.CategoryNameAr = obj.CategoryNameAr;
                     oldCategory.Description = obj.Description;
                     oldCategory.CategoryName = obj.CategoryName;
                     oldCategory.Modified_Date = DateTime.UtcNow;
@@ -156,6 +159,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     Description = s.Description,
+                    CategoryNameAr = s.CategoryNameAr,
                     CategoryName = s.CategoryName,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                 }).ToList();

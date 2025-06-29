@@ -9,7 +9,7 @@ namespace Domain.Entities
             InvoiceNumber = Generate12DigitSerialNumber();
         }
         [MaxLength(200)]
-        public string? InvoiceNumber { get; private set; }
+        public string? InvoiceNumber { get;  set; }
         public string? AllProductItems { get; set; }
         public decimal? ProductsOnlyAmount { get; set; }
         public double? GrandTotalAmount { get; set; }

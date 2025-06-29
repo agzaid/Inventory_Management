@@ -8,10 +8,11 @@ namespace Domain.Enums
 {
     public enum Status
     {
-        Available,
-        OutOfStock,
-        Completed,
-        InProgress,
-        InActive
+        Available = 1,
+        OutOfStock = 2,
+        InProgress = 3,
+        Completed = 4,
+        ReadyToBeDelivered = 5,
+        InActive = 6
     }
 }

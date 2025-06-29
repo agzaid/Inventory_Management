@@ -33,8 +33,8 @@
 }
 
 <section id="page-header" class="">
-    <h2>#let's_meetup</h2>
-    <p>Deleviry In Cairo and Around Egypt</p>
+    <h2>#@Localizer["LetsMeetUp"]</h2>
+    <p>@Localizer["Delivery"]</p>
 </section>
 
 @Html.AntiForgeryToken()
@@ -42,12 +42,12 @@
     <table width="100%" id="cartTable">
         <thead>
             <tr>
-                <td>Remove</td>
-                <td>Image</td>
-                <td>Product</td>
-                <td>Price</td>
-                <td>Quantity</td>
-                <td>Subtotal</td>
+                <td>@Localizer["Remove"]</td>
+                <td>@Localizer["Image"]</td>
+                <td>@Localizer["Product"]</td>
+                <td>@Localizer["Price"]</td>
+                <td>@Localizer["Quantity"]</td>
+                <td>@Localizer["Subtotal"]</td>
             </tr>
         </thead>
         <tbody>
@@ -66,10 +66,10 @@
     </div> *@
         <div class="d-flex">
             <div id="subtotal" class="col-md-6 col-12">
-                <h3>Cart Totals</h3>
+                <h3>@Localizer["CartTotals"]</h3>
                 <table>
                     <tr>
-                        <td>Cart Subtotal</td>
+                        <td>@Localizer["CartSubtotal"]</td>
                         <td>$<span id="cartSubTotal">0.0</span></td>
                     </tr>
                     @*  <tr>
@@ -99,7 +99,7 @@
                             <div class="dropdown-container">
                                 <select class="form-select mb-2" aria-label="multiple select example"
                                         asp-for="AreaId" asp-items="@(new SelectList(Model.Areas, "Value", "Text"))" data-placeholder=" Choose Area...">
-                                    <option disabled>Please Select Area...</option>
+                                    <option disabled>@Localizer["Delivery"]</option>
                                 </select>
                             </div>
                         </td>
@@ -112,10 +112,10 @@
                 @* <a class="" asp-action="CheckoutDetails" id="checkout">Proceed to Checkout</a> *@
             </div>
             <div id="subtotal" class="col-md-6 col-12">
-                <h3>Delivery Information</h3>
+                <h3>@Localizer["DeliveryInformation"]</h3>
                 <table>
                     <tr>
-                        <td><strong>Your Name</strong></td>
+                        <td><strong>@Localizer["YourName"]</strong></td>
                         <td>
 
                             <input class="form-control" asp-for="CustomerName" type="text" placeholder="Your Name">
@@ -124,7 +124,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>Contact Number</strong></td>
+                        <td><strong>@Localizer["ContactNumber"]</strong></td>
                         <td>
                             <input class="form-control" asp-for="CustomerPhone" type="text" placeholder="Phone Number">
                             <span asp-validation-for="CustomerPhone" class="text-danger"></span>
@@ -132,7 +132,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>Address</strong></td>
+                        <td><strong>@Localizer["Address"]</strong></td>
                         <td>
                             <textarea cols="3" value="" class="form-control" asp-for="CustomerAddress" type="text" placeholder="Address"></textarea>
                             <span asp-validation-for="CustomerAddress" class="text-danger"></span>
@@ -140,7 +140,7 @@
                         </td>
                     </tr>
                 </table>
-                <strong>Preferable Delivery Slots</strong>
+                <strong>@Localizer["PreferableDeliverySlots"]</strong>
                 <div class="time-slot-container d-flex">
                     @foreach (var delivery in @Model.DeliverySlotVMs)
                     {
@@ -150,7 +150,7 @@
             </div>
         </div>
         <div class="col-12 text-center">
-            <button class="btn" type="submit" id="checkout">Proceed to Checkout</button>
+            <button class="btn" type="submit" id="checkout">@Localizer["ProceedToCheckout"]</button>
         </div>
     </form>
 </section>

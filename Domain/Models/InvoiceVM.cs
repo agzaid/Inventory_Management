@@ -26,6 +26,7 @@ namespace Domain.Models
         public bool? discountSwitch { get; set; }
         [Required(ErrorMessage = "Customer Name is required.")]
         public string? CustomerName { get; set; }
+        public string? CustomerNameAr { get; set; }
         [Required(ErrorMessage = "Phone is required.")]
         public string? PhoneNumber { get; set; }
         public string? ShippingNotes { get; set; }

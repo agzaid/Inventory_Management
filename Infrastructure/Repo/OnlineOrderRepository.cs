@@ -20,6 +20,7 @@ namespace Infrastructure.Repo
 
         public void Update(OnlineOrder entity)
         {
+            entity.Modified_Date = DateTime.Now;
             _db.OnlineOrder.Update(entity);
         }
     }
