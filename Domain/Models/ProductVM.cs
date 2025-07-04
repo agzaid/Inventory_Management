@@ -24,9 +24,11 @@ namespace Domain.Models
         public int? Id { get; set; }
         [Required(ErrorMessage = "Product Name is required.")]
         public string? ProductName { get; set; }
+        [Required(ErrorMessage = "Product Name arabic is required.")]
+        public string? ProductNameAr { get; set; }
         [Required(ErrorMessage = "Description is required.")]
         public string? Description { get; set; }
-        [Required(ErrorMessage = "Brand is required.")]
+        //[Required(ErrorMessage = "Brand is required.")]
         public string? Brand { get; set; }
         public string? Barcode { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
@@ -49,11 +51,13 @@ namespace Domain.Models
         public int? InputQuantity { get; set; }
         public string? StatusId{ get; set; }
         public string? CategoryId{ get; set; }
+        public string? BrandId{ get; set; }
         public string? CategoryName{ get; set; }
         public List<string>? OldImagesBytes { get; set; } = new List<string>();
         public List<string>? ListOfRetrievedImages { get; set; } = new List<string>();
         public List<SelectListItem>? ListOfStatus { get; set; }
         public List<SelectListItem>? ListOfCategory { get; set; }
+        public List<SelectListItem>? ListOfBrands { get; set; }
 
 
     }

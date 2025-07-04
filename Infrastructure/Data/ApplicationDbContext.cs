@@ -28,6 +28,7 @@ namespace Infrastructure.Data
         public DbSet<District> District { get; set; }
         public DbSet<DeliverySlot> DeliverySlot { get; set; }
         public DbSet<UserDeliverySlot> UserDeliverySlot { get; set; }
+        public DbSet<Brand> Brand { get; set; }
 
 
         public static void SeedData(ApplicationDbContext context)

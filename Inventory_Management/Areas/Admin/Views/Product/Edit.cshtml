@@ -22,9 +22,16 @@
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Brand</label>
-                                                <input class="form-control" asp-for="Brand">
-                                                <span asp-validation-for="Brand" class="text-danger"></span>
+                                                <label class="form-label">Product Title Arabic</label>
+                                                <input class="form-control" asp-for="ProductNameAr">
+                                                <span asp-validation-for="ProductNameAr" class="text-danger"></span>
+                                            </div> 
+                                            <div class="mb-3">
+                                                <label for="inputVendor" class="form-label">Brand</label>
+                                                <select class="form-select mb-2" aria-label="multiple select example"
+                                                        asp-for="BrandId" asp-items="@(new SelectList(Model.ListOfBrands, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                    <option disabled></option>
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Description</label>

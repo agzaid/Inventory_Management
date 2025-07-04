@@ -19,14 +19,21 @@
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
                                             </div>
                                             <div class="mb-3">
+                                                <label class="form-label">Product Title Arabic</label>
+                                                <input class="form-control" asp-for="ProductNameAr">
+                                                <span asp-validation-for="ProductNameAr" class="text-danger"></span>
+                                            </div>
+                                            <div class="mb-3">
                                                 <label class="form-label">Description</label>
                                                 <input class="form-control" asp-for="Description">
                                                 <span asp-validation-for="Description" class="text-danger"></span>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Brand</label>
-                                                <input class="form-control" asp-for="Brand">
-                                                <span asp-validation-for="Brand" class="text-danger"></span>
+                                                <label for="inputVendor" class="form-label">Brand</label>
+                                                <select class="form-select mb-2" aria-label="multiple select example"
+                                                        asp-for="BrandId" asp-items="@(new SelectList(Model.ListOfBrands, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                    <option disabled></option>
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Barcode</label>
@@ -123,46 +130,46 @@
     } *@
     <partial name="_ValidationScriptsPartial">
 
-    <script>
-        $(document).ready(function () {
-            $('#ImagesFormFiles').imageuploadify();
+        <script>
+            $(document).ready(function () {
+                $('#ImagesFormFiles').imageuploadify();
 
-            $('#SellingPrice, #OtherShopsPrice').on('input', function() {
-                calculateDiscountPercentage();
-            });
-            $('#BuyingPrice').on('input', function() {
-                CalculateMaxDiscount();
-            });
+                $('#SellingPrice, #OtherShopsPrice').on('input', function() {
+                    calculateDiscountPercentage();
+                });
+                $('#BuyingPrice').on('input', function() {
+                    CalculateMaxDiscount();
+                });
 
-            function CalculateMaxDiscount() {
-                var sellingPrice = parseFloat($('#SellingPrice').val());
-                var buyingPrice = parseFloat($('#BuyingPrice').val());
+                function CalculateMaxDiscount() {
+                    var sellingPrice = parseFloat($('#SellingPrice').val());
+                    var buyingPrice = parseFloat($('#BuyingPrice').val());
 
-                if (!isNaN(sellingPrice) && sellingPrice > 0 && !isNaN(buyingPrice) && buyingPrice > 0) {
-                    var newPrice = sellingPrice - buyingPrice;
-                    var discount = Math.floor((newPrice/sellingPrice) *100);
+                    if (!isNaN(sellingPrice) && sellingPrice > 0 && !isNaN(buyingPrice) && buyingPrice > 0) {
+                        var newPrice = sellingPrice - buyingPrice;
+                        var discount = Math.floor((newPrice/sellingPrice) *100);
 
-                    $('#MaximumDiscountPercentage').val(discount.toFixed(2) + "%");
-                } else {
-                    $('#MaximumDiscountPercentage').val('');
+                        $('#MaximumDiscountPercentage').val(discount.toFixed(2) + "%");
+                    } else {
+                        $('#MaximumDiscountPercentage').val('');
+                    }
                 }
-            }
-            function calculateDiscountPercentage() {
-                var sellingPrice = parseFloat($('#SellingPrice').val());
-                var otherShopPrice = parseFloat($('#OtherShopsPrice').val());
+                function calculateDiscountPercentage() {
+                    var sellingPrice = parseFloat($('#SellingPrice').val());
+                    var otherShopPrice = parseFloat($('#OtherShopsPrice').val());
 
-                // Check if both prices are valid and the otherShopPrice is greater than 0
-                if (!isNaN(sellingPrice) && !isNaN(otherShopPrice) && otherShopPrice > 0 && sellingPrice > 0) {
-                    var discountPercentage = ((otherShopPrice - sellingPrice) / otherShopPrice) * 100;
+                    // Check if both prices are valid and the otherShopPrice is greater than 0
+                    if (!isNaN(sellingPrice) && !isNaN(otherShopPrice) && otherShopPrice > 0 && sellingPrice > 0) {
+                        var discountPercentage = ((otherShopPrice - sellingPrice) / otherShopPrice) * 100;
 
-                    // Display the discount percentage
-                    $('#DifferencePercentage').val(discountPercentage.toFixed(2) + "%");
-                } else {
-                    // If prices are not valid, clear the discount field
-                    $('#discount').val('');
+                        // Display the discount percentage
+                        $('#DifferencePercentage').val(discountPercentage.toFixed(2) + "%");
+                    } else {
+                        // If prices are not valid, clear the discount field
+                        $('#discount').val('');
+                    }
                 }
-            }
-        })
+            })
 
-    </script>
+        </script>
 }

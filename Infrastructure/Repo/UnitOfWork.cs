@@ -21,6 +21,7 @@ namespace Infrastructure.Repo
         public IDeliverySlotRepository DeliverySlot { get; private set; }
         public IDistrictRepository District { get; private set; }
         public IOnlineOrderRepository OnlineOrder { get; private set; }
+        public IBrandRepository Brand { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -33,6 +34,7 @@ namespace Infrastructure.Repo
             DeliverySlot = new DeliverySlotRepository(_db);
             District = new DistrictRepository(_db);
             OnlineOrder = new OnlineOrderRepository(_db);
+            Brand = new BrandRepository(_db);
         }
         public async Task Save()
         {

@@ -42,6 +42,7 @@ namespace Application.Services.Implementation
                 else
                 {
                     product.ProductName = product.ProductName?.ToLower().Trim();
+                    product.ProductNameAr = product.ProductNameAr?.Trim();
                     product.Description = product.Description?.ToLower().Trim();
                     product.Brand = product.Brand?.ToLower().Trim();
                     product.ProductTags = product.ProductTags?.ToLower().Trim();
@@ -71,8 +72,8 @@ namespace Application.Services.Implementation
                         var Newproduct = new Product()
                         {
                             ProductName = product.ProductName,
+                            ProductNameAr = product.ProductNameAr,
                             Description = product.Description,
-                            BrandId = 1,
                             Barcode = product.Barcode,
                             Create_Date = DateTime.Now,
                             SellingPrice = product.SellingPrice,
@@ -84,6 +85,7 @@ namespace Application.Services.Implementation
                             StockQuantity = product.StockQuantity,
                             ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "1-1-2000"),
                             CategoryId = int.Parse(product.CategoryId),
+                            BrandId = int.Parse(product.BrandId),
                             StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
                             ProductTags = product.ProductTags ?? "",
                             Images = listOfImages,
@@ -109,9 +111,15 @@ namespace Application.Services.Implementation
             {
                 var productVM = new ProductVM();
                 var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                var brand = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false).ToList();
                 productVM.ListOfCategory = category.Select(v => new SelectListItem
                 {
                     Text = v.CategoryName,
+                    Value = v.Id.ToString()
+                }).ToList();
+                productVM.ListOfBrands = brand.Select(v => new SelectListItem
+                {
+                    Text = v.BrandName,
                     Value = v.Id.ToString()
                 }).ToList();
                 return productVM;
@@ -198,6 +206,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     ProductName = s.ProductName?.ToUpper(),
+                    ProductNameAr = s.ProductNameAr?.ToUpper(),
                     //Brand = s.Brand?.ToUpper(),
                     Description = s.Description,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
@@ -238,6 +247,7 @@ namespace Application.Services.Implementation
                     {
                         Id = item.Id,
                         ProductName = item.ProductName?.ToUpper(),
+                        ProductNameAr = item.ProductNameAr,
                         Description = item.Description,
                         //Brand = item.Brand,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
@@ -270,6 +280,7 @@ namespace Application.Services.Implementation
                     var productVM = new ProductVM()
                     {
                         ProductName = product.ProductName ?? "",
+                        ProductNameAr = product.ProductNameAr ?? "",
                         Description = product.Description ?? "",
                         //Brand = product.Brand ?? "",
                         Barcode = product.Barcode ?? "",
@@ -281,6 +292,7 @@ namespace Application.Services.Implementation
                         OtherShopsPrice = product.OtherShopsPrice ?? decimal.Parse("0.00"),
                         StockQuantity = product.StockQuantity ?? int.Parse("0"),
                         CategoryId = product.CategoryId.ToString() ?? "",
+                        BrandId = product.BrandId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
                         //Images = result.Select(s => new Image()
@@ -303,9 +315,15 @@ namespace Application.Services.Implementation
                         }
                     }
                     var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                    var brands = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false).ToList();
                     productVM.ListOfCategory = category.Select(v => new SelectListItem
                     {
                         Text = v.CategoryName,
+                        Value = v.Id.ToString()
+                    }).ToList();
+                    productVM.ListOfBrands = brands.Select(v => new SelectListItem
+                    {
+                        Text = v.BrandName,
                         Value = v.Id.ToString()
                     }).ToList();
                     return productVM;
@@ -422,6 +440,7 @@ namespace Application.Services.Implementation
         private void UpdateProductProperties(Product oldProduct, ProductVM obj, List<Domain.Entities.Image> listOfImages)
         {
             oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
+            oldProduct.ProductNameAr = obj.ProductNameAr;
             oldProduct.Description = obj.Description?.ToLower().Trim();
             oldProduct.Barcode = obj.Barcode?.ToLower().Trim();
             oldProduct.SellingPrice = obj.SellingPrice;
@@ -430,6 +449,7 @@ namespace Application.Services.Implementation
             oldProduct.StockQuantity = obj.StockQuantity;
             oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
             oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
+            oldProduct.BrandId = int.Parse(obj.BrandId ?? "0");
             oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
             oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
             oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");

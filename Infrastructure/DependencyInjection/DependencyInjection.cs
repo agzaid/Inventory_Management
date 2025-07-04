@@ -20,6 +20,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IOnlineOrderService, OnlineOrderService>();
             services.AddScoped<IDeliverySlotService, DeliverySlotService>();
             services.AddScoped<IDistrictService, DistrictService>();
+            services.AddScoped<IBrandService, BrandService>();
             return services;
         }
 
