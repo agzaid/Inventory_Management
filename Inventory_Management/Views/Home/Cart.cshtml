@@ -193,7 +193,7 @@
 
         });
 
-        function submitCart(){
+            function submitCart(){
                  const token = $('input[name="__RequestVerificationToken"]').val();
 
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -225,14 +225,17 @@
                  if(customerName!="" && customerAddress!="" && customerPhone!=""){
                     _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
                      function (data) {
-                         var res = JSON.parse(data);
-                         if (res != null && res.IsSuccess==true) {
-                            MappingToFields(res);
-                         } else
-                             _SWAL.AlertWithoutNotification(res.Message);
+                         debugger;
+                         // var res = JSON.parse(data);
+                         if (data.isSuccess == true) {
+                         _TOASTR.Success("Your order is submitted successfully");
+                         localStorage.removeItem('cart');
+                         }else {
+                             _TOASTR.Error(data.message);
+                         }
                      },
                      function (xhr) {
-                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                         _TOASTR.Error("Something went wrong..!!");
                      });
                  }
          };
@@ -269,10 +272,11 @@
             // reorderRows();
          };
          function calcItems(){
+             debugger;
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
             var subTotal = 0;
             cart.forEach(function(item){
-                subTotal += item.quantity * item.productPrice;
+                subTotal += item.quantity * parseInt(item.productPrice);
             });
             var Area = $("#AreaId")[0].value;
             $("#total")[0].innerHTML= subTotal + parseInt(Area);

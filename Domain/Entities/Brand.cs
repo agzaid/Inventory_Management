@@ -17,5 +17,7 @@ namespace Domain.Entities
         public string? Description { get; set; }
 
         public ICollection<Product>? Products { get; set; }
+        public ICollection<Image>? Images { get; set; } // Navigation property
+
     }
 }

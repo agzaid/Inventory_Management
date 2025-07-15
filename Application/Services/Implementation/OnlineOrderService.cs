@@ -33,6 +33,7 @@ namespace Application.Services.Implementation
             var portalVM = new PortalVM();
             try
             {
+                var brands = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false, "Images").ToList();
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images");
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
                 foreach (var item in products)
@@ -373,7 +374,7 @@ namespace Application.Services.Implementation
                                 ProductTagsFromProduct = product.ProductTags,
                                 BarcodeFromProduct = product.Barcode,
                             };
-                            grandTotalPrice += (int)(decimal.Parse(onlineOrder.IndividualProductsQuatities) * product.SellingPrice);
+                            grandTotalPrice += (int)(item.Quantity * product?.SellingPrice);
                             onlineOrder.InvoiceItems?.Add(invoiceItem);
                         }
                     }
@@ -565,5 +566,34 @@ namespace Application.Services.Implementation
 
             }
         }
+        public async Task<Result<bool>> UpdateOrderStatus(string orderNum, string options)
+        {
+            try
+            {
+                var getOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum);
+                if (getOrder == null)
+                {
+                    return Result<bool>.Failure("Order not found", "error");
+                }
+
+                getOrder.OrderStatus = options switch
+                {
+                    "Delivered" => Status.Completed,
+                    "Returned" => Status.Returned,
+                    _ => Status.InProgress
+                };
+
+                _unitOfWork.OnlineOrder.Update(getOrder);
+                await _unitOfWork.Save();
+
+                return Result<bool>.Success(true, "success");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating order status for OrderNum: {OrderNum}", orderNum);
+                return Result<bool>.Failure("Error updating order status", "error");
+            }
+        }
+
     }
 }

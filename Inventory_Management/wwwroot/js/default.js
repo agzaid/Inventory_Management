@@ -75,7 +75,7 @@ var _Ajax = {
         });
     },
     ReturnHTML: function ($url, $params, $method, $beforecallBack, $successcallBack, $errorcallBack) {
-        debugger;
+        //debugger;
         $.ajax({
             type: $method,
             url: $url,
@@ -170,8 +170,12 @@ var _SWAL = {
     },
 }
 
-//function _AjaxCall(action, controller) {
-//    debugger;
-
-//}
+var _TOASTR = {
+    Success: function ($message) {
+        toastr.success($message);
+    },
+    Error: function ($message) {
+        toastr.error($message)
+    }
+}
 

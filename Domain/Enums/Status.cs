@@ -13,6 +13,7 @@ namespace Domain.Enums
         InProgress = 3,
         Completed = 4,
         ReadyToBeDelivered = 5,
-        InActive = 6
+        InActive = 6,
+        Returned = 7,
     }
 }

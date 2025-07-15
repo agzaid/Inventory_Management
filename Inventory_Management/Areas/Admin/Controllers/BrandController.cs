@@ -18,11 +18,20 @@ namespace Inventory_Management.Areas.admin.Controllers
             _logger = logger;
             _antiforgery = antiforgery;
         }
-        public IActionResult Index()
+        public IActionResult Index(string? status, string? message)
         {
             try
             {
                 var brands = _brandService.GetAllBrands();
+                if (status == "success")
+                {
+                    TempData["success"] = message;
+                }
+                else
+                {
+                    TempData["error"] = message;
+                }
+
                 return View(brands.ToList());
             }
             catch (Exception ex)
@@ -48,7 +57,7 @@ namespace Inventory_Management.Areas.admin.Controllers
                     var result = await _brandService.CreateBrand(obj);
                     TempData["success"] = result;
                     TempData["FormToken"] = null;
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index), new { status = "success", message = result[1] });
                 }
             }
             return View();

@@ -3,6 +3,7 @@ using Application.Services.Intrerfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
@@ -44,7 +45,11 @@ namespace Inventory_Management.Areas.admin.Controllers
                 return View(_onlineOrderService.CreateInvoiceForViewing(orderNum));
             }
             else
-               return RedirectToAction("Index");
+                return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> ChangeStatus(string? orderNum, string option)
+        {
+            return Json(await _onlineOrderService.UpdateOrderStatus(orderNum, option));
         }
 
         //[HttpPost]
