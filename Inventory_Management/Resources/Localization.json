@@ -29,7 +29,11 @@
     "ContactNumber": "Contact Number",
     "Address": "Address",
     "PreferableDeliverySlots": "Preferable Delivery Slots",
-    "ProceedToCheckout": "Proceed To Checkout"
+    "ProceedToCheckout": "Proceed To Checkout",
+    "BrandName_Required": "Brand Name is required",
+    "AddressName_Required": "Address Name Required",
+    "PhoneNumber_Required": "Phone Number Required",
+    "CustomerName_Required": "Customer Name Required"
   },
   "ar": {
     "Greeting": "كيف حالك",
@@ -61,6 +65,10 @@
     "ContactNumber": "رقم الاتصال",
     "Address": "العنوان",
     "PreferableDeliverySlots": "فترات التوصيل المفضلة",
-    "ProceedToCheckout": "المتابعة إلى الدفع"
+    "ProceedToCheckout": "المتابعة إلى الدفع",
+    "BrandName_Required": "الرجاء إدخال العلامة التجارية",
+    "AddressName_Required": "الرجاء إدخال اسم العنوان",
+    "PhoneNumber_Required": "الرجاء إدخال رقم الهاتف",
+    "CustomerName_Required": "الرجاء إدخال اسم العميل"
   }
 }

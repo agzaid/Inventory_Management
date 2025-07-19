@@ -77,7 +77,7 @@ namespace Inventory_Management.Controllers
        
         public async Task<IActionResult> Cart()
         {
-            var cartvm = new CartVM()
+            var cartvm = new Inventory_Management.Models.CartVM()
             {
                 Areas = await _onlineOrderService.ShippingFreightSelectList(),
                 DeliverySlotVMs = await _onlineOrderService.DeliverySlot(),
@@ -87,9 +87,29 @@ namespace Inventory_Management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CheckoutDetails([FromBody]CartVM data)
+        public IActionResult CheckoutDetails([FromBody] Inventory_Management.Models.CartVM data)
         {
-            var cart = _onlineOrderService.CreateOrder(data);
+            if (data == null)
+            {
+                return BadRequest("Invalid data received.");
+            }
+            var mappedData = new Domain.Models.CartVM
+            {
+                CustomerName = data.CustomerName,
+                CustomerAddress = data.CustomerAddress,
+                CustomerPhone = data.CustomerPhone,
+                SelectedSlots = data.SelectedSlots,
+                Location = data.Location,
+                AreaId = data.AreaId,
+                ItemsVMs = data.ItemsVMs.Select(i => new Domain.Models.ItemsVM
+                {
+                    ProductId = i.ProductId,
+                    ProductName = i.ProductName,
+                    ProductPrice = i.ProductPrice,
+                    Quantity = i.Quantity
+                }).ToList(),
+            };
+            var cart = _onlineOrderService.CreateOrder(mappedData);
             if (cart != null)
             {
                 return Json(cart.Result);

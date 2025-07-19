@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
-//using Infrastructure.Localization;
+﻿using Infrastructure.Localization;
 
-namespace Domain.Models
+namespace Inventory_Management.Models
 {
     public class BrandVM
     {
         public int Id { get; set; }
+        [LocalizedRequired("BrandName_Required")]
 
-        [Required(ErrorMessage = "Name is required.")]
         public string? BrandName { get; set; }
-        [Required(ErrorMessage = "Name arabic is required.")]
+        [LocalizedRequired("BrandName_Required")]
+
         public string? BrandNameAr { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
-        //[LocalizedRequired("BrandName_Required")]
+        [LocalizedRequired("BrandName_Required")]
         public string? Description { get; set; }
         public string? FormToken { get; set; }
         public string? CreatedDate { get; set; }

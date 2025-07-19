@@ -47,7 +47,7 @@ namespace Application.Services.Implementation
                     var productVM = new ProductVM()
                     {
                         Id = item.Id,
-                        ProductName = item.ProductName?.ToUpper(),
+                        ProductName = item.DisplayProductName,
                         Description = item.Description,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,

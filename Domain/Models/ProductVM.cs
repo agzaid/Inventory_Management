@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,6 +60,13 @@ namespace Domain.Models
         public List<SelectListItem>? ListOfCategory { get; set; }
         public List<SelectListItem>? ListOfBrands { get; set; }
 
-
+        public string? DisplayProductName
+        {
+            get
+            {
+                var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                return lang == "ar" ? ProductNameAr : ProductName;
+            }
+        }
     }
 }

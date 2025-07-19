@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -103,6 +104,8 @@ else
 
 // Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
 // app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
+var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(locOptions.Value);
 
 app.UseHttpsRedirection();
 
