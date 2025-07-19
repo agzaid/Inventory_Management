@@ -6,11 +6,13 @@ using Infrastructure.Localization;
 using Infrastructure.Repo;
 using Inventory_Management.DependencyInjection;
 using Inventory_Management.Middleware;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Serilog;
 using Serilog.Events;
+using System;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();
+
 
 // adding Dependency Injection
 builder.Services.AddAppDI();
@@ -60,6 +67,8 @@ Log.Logger = new LoggerConfiguration()
 // Use Serilog for logging
 builder.Host.UseSerilog();
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>(); // Global exception handler
@@ -97,13 +106,13 @@ else
 
 app.UseHttpsRedirection();
 
-
 app.UseStaticFiles();
 
 app.UseRequestLocalization();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

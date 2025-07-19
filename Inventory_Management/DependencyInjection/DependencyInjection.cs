@@ -7,7 +7,7 @@ namespace Inventory_Management.DependencyInjection
     {
         public static IServiceCollection AddAppDI(this IServiceCollection services)
         {
-            services.AddInfrastructureDI().AddApplicationDI();
+            services.AddInfrastructureDI().AddIdentityInfrastructure().AddApplicationDI();
             return services;
         }
 
