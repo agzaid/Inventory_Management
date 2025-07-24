@@ -33,7 +33,7 @@
 }
 
 <section id="page-header" class="">
-    <h2>#@Localizer["LetsMeetUp"]</h2>
+    <h2>#@Localizer["TrustOurProducts"]</h2>
     <p>@Localizer["Delivery"]</p>
 </section>
 
@@ -72,30 +72,9 @@
                         <td>@Localizer["CartSubtotal"]</td>
                         <td>$<span id="cartSubTotal">0.0</span></td>
                     </tr>
-                    @*  <tr>
-                        <td>Shipping</td>
-                        <td>
-                            <div class="dropdown-container">
-                                <select id="shipping" class="form-control" name="shipping">
-                                    <option value="0">Free (Picking it from store)</option>
-                                    <option value="30">Standard Shipping</option>
-                                    <option value="50">Express Shipping</option>
-                                </select>
-                                <div class="dropdown-arrow"></div>
-                            </div>
-                        </td>
-                    </tr> *@
                     <tr>
-                        <td>Shipping Area</td>
+                        <td>@Localizer["ShippingArea"]</td>
                         <td>
-                            @*  <div class="dropdown-container">
-                                <select id="location" class="form-control" name="location">
-                                    <option value="0">Cairo</option>
-                                    <option value="30">Out of cairo</option>
-                                    @* <option value="50">Express Shipping</option> 
-                                </select>
-                                <div class="dropdown-arrow"></div>
-                            </div> *@
                             <div class="dropdown-container">
                                 <select class="form-select mb-2" aria-label="multiple select example"
                                         asp-for="AreaId" asp-items="@(new SelectList(Model.Areas, "Value", "Text"))" data-placeholder=" Choose Area...">
@@ -109,7 +88,6 @@
                         <td><strong>$ <span id="total">0.0</span></strong></td>
                     </tr>
                 </table>
-                @* <a class="" asp-action="CheckoutDetails" id="checkout">Proceed to Checkout</a> *@
             </div>
             <div id="subtotal" class="col-md-6 col-12">
                 <h3>@Localizer["DeliveryInformation"]</h3>
@@ -117,8 +95,7 @@
                     <tr>
                         <td><strong>@Localizer["YourName"]</strong></td>
                         <td>
-
-                            <input class="form-control" asp-for="CustomerName" type="text" placeholder="Your Name">
+                            <input class="form-control" asp-for="CustomerName" type="text" placeholder="@Localizer["YourName"]">
                             <span asp-validation-for="CustomerName" class="text-danger"></span>
 
                         </td>
@@ -126,7 +103,7 @@
                     <tr>
                         <td><strong>@Localizer["ContactNumber"]</strong></td>
                         <td>
-                            <input class="form-control" asp-for="CustomerPhone" type="text" placeholder="Phone Number">
+                            <input class="form-control" asp-for="CustomerPhone" type="text" placeholder="@Localizer["ContactNumber"]">
                             <span asp-validation-for="CustomerPhone" class="text-danger"></span>
 
                         </td>
@@ -134,13 +111,27 @@
                     <tr>
                         <td><strong>@Localizer["Address"]</strong></td>
                         <td>
-                            <textarea cols="3" value="" class="form-control" asp-for="CustomerAddress" type="text" placeholder="Address"></textarea>
+                            <textarea cols="3" value="" class="form-control" asp-for="CustomerAddress" type="text" placeholder="@Localizer["Address"]"></textarea>
                             <span asp-validation-for="CustomerAddress" class="text-danger"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>@Localizer["pleaseProvideDetailedAddressForSmoothAndFastDelivery"]</strong></td>
+                        <td>
+                            <input class="form-control" asp-for="CustomerName" type="text" placeholder="@Localizer["YourName"]">
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            <input class="form-control" asp-for="CustomerName" type="text" placeholder="@Localizer["YourName"]">
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            <input class="form-control" asp-for="CustomerName" type="text" placeholder="@Localizer["YourName"]">
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+
+                            <input type="text" id="locationInput" placeholder="Your location">
 
                         </td>
                     </tr>
                 </table>
                 <strong>@Localizer["PreferableDeliverySlots"]</strong>
+                <p>@Localizer["youCanChooseMultipleDeliverySlots"]</p>
                 <div class="time-slot-container d-flex">
                     @foreach (var delivery in @Model.DeliverySlotVMs)
                     {
@@ -151,6 +142,9 @@
         </div>
         <div class="col-12 text-center">
             <button class="btn" type="submit" id="checkout">@Localizer["ProceedToCheckout"]</button>
+
+            <input id="successMessageOnsubmission" hidden type="text" data-val-custom="@Html.Encode(Localizer["YourOrderIsSubmittedSuccessfully"])">
+            <input id="OurTeamWillContactYouSoon" hidden type="text" data-val-custom="@Html.Encode(Localizer["OurTeamWillContactYouSoon"])">
         </div>
     </form>
 </section>
@@ -159,8 +153,11 @@
     @* <partial name="_ValidationScriptsPartial"> *@
     <script>
         var selectedSlotsValue = [];
+        var decodedOurTeamWillContactYouSoon = "";
+        var decoded = "";
         $(document).ready(function() {
 
+                translatedMessages();
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
@@ -192,7 +189,12 @@
             calcItems();
 
         });
-
+               function translatedMessages() {
+                   var encoded = $('#successMessageOnsubmission').data('val-custom');
+                   decoded = $('<textarea/>').html(encoded).text();
+                   var encodedOurTeamWillContactYouSoon = $('#OurTeamWillContactYouSoon').data('val-custom');
+                   decodedOurTeamWillContactYouSoon = $('<textarea/>').html(encodedOurTeamWillContactYouSoon).text();
+               };
             function submitCart(){
                  const token = $('input[name="__RequestVerificationToken"]').val();
 
@@ -226,10 +228,18 @@
                     _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
                      function (data) {
                          debugger;
-                         // var res = JSON.parse(data);
                          if (data.isSuccess == true) {
-                         _TOASTR.Success("Your order is submitted successfully");
+                         _TOASTR.Success(decoded);
+                         _TOASTR.Success(decodedOurTeamWillContactYouSoon);
                          localStorage.removeItem('cart');
+                         var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                             if(cart == []){
+                                 $("#cartNum").innerHTML= 0;
+                                 $("#cartNum1").innerHTML= 0;
+                             }else{
+                                    $("#cartNum").innerHTML = cart.length;
+                                    $("#cartNum1").innerHTML = cart.length;
+                         }
                          }else {
                              _TOASTR.Error(data.message);
                          }
@@ -384,4 +394,24 @@
             //      var discountSwitch = $('#discountSwitch');
             // });
     </script>
+    <script>
+        // Check if browser supports geolocation
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            // Format: "Latitude, Longitude"
+            var locationString = lat.toFixed(6) + ", " + lon.toFixed(6);
+
+            // Set the input value
+            document.getElementById("locationInput").value = locationString;
+          }, function(error) {
+            console.error("Error getting location:", error.message);
+          });
+        } else {
+          alert("Geolocation is not supported by your browser.");
+        }
+    </script>
+
 }

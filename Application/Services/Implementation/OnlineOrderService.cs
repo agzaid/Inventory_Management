@@ -524,10 +524,10 @@ namespace Application.Services.Implementation
                     OrderNumber = s.OrderNumber,
                     CustomerName = s.Customer?.CustomerName,
                     OrderDate = s.OrderDate.ToString("yyyy-MM-dd:HH:mm:ss"),
-                    OrderStatus = s.OrderStatus.ToString(),
+                    //OrderStatus = s.OrderStatus.ToString(),
                     GrandTotalAmount = s.GrandTotalAmount,
                     Status = s.OrderStatus,
-                    Area = _unitOfWork.ShippingFreight.Get(d => d.Id == s.AreaId).ShippingArea,
+                    // Area = _unitOfWork.ShippingFreight.Get(d => d.Id == s.AreaId).ShippingArea,
                 }).ToList();
                 return Result<List<OnlineOrderVM>>.Success(orderVMs, "success");
             }
