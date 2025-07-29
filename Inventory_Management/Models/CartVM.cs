@@ -22,8 +22,19 @@ namespace Inventory_Management.Models
         [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits (only numbers allowed).")]
         [LocalizedRequired("PhoneNumber_Required")]
         public string? CustomerPhone { get; set; }
+
+        //[LocalizedRequired("CustomerName_Required")]
+        public string? StreetName { get; set; }
+        //[LocalizedRequired("CustomerName_Required")]
+        public string? BuildingNumber { get; set; }
+        //[LocalizedRequired("CustomerName_Required")]
+        public string? Floor { get; set; }
+        //[LocalizedRequired("CustomerName_Required")]
+        public string? ApartmentNumber { get; set; }
+        //[LocalizedRequired("CustomerName_Required")]
+        public string? LandMark { get; set; }
         public string[]? SelectedSlots { get; set; }
-        public string? Location { get; set; }
+        public string? locationInput { get; set; }
         public List<ItemsVM> ItemsVMs { get; set; } = new();
         public List<DeliverySlotVM> DeliverySlotVMs { get; set; } = new();
         public int? AreaId { get; set; } = new();

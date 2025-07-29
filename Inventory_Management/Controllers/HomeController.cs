@@ -98,8 +98,13 @@ namespace Inventory_Management.Controllers
                 CustomerName = data.CustomerName,
                 CustomerAddress = data.CustomerAddress,
                 CustomerPhone = data.CustomerPhone,
+                StreetName = data.StreetName,
+                BuildingNumber = data.BuildingNumber,
+                Floor = data.Floor,
+                ApartmentNumber = data.ApartmentNumber,
+                LandMark = data.LandMark,
                 SelectedSlots = data.SelectedSlots,
-                Location = data.Location,
+                Location = data.locationInput,
                 AreaId = data.AreaId,
                 ItemsVMs = data.ItemsVMs.Select(i => new Domain.Models.ItemsVM
                 {

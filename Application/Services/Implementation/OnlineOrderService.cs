@@ -348,7 +348,7 @@ namespace Application.Services.Implementation
                         OrderDate = DateTime.Now,
                         AreaId = shipping?.Id,
                         AllDiscountInput = 0,
-                        InvoiceId = 0
+                        //InvoiceId = 0
                     };
 
 

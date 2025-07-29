@@ -115,13 +115,15 @@ namespace Application.Services.Implementation
                 invoice.ShippingNotes = invoiceVM.ShippingNotes;
                 invoice.ShippingPrice = double.Parse(invoiceVM.AreaId);
                 
+                //delete from quantity products
+                _unitOfWork.Invoice.Add(invoice);
+
                 //change onlineOrderStatus
                 var onlineOrder = _unitOfWork.OnlineOrder.Get(s=>s.OrderNumber == invoice.InvoiceNumber);
                 onlineOrder.OrderStatus = Status.ReadyToBeDelivered;
+                onlineOrder.InvoiceId = invoice.Id;
                 _unitOfWork.OnlineOrder.Update(onlineOrder);
 
-                //delete from quantity products
-                _unitOfWork.Invoice.Add(invoice);
                 await _unitOfWork.Save();
 
 

@@ -30,6 +30,13 @@
     "YourName": "Your Name",
     "ContactNumber": "Contact Number",
     "Address": "Address",
+    "StreetName": "Street Name",
+    "BuildingNumber": "Building Number",
+    "LandMark": "Land Mark",
+    "Floor": "Floor",
+    "ApartmentNumber": "Apartment Number",
+    "GetYourLocation": "Get Your Location",
+
     "pleaseProvideDetailedAddressForSmoothAndFastDelivery": "please Provide Detailed Address For Smooth And Fast Delivery",
     "PreferableDeliverySlots": "Preferable Delivery Slots",
     "youCanChooseMultipleDeliverySlots": "you Can Choose Multiple Delivery Slots",
@@ -39,7 +46,8 @@
     "PhoneNumber_Required": "Phone Number Required",
     "CustomerName_Required": "Customer Name Required",
     "YourOrderIsSubmittedSuccessfully": "Your order is submitted successfully",
-    "OurTeamWillContactYouSoon": "Our Team will contact you soon"
+    "OurTeamWillContactYouSoon": "Our Team will contact you soon",
+    "FollowUs": "Follow Us"
   },
   "ar": {
     "Greeting": "كيف حالك",
@@ -72,6 +80,12 @@
     "YourName": "اسمك",
     "ContactNumber": "رقم الاتصال",
     "Address": "العنوان",
+    "StreetName": "اسم الشارع",
+    "BuildingNumber": "رقم العماره او المبنى",
+    "LandMark": "علامه مميزه",
+    "Floor": "الدور",
+    "ApartmentNumber": "رقم الشقه",
+    "GetYourLocation": "تحديد موقعك",
     "pleaseProvideDetailedAddressForSmoothAndFastDelivery": "الرجاء تقديم عنوان مفصل لضمان توصيل سلس وسريع",
     "PreferableDeliverySlots": "فترات التوصيل المفضلة",
     "youCanChooseMultipleDeliverySlots": "يمكنك اختيار فترات توصيل متعددة",
@@ -81,6 +95,7 @@
     "PhoneNumber_Required": "الرجاء إدخال رقم الهاتف",
     "CustomerName_Required": "الرجاء إدخال اسم العميل",
     "YourOrderIsSubmittedSuccessfully": "تم إرسال طلبك بنجاح",
-    "OurTeamWillContactYouSoon": "سيتواصل معك فريقنا قريبًا"
+    "OurTeamWillContactYouSoon": "سيتواصل معك فريقنا قريبًا",
+    "FollowUs": "تابعونا"
   }
 }
