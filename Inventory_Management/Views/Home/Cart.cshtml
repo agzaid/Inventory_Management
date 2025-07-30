@@ -64,6 +64,8 @@
             <button class="normal">Apply</button>
         </div>
     </div> *@
+        <input class="form-control" asp-for="OrderNumber" hidden type="text">
+
         <div class="d-flex">
             <div id="subtotal" class="col-md-6 col-12">
                 <h3>@Localizer["CartTotals"]</h3>
@@ -222,10 +224,12 @@
                  var ApartmentNumber = $("#ApartmentNumber").val();
                  var LandMark = $("#LandMark").val();
                  var locationInput = $("#locationInput").val();
+                 var OrderNumber = $("#OrderNumber").val();
 
                  var $url = "@Url.Action("CheckoutDetails", "Home")";
                  var parameter =
                  {
+                     OrderNumber: OrderNumber,
                      TotalPrice: allTotal,
                      PriceBeforeShipping : subTotal,
                      ShippingAreaPrice: Area,
@@ -249,14 +253,17 @@
                          _TOASTR.Success(decoded);
                          _TOASTR.Success(decodedOurTeamWillContactYouSoon);
                          localStorage.removeItem('cart');
-                         var cart = JSON.parse(localStorage.getItem('cart')) || [];
-                             if(cart == []){
-                                 $("#cartNum").innerHTML= 0;
-                                 $("#cartNum1").innerHTML= 0;
-                             }else{
-                                    $("#cartNum").innerHTML = cart.length;
-                                    $("#cartNum1").innerHTML = cart.length;
-                         }
+                         // var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                         //     if(cart == []){
+                         //         $("#cartNum").innerHTML= 0;
+                         //         $("#cartNum1").innerHTML= 0;
+                         //     }else{
+                         //            $("#cartNum").innerHTML = cart.length;
+                         //            $("#cartNum1").innerHTML = cart.length;
+                         // }
+                         setTimeout(function () {
+                                 window.location.href = '/';
+                             }, 2000);
                          }else {
                              _TOASTR.Error(data.message);
                          }

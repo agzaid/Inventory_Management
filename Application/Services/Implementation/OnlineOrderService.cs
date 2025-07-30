@@ -291,6 +291,12 @@ namespace Application.Services.Implementation
                 }
                 else
                 {
+                    var existingOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == cart.OrderNumber);
+                    if (existingOrder != null)
+                    {
+                        return Result<string>.Failure("Order with this number already exists", "error");
+                    }
+
                     ShippingFreight shipping = null;
                     IEnumerable<DeliverySlot> deliverySlot;
                     double shippingPrice = 0;
@@ -334,6 +340,7 @@ namespace Application.Services.Implementation
 
                     var onlineOrder = new OnlineOrder()
                     {
+                        OrderNumber = cart.OrderNumber,
                         IndividualProductsNames = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductName)),
                         IndividualProductsPrices = string.Join(", ", cart.ItemsVMs.Select(s => s.ProductPrice)),
                         IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
@@ -349,6 +356,12 @@ namespace Application.Services.Implementation
                         AreaId = shipping?.Id,
                         AllDiscountInput = 0,
                         //InvoiceId = 0
+                        StreetName = cart.StreetName,
+                        BuildingNumber = cart.BuildingNumber,
+                        Floor = cart.Floor,
+                        ApartmentNumber = cart.ApartmentNumber,
+                        LandMark = cart.LandMark,
+                        Location = cart.Location,
                     };
 
 
@@ -524,6 +537,7 @@ namespace Application.Services.Implementation
                     OrderNumber = s.OrderNumber,
                     CustomerName = s.Customer?.CustomerName,
                     OrderDate = s.OrderDate.ToString("yyyy-MM-dd:HH:mm:ss"),
+                    DeliverySlots = s.DeliverySlotsAsString != null ? string.Join(", ", s.DeliverySlotsAsString) : "",
                     //OrderStatus = s.OrderStatus.ToString(),
                     GrandTotalAmount = s.GrandTotalAmount,
                     Status = s.OrderStatus,

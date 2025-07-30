@@ -64,71 +64,95 @@ namespace Application.Services.Implementation
         {
             try
             {
+                // ensure dictionary is initialized
                 var productQuantityMap = new Dictionary<int, int>();
+
+                // check customer existence
                 var customer = _unitOfWork.Customer.Get(s => s.Phone == invoiceVM.PhoneNumber);
-                var invoice = new Invoice();
+                if (customer == null)
+                {
+                    return new string[] { "error", "Customer not found with this phone number." };
+                }
+
+                var existingInvoice = _unitOfWork.Invoice.Get(s => s.InvoiceNumber == invoiceVM.InvoiceNumber);
+                if (existingInvoice != null)
+                {
+                    return new string[] { "error", "Invoice already exists with this number." };
+                }
+
+                var invoice = new Invoice
+                {
+                    InvoiceItems = new List<InvoiceItem>()
+                };
+
                 var area = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == invoiceVM.shippingText);
+
                 for (int i = 0; i < invoiceVM.productInput?.Count; i++)
                 {
                     var product = _unitOfWork.Product.Get(s => s.ProductName == invoiceVM.productInput[i].ToLower());
-                    var invoiceItems = new InvoiceItem()
+                    if (product == null)
                     {
-                        ProductName = product.ProductName,
-                        ProductId = product.Id,
-                        Quantity = int.Parse(invoiceVM.quantityInput[i]),
-                        PriceSoldToCustomer = decimal.Parse(invoiceVM.priceInput[i]),
-                        ShippingPrice = invoiceVM.shippingInput,
-                        IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] == null ? "0" : invoiceVM.individualDiscount[i]),
-                        //Product = product
-                    };
-                    if (productQuantityMap.ContainsKey(product.Id))
+                        return new string[] { "error", $"Product '{invoiceVM.productInput[i]}' not found." };
+                    }
+
+                    int quantity = int.Parse(invoiceVM.quantityInput[i]);
+
+                    var existingItem = invoice.InvoiceItems.FirstOrDefault(p => p.ProductId == product.Id);
+                    if (existingItem != null)
                     {
-                        var s = invoice.InvoiceItems?.FirstOrDefault(s => s.ProductId == product.Id);
-                        s.Quantity += int.Parse(invoiceVM.quantityInput[i]);
-                        productQuantityMap[product.Id] += int.Parse(invoiceVM.quantityInput[i]); // Add quantity if product already exists
+                        existingItem.Quantity += quantity;
+                        productQuantityMap[product.Id] += quantity;
                     }
                     else
                     {
-                        productQuantityMap[product.Id] = int.Parse(invoiceVM.quantityInput[i]); // Initialize the quantity if it's the first occurrence
-                        invoice.InvoiceItems?.Add(invoiceItems);
+                        productQuantityMap[product.Id] = quantity;
+                        invoice.InvoiceItems.Add(new InvoiceItem
+                        {
+                            ProductId = product.Id,
+                            ProductName = product.ProductName,
+                            Quantity = quantity,
+                            PriceSoldToCustomer = decimal.Parse(invoiceVM.priceInput[i]),
+                            ShippingPrice = invoiceVM.shippingInput,
+                            IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] ?? "0")
+                        });
                     }
                 }
 
+                // stock updates
                 foreach (var productEntry in productQuantityMap)
                 {
                     var productUpdate = _unitOfWork.Product.Get(s => s.Id == productEntry.Key);
                     if (productUpdate != null)
                     {
-                        productUpdate.StockQuantity -= productEntry.Value; // Update stock after all items are processed
-                        _unitOfWork.Product.Update(productUpdate); // Update product only once
+                        productUpdate.StockQuantity -= productEntry.Value;
+                        _unitOfWork.Product.Update(productUpdate);
                     }
                 }
+
                 invoice.InvoiceNumber = invoiceVM.InvoiceNumber;
                 invoice.AreaId = area?.Id;
-                //invoice.Customer = customer;
                 invoice.CustomerId = customer?.Id;
                 invoice.OrderDate = DateTime.UtcNow;
-                invoice.AllDiscountInput = decimal.Parse(invoiceVM.allDiscountInput == null ? "0.00" : invoiceVM.allDiscountInput);
+                invoice.AllDiscountInput = decimal.Parse(invoiceVM.allDiscountInput ?? "0.00");
                 invoice.GrandTotalAmount = invoiceVM.grandTotalInput;
-                invoice.ProductsOnlyAmount = invoiceVM.totalAmountInput == 0 ? decimal.Parse("0.00") : (decimal)invoiceVM.totalAmountInput;
+                invoice.ProductsOnlyAmount = invoiceVM.totalAmountInput == 0 ? 0 : (decimal)invoiceVM.totalAmountInput;
                 invoice.AllProductItems = string.Join(',', invoiceVM.productInput);
                 invoice.ShippingNotes = invoiceVM.ShippingNotes;
-                invoice.ShippingPrice = double.Parse(invoiceVM.AreaId);
-                
-                //delete from quantity products
+                invoice.ShippingPrice = area?.Price ?? 0; // fixed
+
                 _unitOfWork.Invoice.Add(invoice);
 
-                //change onlineOrderStatus
-                var onlineOrder = _unitOfWork.OnlineOrder.Get(s=>s.OrderNumber == invoice.InvoiceNumber);
+                var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == invoice.InvoiceNumber);
+                if (onlineOrder == null)
+                {
+                    return new string[] { "error", "Online order not found." };
+                }
                 onlineOrder.OrderStatus = Status.ReadyToBeDelivered;
-                onlineOrder.InvoiceId = invoice.Id;
+                onlineOrder.Invoice = invoice;
+
                 _unitOfWork.OnlineOrder.Update(onlineOrder);
 
                 await _unitOfWork.Save();
-
-
-                // add invoice number from order number and make a relation between invoice and order
-
                 return new string[] { "success", "Invoice Created Successfully" };
             }
             catch (Exception ex)

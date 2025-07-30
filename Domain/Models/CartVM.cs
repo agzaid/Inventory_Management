@@ -6,6 +6,7 @@ namespace Domain.Models
 {
     public class CartVM
     {
+        public string? OrderNumber { get; set; }
         public double? TotalPrice { get; set; }
         public double? PriceBeforeShipping { get; set; }
         public string? ShippingAreaPrice { get; set; }
@@ -29,8 +30,8 @@ namespace Domain.Models
         public string? ApartmentNumber { get; set; }
         //[LocalizedRequired("CustomerName_Required")]
         public string? LandMark { get; set; }
-        public string[]? SelectedSlots { get; set; }
         public string? Location { get; set; }
+        public string[]? SelectedSlots { get; set; }
         public List<ItemsVM> ItemsVMs { get; set; } = new();
         public List<DeliverySlotVM> DeliverySlotVMs { get; set; } = new();
         public int? AreaId { get; set; } = new();

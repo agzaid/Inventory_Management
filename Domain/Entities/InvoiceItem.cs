@@ -30,7 +30,11 @@ namespace Domain.Entities
         public decimal? SellingPriceFromProduct { get; set; }
         public decimal? OtherShopsPriceFromProduct { get; set; }
         public DateOnly? ProductExpiryDateFromProduct { get; set; }
+
+        [MaxLength(1000)]
         public string? ProductTagsFromProduct { get; set; }
+
+        [MaxLength(1000)]
         public string? BarcodeFromProduct { get; set; }
 
 

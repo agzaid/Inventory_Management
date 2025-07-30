@@ -95,6 +95,7 @@ namespace Inventory_Management.Controllers
             }
             var mappedData = new Domain.Models.CartVM
             {
+                OrderNumber = data.OrderNumber,
                 CustomerName = data.CustomerName,
                 CustomerAddress = data.CustomerAddress,
                 CustomerPhone = data.CustomerPhone,

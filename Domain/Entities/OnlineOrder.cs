@@ -10,13 +10,13 @@ namespace Domain.Entities
 {
     public class OnlineOrder : BaseEntity
     {
-        public OnlineOrder()
-        {
-            OrderNumber = Generate12DigitSerialNumber();
-        }
+        //public OnlineOrder()
+        //{
+        //  OrderNumber = Generate12DigitSerialNumber();
+        //}
         [MaxLength(100)]
-        public string? OrderNumber { get; private set; }
-        [MaxLength(100)]
+        public string? OrderNumber { get; set; }
+        [MaxLength(500)]
         public string? IndividualProductsNames { get; set; }
         [MaxLength(100)]
         public string? IndividualProductsPrices { get; set; }
@@ -25,8 +25,27 @@ namespace Domain.Entities
         public double? GrandTotalAmount { get; set; }
         public double? AmountBeforeShipping{ get; set; }
         public decimal? AllDiscountInput { get; set; }
+        [MaxLength(1000)]
         public string? ShippingNotes { get; set; }
         public double? ShippingPrice { get; set; }
+
+        [MaxLength(200)]
+        public string? StreetName { get; set; }
+
+        [MaxLength(100)]
+        public string? BuildingNumber { get; set; }
+
+        [MaxLength(100)]
+        public string? Floor { get; set; }
+
+        [MaxLength(100)]
+        public string? ApartmentNumber { get; set; }
+
+        [MaxLength(1000)]
+        public string? LandMark { get; set; }
+
+        [MaxLength(1000)]
+        public string? Location { get; set; }
         public string[]? DeliverySlotsAsString { get; set; }
 
         public int? AreaId { get; set; }
@@ -36,6 +55,7 @@ namespace Domain.Entities
         public DateTime OrderDate { get; set; }
         public Status OrderStatus { get; set; } = Status.InProgress;
         public int? InvoiceId { get; set; }
+        public Invoice? Invoice { get; set; }
 
         public ICollection<UserDeliverySlot> UserDeliverySlots { get; set; }
         public List<InvoiceItem>? InvoiceItems { get; set; } = new List<InvoiceItem>();

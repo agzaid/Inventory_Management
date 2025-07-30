@@ -34,7 +34,12 @@
                                             <td>@item.Description</td>
                                             <td>@item.CategoryName</td>
                                             <td>@item.SellingPrice</td>
-                                            <td>@item.StockQuantity</td>
+                                            <td>
+                                                <span class="badge @(item.StockQuantity < 3 ? "bg-danger" : "bg-success")"
+                                                      title="Stock quantity is @(item.StockQuantity < 3 ? "lower than 3" : "sufficient")">
+                                                    @item.StockQuantity
+                                                </span>
+                                            </td>
                                             <td>@item.ExpiryDate</td>
                                             <td>@item.CreatedDate</td>
                                             <td class="text-center" style="font-size:20px">

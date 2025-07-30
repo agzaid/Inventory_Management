@@ -15,6 +15,8 @@ namespace Domain.Entities
         public string? ProductName { get; set; }
         [MaxLength(200)]
         public string? ProductNameAr { get; set; }
+
+        [MaxLength(1000)]
         public string? Description { get; set; }
         public decimal? SellingPrice { get; set; }
         public decimal? OtherShopsPrice { get; set; }
@@ -23,6 +25,8 @@ namespace Domain.Entities
         public decimal? BuyingPrice { get; set; }
         public int? StockQuantity{ get; set; }
         public DateOnly? ProductExpiryDate { get; set; }
+
+        [MaxLength(1000)]
         public string? Barcode { get; set; }
         public int? StatusId{ get; set; }
         [MaxLength(900)]

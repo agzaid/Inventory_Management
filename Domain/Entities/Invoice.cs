@@ -10,10 +10,14 @@ namespace Domain.Entities
         }
         [MaxLength(200)]
         public string? InvoiceNumber { get;  set; }
+
+        [MaxLength(2000)]
         public string? AllProductItems { get; set; }
         public decimal? ProductsOnlyAmount { get; set; }
         public double? GrandTotalAmount { get; set; }
         public decimal? AllDiscountInput { get; set; }
+
+        [MaxLength(1000)]
         public string? ShippingNotes { get; set; }
         public double? ShippingPrice { get; set; }
 
@@ -22,6 +26,8 @@ namespace Domain.Entities
         public Customer? Customer { get; set; } // Navigation property
 
         public DateTime OrderDate { get; set; }
+
+        public OnlineOrder OnlineOrder { get; set; }
 
         public List<InvoiceItem>? InvoiceItems { get; set; } = new List<InvoiceItem>();
 
