@@ -18,6 +18,9 @@ namespace Domain.Entities
 
         [MaxLength(1000)]
         public string? Description { get; set; }
+        public bool IsKilogram { get; set; } = false;
+        public decimal? PricePerGram { get; set; }
+
         public decimal? SellingPrice { get; set; }
         public decimal? OtherShopsPrice { get; set; }
         public decimal? DifferencePercentage { get; set; }

@@ -51,6 +51,8 @@ namespace Application.Services.Implementation
                         Description = item.Description,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,
+                        IsKilogram = item.IsKilogram,
+                        PricePerGram = item.PricePerGram,
                         OtherShopsPrice = item.OtherShopsPrice,
                         DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
                         StockQuantity = item.StockQuantity,

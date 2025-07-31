@@ -139,7 +139,7 @@ namespace Application.Services.Implementation
                 var imagesToBeInserted = new List<byte[]>();
 
                 // Load old brand with its images
-                var oldBrand = _unitOfWork.Brand.Get(s => s.Id == obj.Id, "Images");
+                var oldBrand = _unitOfWork.Brand.Get(s => s.Id == obj.Id, "Images", true);
 
                 // Remove old images
                 RemoveOldImages(oldBrand);

@@ -72,6 +72,16 @@
                                         <div class="border border-3 p-4 rounded">
                                             <div class="row g-3">
                                                 <div class="col-md-6">
+                                                    <label class="form-label">Is Kilogram?</label>
+                                                    <select class="form-select" asp-for="IsKilogram">
+                                                        <option disabled value="">-- Select --</option>
+                                                        <option value="true">Yes</option>
+                                                        <option value="false">No</option>
+                                                    </select>
+                                                    <span asp-validation-for="IsKilogram" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
                                                     <label class="form-label">Selling Price</label>
                                                     <input class="form-control" asp-for="SellingPrice">
                                                     <span asp-validation-for="SellingPrice" class="text-danger"></span>
@@ -80,6 +90,11 @@
                                                     <label class="form-label">Othr.shp.Price</label>
                                                     <input class="form-control" asp-for="OtherShopsPrice">
                                                     <span asp-validation-for="OtherShopsPrice" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-6" id="pricePerGramContainer" style="display: none;">
+                                                    <label class="form-label">Price Per Gram</label>
+                                                    <input class="form-control" asp-for="PricePerGram" id="PricePerGram" />
+                                                    <span asp-validation-for="PricePerGram" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label for="inputCostPerPrice" class="form-label">Difference Percentage</label>
@@ -144,6 +159,7 @@
     </div>
 </div>
 @section Scripts {
+    <partial name="_ValidationScriptsPartial">
     <script>
         $(document).ready(function () {
             $('#ImagesFormFiles').imageuploadify();
@@ -160,6 +176,21 @@
             //     updateInputIndices();
             // });
 
+                  // On page load
+                updatePricePerGramVisibility();
+
+                // When radio buttons change
+                $('#IsKilogram').on('change', updatePricePerGramVisibility);
+
+                // Recalculate if selling price changes and kilo mode is on
+                $('#SellingPrice').on('input', function () {
+                    if ($('#IsKilogram:checked').val() === "true") {
+                        var sellingPrice = parseFloat($(this).val());
+                        if (!isNaN(sellingPrice)) {
+                            $('#PricePerGram').val((sellingPrice / 1000).toFixed(2));
+                        }
+                    }
+                });
 
 
             function CalculateMaxDiscount() {
@@ -215,5 +246,20 @@
                 }
              });
             }
+                    function updatePricePerGramVisibility() {
+                    var isKilogram = $('#IsKilogram').val();
+                    if (isKilogram === "true") {
+                        $('#pricePerGramContainer').show();
+
+                        // Optional: auto-calculate price per gram
+                        var sellingPrice = parseFloat($('#SellingPrice').val());
+                        if (!isNaN(sellingPrice)) {
+                            $('#PricePerGram').val((sellingPrice / 1000).toFixed(2));
+                        }
+                    } else {
+                        $('#pricePerGramContainer').hide();
+                        $('#PricePerGram').val('');
+                    }
+                }
     </script>
 }

@@ -76,6 +76,8 @@ namespace Application.Services.Implementation
                             Description = product.Description,
                             Barcode = product.Barcode,
                             Create_Date = DateTime.Now,
+                            IsKilogram = product.IsKilogram,
+                            PricePerGram = product.PricePerGram,
                             SellingPrice = product.SellingPrice,
                             BuyingPrice = product.BuyingPrice,
                             DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
@@ -252,6 +254,8 @@ namespace Application.Services.Implementation
                         //Brand = item.Brand,
                         CategoryName = item.Category?.CategoryName?.ToUpper(),
                         SellingPrice = item.SellingPrice,
+                        IsKilogram = item.IsKilogram,
+                        PricePerGram = item.PricePerGram,
                         StockQuantity = item.StockQuantity,
                         ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
                         CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
@@ -286,6 +290,8 @@ namespace Application.Services.Implementation
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
                         SellingPrice = product.SellingPrice ?? decimal.Parse("0.00"),
+                        IsKilogram = product.IsKilogram,
+                        PricePerGram = product.PricePerGram ?? decimal.Parse("0.00"),
                         BuyingPrice = product.BuyingPrice ?? decimal.Parse("0.00"),
                         DifferencePercentage = product.DifferencePercentage?.ToString() ?? "",
                         MaximumDiscountPercentage = product.MaximumDiscountPercentage?.ToString() ?? "",
@@ -349,14 +355,14 @@ namespace Application.Services.Implementation
                 throw;  // Rethrow the exception after logging it
             }
         }
-        public bool UpdateProduct(ProductVM obj)
+        public async Task<bool> UpdateProduct(ProductVM obj)
         {
             try
             {
                 // Prepare byte arrays for images
                 var imagesToBeInserted = new List<byte[]>();
 
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
+                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images", true);
 
                 // Remove old images if necessary
                 RemoveOldImages(oldProduct);
@@ -374,7 +380,7 @@ namespace Application.Services.Implementation
 
                     // Save the updated product
                     _unitOfWork.Product.Update(oldProduct);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Save();
                     return true;
                 }
 
@@ -444,6 +450,8 @@ namespace Application.Services.Implementation
             oldProduct.Description = obj.Description?.ToLower().Trim();
             oldProduct.Barcode = obj.Barcode?.ToLower().Trim();
             oldProduct.SellingPrice = obj.SellingPrice;
+            oldProduct.IsKilogram = obj.IsKilogram;
+            oldProduct.PricePerGram = obj.PricePerGram;
             oldProduct.BuyingPrice = obj.BuyingPrice;
             oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
             oldProduct.StockQuantity = obj.StockQuantity;

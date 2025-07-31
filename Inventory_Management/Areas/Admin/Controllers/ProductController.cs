@@ -5,6 +5,7 @@ using Domain.Enums;
 using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
@@ -64,12 +65,12 @@ namespace Inventory_Management.Areas.admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(ProductVM obj)
+        public async Task<IActionResult> Edit(ProductVM obj)
         {
             if (ModelState.IsValid)
             {
 
-                var result = _productService.UpdateProduct(obj);
+                var result =await _productService.UpdateProduct(obj);
                 if (result == true)
                 {
                     //TempData["success"] = result[1];

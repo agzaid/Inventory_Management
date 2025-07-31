@@ -35,6 +35,10 @@ namespace Domain.Models
         public List<IFormFile>? ImagesFormFiles { get; set; }
         [Required(ErrorMessage = "Selling Price is required.")]
         public decimal? SellingPrice { get; set; }
+        public bool IsKilogram { get; set; } = false;
+        public decimal? PricePerGram { get; set; }
+        public decimal? PurchasedGrams { get; set; }
+        public decimal? TotalPurchasedPricePerGrams { get; set; }
         public decimal? OtherShopsPrice { get; set; }
         public string? DifferencePercentage { get; set; }
         public string? MaximumDiscountPercentage { get; set; }
