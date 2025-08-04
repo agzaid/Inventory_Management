@@ -47,7 +47,8 @@
     "CustomerName_Required": "Customer Name Required",
     "YourOrderIsSubmittedSuccessfully": "Your order is submitted successfully",
     "OurTeamWillContactYouSoon": "Our Team will contact you soon",
-    "FollowUs": "Follow Us"
+    "FollowUs": "Follow Us",
+    "ItemWasDeletedSuccessfully": "Item was deleted successfully"
   },
   "ar": {
     "Greeting": "كيف حالك",
@@ -96,6 +97,7 @@
     "CustomerName_Required": "الرجاء إدخال اسم العميل",
     "YourOrderIsSubmittedSuccessfully": "تم إرسال طلبك بنجاح",
     "OurTeamWillContactYouSoon": "سيتواصل معك فريقنا قريبًا",
-    "FollowUs": "تابعونا"
+    "FollowUs": "تابعونا",
+    "ItemWasDeletedSuccessfully": "تم حذف العنصر بنجاح"
   }
 }

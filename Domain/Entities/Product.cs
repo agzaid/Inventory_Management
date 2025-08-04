@@ -26,7 +26,7 @@ namespace Domain.Entities
         public decimal? DifferencePercentage { get; set; }
         public decimal? MaximumDiscountPercentage { get; set; }
         public decimal? BuyingPrice { get; set; }
-        public int? StockQuantity{ get; set; }
+        public decimal? StockQuantity{ get; set; }
         public DateOnly? ProductExpiryDate { get; set; }
 
         [MaxLength(1000)]

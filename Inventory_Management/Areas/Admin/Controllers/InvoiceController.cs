@@ -56,7 +56,7 @@ namespace Inventory_Management.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(obj);
+            return View(_invoiceService.CreateInvoiceForViewing());
         }
 
         public IActionResult Edit(int id)

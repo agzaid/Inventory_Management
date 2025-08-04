@@ -489,6 +489,7 @@ namespace Application.Services.Implementation
                         CategoryId = product.CategoryId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
+                        IsKilogram = product.IsKilogram,
                         //Images = result.Select(s => new Image()
                         //{
                         //    FilePath = s,

@@ -65,7 +65,7 @@ namespace Application.Services.Implementation
             try
             {
                 // ensure dictionary is initialized
-                var productQuantityMap = new Dictionary<int, int>();
+                var productQuantityMap = new Dictionary<decimal, decimal>();
 
                 // check customer existence
                 var customer = _unitOfWork.Customer.Get(s => s.Phone == invoiceVM.PhoneNumber);
@@ -95,7 +95,7 @@ namespace Application.Services.Implementation
                         return new string[] { "error", $"Product '{invoiceVM.productInput[i]}' not found." };
                     }
 
-                    int quantity = int.Parse(invoiceVM.quantityInput[i]);
+                    decimal quantity = decimal.Parse(invoiceVM.quantityInput[i]);
 
                     var existingItem = invoice.InvoiceItems.FirstOrDefault(p => p.ProductId == product.Id);
                     if (existingItem != null)
@@ -191,6 +191,7 @@ namespace Application.Services.Implementation
                         StockQuantity = s.StockQuantity,
                         CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                         Barcode = s.Barcode,
+                        IsKilogram = s.IsKilogram,
                         //ListOfRetrievedImages = s.Images?.Select(v => FileExtensions.ByteArrayToImageBase64(v.ImageByteArray)).ToList()
                     }).ToList();
                     return Result<List<ProductVM>>.Success(productViewModel, "Product retrieved successfully.");

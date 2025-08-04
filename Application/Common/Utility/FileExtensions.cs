@@ -18,6 +18,10 @@ namespace Application.Common.Utility
             {
                 if (file.Length > 0)
                 {
+                    if (file.Length > 5 * 1024 * 1024) // 5 MB limit
+                    {
+                        throw new InvalidOperationException("File size must be less than 5 MB.");
+                    }
                     var img = Guid.NewGuid();
                     var directoryPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Uploads\\" + userDirectory;
                     if (!Directory.Exists(directoryPath))
@@ -58,6 +62,10 @@ namespace Application.Common.Utility
                 }
                 for (int i = 0; i < files.Count(); i++)
                 {
+                    if (files[i].Length > 5 * 1024 * 1024) // 5 MB limit
+                    {
+                        throw new InvalidOperationException("File size must be less than 5 MB.");
+                    }
                     //using var stream = new FileStream($"{directoryPath2}/{files[i].FileName}{Path.GetExtension(files[i].FileName)}", FileMode.Create);
                     using var stream = new FileStream($"{directoryPath2}/{files[i].FileName}", FileMode.Create);
                     await files[i].CopyToAsync(stream);
@@ -101,6 +109,10 @@ namespace Application.Common.Utility
                 {
                     if (file.Length > 0)
                     {
+                        if (file.Length > 5 * 1024 * 1024) // 5 MB limit
+                        {
+                            throw new InvalidOperationException("File size must be less than 5 MB.");
+                        }
                         // Generate a unique file name to avoid overwriting
                         string fileName = Path.GetFileNameWithoutExtension(file.FileName);
                         string fileExtension = Path.GetExtension(file.FileName);

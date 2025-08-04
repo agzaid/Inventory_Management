@@ -165,11 +165,11 @@
             $('#IsKilogram').on('change', updatePricePerGramVisibility);
 
             // Recalculate if selling price changes and kilo mode is on
-            $('#SellingPrice').on('input', function () {
-                if ($('#IsKilogram:checked').val() === "true") {
-                    var sellingPrice = parseFloat($(this).val());
+                        $('#SellingPrice').on('input', function () {
+                if ($('#IsKilogram').val() === "true") {
+                    var sellingPrice = parseFloat($("#SellingPrice").val());
                     if (!isNaN(sellingPrice)) {
-                        $('#PricePerGram').val((sellingPrice / 1000).toFixed(2));
+                        $('#PricePerGram').val((sellingPrice / 1000).toFixed(4));
                     }
                 }
             });

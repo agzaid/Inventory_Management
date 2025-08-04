@@ -46,7 +46,7 @@ namespace Domain.Models
         public decimal? BuyingPrice{ get; set; }
 
         [Required(ErrorMessage = "Quantity is required.")]
-        public int? StockQuantity { get; set; }
+        public decimal? StockQuantity { get; set; }
         public string? CreatedDate { get; set; }
         public string? ExpiryDate { get; set; }
         public Status? ProductStatus { get; set; }

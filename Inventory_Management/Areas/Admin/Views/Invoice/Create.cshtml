@@ -195,7 +195,7 @@
            $('#PhoneNumber').on('keydown',function(event) {
              debugger;
               if (event.key === 'Enter') {
-                      event.preventDefault(); 
+                      event.preventDefault();
                       SearchCustomer();
                }
           });
@@ -225,7 +225,16 @@
 
 
          });
-
+         function changeShippingValue() {
+              var selectedOption = $('#AreaId').val();
+                var selectedText = $('#AreaId').val();
+                var selectedValue = parseFloat(selectedOption);
+                $('#shipping').text('$' + selectedValue.toFixed(2));
+                $('#shipping').attr('data-value', selectedValue);
+                $('#shipping').attr('data-text', selectedText);
+                $('#shippingInput').val(selectedValue);
+                $('#shippingText').val(selectedText);
+         }
          function SearchCustomer(){
               var query = $('#PhoneNumber').val();
                  // var $url = "@Url.Action("FilterPatientByDate", "Doctor")";
@@ -261,7 +270,7 @@
               }
          }
 
-         function updateTotalPrice() {
+         function IsKilogramUpdateTotalPrice() {
              debugger;
              var totalPrice = 0;
              var totalProductItems=0;
@@ -270,11 +279,12 @@
 
              $('.price-input').each(function() {
                  debugger;
-                 var price = parseInt($(this).val());
+                 var price = parseFloat($(this).val());
                  var row = $(this).closest('tr');
                  var quantity = row.find('.quantity-input').val();
                  var discount = row.find('.individualDiscount-input').val();
                  var discountSwitch = $('#discountSwitch');
+                 var isKilogram = row.find('.productKilogram').val();
 
                  if(discountSwitch.checked || discountSwitch[0].checked){
                      discount = '';
@@ -287,7 +297,12 @@
                     price = price * quantity;
                     productItemsTotal= price - (price * discount / 100);
                 }else{
-                    productItemsTotal = quantity * price ;
+                    if(isKilogram == "true" || isKilogram == true){
+                        quantity = parseFloat(quantity);
+                        productItemsTotal = 1 * price ;
+                    }else{
+                             productItemsTotal = quantity * price ;
+                        }
                 }
                  totalProductItems += productItemsTotal;
 
@@ -303,6 +318,56 @@
               totalPrice = totalProductItems + shipping;
              $('#grandTotal').text('$' + totalPrice.toFixed(2));
              $('#grandTotalInput').val(totalPrice);
+         }
+         function updateTotalPrice() {
+             debugger;
+             var totalPrice = 0;
+             var totalProductItems=0;
+             var shipping = parseFloat($('#AreaId').val());
+             var allDiscountInput = $('#allDiscountInput').val();
+             $('.price-input').each(function() {
+                 debugger;
+                 var price = parseFloat($(this).val());
+                 var row = $(this).closest('tr');
+                 var isKilogram = row.find('.productKilogram').val();
+                 var quantity = row.find('.quantity-input').val();
+                 var discount = row.find('.individualDiscount-input').val();
+                 var discountSwitch = $('#discountSwitch');
+
+                 if(discountSwitch.checked || discountSwitch[0].checked){
+                     discount = '';
+                 }
+                 shipping = parseFloat( $('#shipping').attr('data-value'));
+                // var productTotal = quantity * price + shipping;
+                var productItemsTotal = 0;
+                if  (discount!=""){
+                    discount = parseFloat(discount);
+                    price = price * quantity;
+                    productItemsTotal= price - (price * discount / 100);
+                }else{
+                     if(isKilogram == "true" || isKilogram == true){
+                        quantity = parseFloat(quantity);
+                        productItemsTotal = 1 * price ;
+                    }else{
+                             productItemsTotal = quantity * price ;
+                        }
+                }
+                 totalProductItems += productItemsTotal;
+
+                 $('#totalAmount').text('$' + totalProductItems.toFixed(2));
+                 $('#totalAmountInput').val(totalProductItems);
+             });
+
+             debugger;
+             if(allDiscountInput != "" && (discountSwitch.checked || discountSwitch[0].checked)){
+                    allDiscountInput = parseFloat(allDiscountInput);
+                    totalProductItems = totalProductItems - (totalProductItems * allDiscountInput / 100);
+              }
+              totalPrice = totalProductItems + shipping;
+             $('#grandTotal').text('$' + totalPrice.toFixed(2));
+             $('#grandTotalInput').val(totalPrice);
+
+             changeShippingValue();
          }
 
          function AddNewRow(data){
@@ -328,7 +393,8 @@
                      <div>
                          <div class="input-group input-spinner">
                              <button class="btn btn-white" type="button" id="button-plus-${rowIndex}" onclick="Add(event, ${rowIndex})"> + </button>
-                             <input type="number" max="${data.StockQuantity}" class="form-control quantity-input" name="quantityInput[${rowIndex}]" id="quantityInput[${rowIndex}]" value="1">
+                             <input class="quantity-isKilogram" value="${data.IsKilogram}" hidden>
+                              <input type="number" max="${data.StockQuantity}" class="form-control quantity-input" name="quantityInput[${rowIndex}]" id="quantityInput[${rowIndex}]" value="1">
                              <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
                          </div>
                      </div>
@@ -338,7 +404,7 @@
                  <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.StockQuantity}" hidden>
                  </td>
                  <td class="individualDiscount col-1">
-                 <input class="form-control individualDiscount-input" type="number" max="${data.DiscPerceForCreateInvoice}" name="individualDiscount[${rowIndex}]" 
+                 <input class="form-control individualDiscount-input" type="number" max="${data.DiscPerceForCreateInvoice}" name="individualDiscount[${rowIndex}]"
                  oninput="IndividualDiscount(this.value)"/> <td/>
                  <td><button class="btn btn-inverse-danger" id="deleteBtn-${rowIndex}" type="button" onclick="Delete(event, ${rowIndex})">Delete</button></td>
              </tr>
@@ -346,6 +412,51 @@
              $('#listOfPurchases tbody').append(newRowHtml);
              reorderRows();
          };
+         // function IsKilogramAddNewRow(data){
+         //      var rowIndex = $('#listOfPurchases tbody tr').length;
+         //     var newRowHtml = `
+         //         <tr id="row-${rowIndex}">
+         //         <td id="index-${rowIndex}">${rowIndex + 1}</td>
+         //         <td colspan="2">
+         //             <div class="d-flex align-items-center justify-content-center">
+         //                 <div class="font-weight-bold text-danger">${data.ProductName}</div>
+         //                 <input class="font-weight-bold text-danger product-input" name="productInput[${rowIndex}]" id="productInput[${rowIndex}]" value="${data.ProductName}" hidden>
+         //             </div>
+         //         </td>
+         //         <td>
+         //             <input type="text" class="form-control price-input" value="${data.SellingPrice}" id="priceInput[${rowIndex}]" name="priceInput[${rowIndex}]" onchange="handlePriceChange(${rowIndex})">
+         //         <input class="productKilogram" value="${data.IsKilogram}" hidden>
+
+         //         </td>
+         //         <td>
+         //             ${data.DiscPerceForCreateInvoice}
+         //             <input type="text" class="form-control maxDisc-input" id="maxDiscInput[${rowIndex}]" name="maxDiscInput[${rowIndex}]" value="${data.DiscPerceForCreateInvoice}" hidden>
+         //         </td>
+         //         <td class="col-3">
+         //             <div>
+         //                 <div class="input-group input-spinner">
+         //                     <input type="number" class="form-control quantity-input"  min="0.001" step="0.001" max="${data.StockQuantity && data.StockQuantity > 0 ? data.StockQuantity : 9999}" value="1" name="quantityInput[${rowIndex}]" id="quantityInput[${rowIndex}]" onchange="handlePriceChange(${rowIndex})">
+         //                 </div>
+         //             </div>
+         //         </td>
+         //         <td class="text-danger">
+         //         ${data.StockQuantity}
+         //         <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.StockQuantity}" hidden>
+         //         </td>
+         //         <td class="individualDiscount col-1">
+         //         <input class="form-control individualDiscount-input" type="number" max="${data.DiscPerceForCreateInvoice}" name="individualDiscount[${rowIndex}]"
+         //         oninput="IndividualDiscount(this.value)"/> <td/>
+         //         <td><button class="btn btn-inverse-danger" id="deleteBtn-${rowIndex}" type="button" onclick="Delete(event, ${rowIndex})">Delete</button></td>
+         //     </tr>
+         // `;
+         //     $('#listOfPurchases tbody').append(newRowHtml);
+         //     reorderRows();
+         // };
+         function handlePriceChange(rowIndex) {
+            const value = document.getElementById(`priceInput[${rowIndex}]`).value;
+            IsKilogramUpdateTotalPrice();
+            console.log("Price changed:", value);
+        }
          function IndividualDiscount(value){
              updateTotalPrice();
          };
@@ -377,12 +488,16 @@
                      debugger;
                        var addBtn = $(event.target);  // Get the clicked button
                        var inputField = addBtn.siblings('.quantity-input');  // Get the input field that is a sibling of the clicked button
-
+                       var unit = $('.product-isKilogram').val();
                        // Get the current value of the input field and parse it as an integer
-                       var currentValue = parseInt(inputField.val());
+                       var currentValue = parseFloat(inputField.val());
 
                        // Increment the value by 1
-                       inputField.val(currentValue + 1);
+                       if(unit == "true" || unit == true){
+                            inputField.val(currentValue + 0.25);
+                           }else{
+                            inputField.val(currentValue + 1);
+                           }
                        updateTotalPrice();
              };
 
@@ -390,12 +505,15 @@
                      debugger;
                     var addBtn = $(event.target);  // Get the clicked button
                     var inputField = addBtn.siblings('.quantity-input');  // Get the input field that is a sibling of the clicked button
-
+                       var unit = $('.product-isKilogram').val();
                     // Get the current value of the input field and parse it as an integer
-                    var currentValue = parseInt(inputField.val());
-
-                    // Decrement the value by 1
-                    inputField.val(currentValue - 1);
+                    var currentValue = parseFloat(inputField.val());
+                    if(unit == "true" || unit == true){
+                     inputField.val(currentValue - 0.25);
+                    }else{
+                     // Decrement the value by 1
+                     inputField.val(currentValue - 1);
+                    }
                     updateTotalPrice();
           };
           function SearchProduct() {
@@ -407,10 +525,16 @@
                  };
                  _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
                      function (data) {
+                         debugger;
                          var res = JSON.parse(data);
                          if (res != null && res.IsSuccess==true) {
                              checkNoData();
-                             AddNewRow(res.Data[0]);
+                             debugger;
+                             if(res.Data[0].IsKilogram){
+                                IsKilogramAddNewRow(res.Data[0]);
+                             }else{
+                                AddNewRow(res.Data[0]);
+                             }
                              updateTotalPrice();
                          } else
                              _SWAL.AlertWithoutNotification(res.Message);
@@ -421,12 +545,12 @@
              };
          //window.Delete =
           function Delete(event) {
-              debugger;
                   var deleteBtn = $(event.target);
                   var rowToDelete = deleteBtn.closest('tr');
                   rowToDelete.remove();
                   reorderRows();
                   updateTotalPrice();
+                  IsKilogramUpdateTotalPrice();
           };
 
 

@@ -553,7 +553,8 @@ footer .copyright{
 
 /* Shop Page */
 #page-header {
-    background-image: url('../uploadedfiles/b1.jpg');
+    /*background-image: url('../uploadedfiles/b1.jpg');*/
+    background-image: url('../uploadedfiles/trustourproducts.jpg');
     width: 100%;
     height: 40vh;
     background-size: cover;

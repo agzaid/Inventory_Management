@@ -208,7 +208,7 @@
          // console.log("Distance in meters:", distance);
 
         });
-               function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+          function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
             const R = 6371; // Radius of the Earth in km
             const toRad = deg => deg * Math.PI / 180;
 
@@ -239,8 +239,8 @@
                  cart.forEach(function(item){
                      subTotal += item.quantity * item.productPrice;
                  });
-                 var Area = $("#AreaId")[0].value;
-                 var allTotal = subTotal + parseInt(Area);
+                 var Area = $("#AreaId").val();
+                 var allTotal = subTotal + parseFloat(Area);
 
                  var selectedSlots = selectedSlotsValue;
                  var customerName = $("#CustomerName").val();
@@ -322,6 +322,7 @@
                  data-value="${data.productPrice}" hidden>
                  <button class="btn btn-white" type="button" id="button-plus-${rowIndex}" onclick="Add(event, ${rowIndex})"> + </button>
                  <input type="number" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}">
+                 <input type="text" class="form-control isKilogram" value="${data.isKilogram}" hidden>
                  <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
                  </td>
                  <td class="text-danger">
@@ -333,34 +334,51 @@
              $('#cartTable tbody').append(newRowHtml);
             // reorderRows();
          };
+         function handlePriceChange(rowIndex) {
+            const value = document.getElementById(`priceInput[${rowIndex}]`).value;
+            IsKilogramUpdateTotalPrice();
+            console.log("Price changed:", value);
+        }
+
          function calcItems(){
              debugger;
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
             var subTotal = 0;
             cart.forEach(function(item){
-                subTotal += item.quantity * parseInt(item.productPrice);
+                subTotal += item.quantity * parseFloat(item.productPrice);
             });
             var Area = $("#AreaId")[0].value;
-            $("#total")[0].innerHTML= subTotal + parseInt(Area);
+            $("#total")[0].innerHTML= subTotal + parseFloat(Area);
             $("#cartSubTotal")[0].innerHTML= subTotal;
          }
          function Add(event) {
+             debugger;
                        var addBtn = $(event.target);
                        var inputField = addBtn.siblings('.stock-input');
+                       var isKilogramInput = addBtn.siblings('.isKilogram');
+                       var isKilogram = isKilogramInput.val();
                        var productId = addBtn[0].id;
                        var extractedIndex = productId.split('-').pop();
-                       var convertingId= parseInt(extractedIndex);
+                       var convertingId= parseFloat(extractedIndex);
 
                        var inputElement = document.getElementById(`productInputId[${convertingId}]`);
-                       var dataId = parseInt(inputElement.dataset.id);
+                       var dataId = parseFloat(inputElement.dataset.id);
                        var dataName = inputElement.dataset.name;
                        var dataValue = inputElement.dataset.value;
 
-                       var inputValue = parseInt(inputField.val());
-                       inputField.val(inputValue + 1);
-                       $(".itemPrice")[convertingId].innerHTML = "$"+ ((inputValue+1) * parseInt(dataValue)) ;
+                       var inputValue = parseFloat(inputField.val());
+                       if(isKilogram=="kg"){
+                            inputField.val(inputValue + .25);
+                            AddToCart(dataId,dataName,dataValue,inputValue + .25,isKilogram);
+                            $(".itemPrice")[convertingId].innerHTML = "$"+ ((inputValue + .25) * parseFloat(dataValue)) ;
 
-                       AddToCart(dataId,dataName,dataValue,inputValue + 1);
+                       }else{
+
+                            inputField.val(inputValue + 1);
+                            $(".itemPrice")[convertingId].innerHTML = "$"+ ((inputValue + 1) * parseFloat(dataValue)) ;
+                            AddToCart(dataId,dataName,dataValue,inputValue + 1,isKilogram);
+                       }
+
                        calcItems();
              };
 
@@ -369,7 +387,7 @@
              var rowToDelete = deleteBtn.closest('tr');
              var productId = rowToDelete[0].id;
              var extractedIndex = productId.split('-').pop();
-             var convertingId = parseInt(extractedIndex);
+             var convertingId = parseFloat(extractedIndex);
              var inputElement = document.getElementById(`productInputId[${convertingId}]`);
              var dataId = inputElement.dataset.id;
              var result = await _SWAL.CustomAlertWithOwnMessage("Are you sure you want to Delete this item ???","Yes","No");
@@ -377,6 +395,7 @@
                  rowToDelete.remove();
                  RemoveFromCart(dataId);
                  calcItems();
+                 location.reload();
              }
           };
 
@@ -385,7 +404,7 @@
                         cart = cart.filter(item => String(item.productId) !== String(productId));
                         localStorage.setItem('cart', JSON.stringify(cart));
                   }
-         function AddToCart(productId, productName, productPrice, Quantity) {
+         function AddToCart(productId, productName, productPrice, Quantity,unit) {
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
                  const existingProductIndex = cart.findIndex(item => item.productId === productId);
 
@@ -396,7 +415,8 @@
                          productId: productId,
                          productName: productName,
                          productPrice: productPrice,
-                         quantity: Quantity
+                         quantity: Quantity,
+                         isKilogram: unit
                      };
                      cart.push(newItem);
                  }
@@ -408,20 +428,40 @@
                        var inputField = addBtn.siblings('.stock-input');
                        var productId = addBtn[0].id;
                        var extractedIndex = productId.split('-').pop();
-                       var convertingId= parseInt(extractedIndex);
+                       var convertingId= parseFloat(extractedIndex);
                        var inputElement = document.getElementById(`productInputId[${convertingId}]`);
-                       var dataId = parseInt(inputElement.dataset.id);
+                       var dataId = parseFloat(inputElement.dataset.id);
                        var dataName = inputElement.dataset.name;
                        var dataValue = inputElement.dataset.value;
-                       var inputValue = parseInt(inputField.val());
-                       inputField.val(inputValue - 1);
-                       $(".itemPrice")[convertingId].innerHTML = "$"+((inputValue-1) * parseInt(dataValue)) ;
+                       var inputValue = parseFloat(inputField.val());
+                       var isKilogramInput = addBtn.siblings('.isKilogram');
+                       var isKilogram = isKilogramInput.val();
 
-                       if  (inputValue - 1 <= 0) {
+                       // inputField.val(inputValue - 1);
+                       // $(".itemPrice")[convertingId].innerHTML = "$"+((inputValue - 1) * parseFloat(dataValue)) ;
+
+                        if(isKilogram=="kg"){
+                            inputField.val(inputValue - .25);
+                            AddToCart(dataId,dataName,dataValue,inputValue - .25,isKilogram);
+                            $(".itemPrice")[convertingId].innerHTML = "$"+ ((inputValue - .25) * parseFloat(dataValue)) ;
+                            if  (inputValue - .25 <= 0) {
                            Delete(event);
                            return;
                        }
-                       AddToCart(dataId, dataName, dataValue, inputValue - 1);
+
+                       }else{
+
+                            inputField.val(inputValue - 1);
+                            $(".itemPrice")[convertingId].innerHTML = "$"+ ((inputValue - 1) * parseFloat(dataValue)) ;
+                            AddToCart(dataId,dataName,dataValue,inputValue - 1,isKilogram);
+                            if  (inputValue - 1 <= 0) {
+                           Delete(event);
+                           return;
+                       }
+                       }
+
+                       
+                       // AddToCart(dataId, dataName, dataValue, inputValue - 1);
                        calcItems();
           };
          function selectSlot(button) {
@@ -439,7 +479,7 @@
 
             // $('.price-input').each(function() {
             //      debugger;
-            //      var price = parseInt($(this).val());
+            //      var price = parseFloat($(this).val());
             //      var row = $(this).closest('tr');
             //      var quantity = row.find('.quantity-input').val();
             //      var discount = row.find('.individualDiscount-input').val();

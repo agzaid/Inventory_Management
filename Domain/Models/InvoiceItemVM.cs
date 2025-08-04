@@ -11,7 +11,7 @@
             set { productName = value.ToLower(); }
         }
         public double? IndividualDiscount { get; set; }
-        public int? Quantity { get; set; }
+        public decimal? Quantity { get; set; }
         public decimal? PriceSoldToCustomer { get; set; }
         public double? ShippingPrice { get; set; }
 
