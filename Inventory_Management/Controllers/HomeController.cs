@@ -79,7 +79,7 @@ namespace Inventory_Management.Controllers
         {
             var cartvm = new Inventory_Management.Models.CartVM()
             {
-                Areas = await _onlineOrderService.ShippingFreightSelectList(),
+                Areas = await _onlineOrderService.DistrictSelectList(),
                 DeliverySlotVMs = await _onlineOrderService.DeliverySlot(),
             };
             return View(cartvm);

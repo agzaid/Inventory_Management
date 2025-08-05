@@ -256,6 +256,32 @@ namespace Application.Services.Implementation
             }
 
         }
+        public async Task<List<SelectListItem>> DistrictSelectList()
+        {
+            try
+            {
+                var shipping = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
+                var vm = shipping.Select(s => new SelectListItem()
+                {
+                    Text = $"{s.Name} ({s.ShippingFreight?.ShippingArea}) ({s.Price})",
+                    Value = s.Price.ToString()
+                }).ToList();
+                return vm;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+                return new List<SelectListItem>();
+            }
+
+        }
+
+
         public async Task<List<DeliverySlotVM>> DeliverySlot()
         {
             try
