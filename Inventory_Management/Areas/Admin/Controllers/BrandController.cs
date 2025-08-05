@@ -57,7 +57,7 @@ namespace Inventory_Management.Areas.admin.Controllers
                     var result = await _brandService.CreateBrand(obj);
                     TempData["success"] = result;
                     TempData["FormToken"] = null;
-                    return RedirectToAction(nameof(Index), new { status = "success", message = result[1] });
+                    return RedirectToAction(nameof(Index), new { status = "success", message = result });
                 }
             }
             return View();

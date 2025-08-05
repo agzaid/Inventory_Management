@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250730123419_relation")]
-    partial class relation
+    [Migration("20250805125136_changes1")]
+    partial class changes1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,8 +110,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(800)
-                        .HasColumnType("nvarchar(800)");
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -533,8 +533,8 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int?>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("Quantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("SellingPriceFromProduct")
                         .HasColumnType("decimal(18,2)");
@@ -542,8 +542,8 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("ShippingPrice")
                         .HasColumnType("float");
 
-                    b.Property<int?>("StockQuantityFromProduct")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("StockQuantityFromProduct")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -563,6 +563,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<decimal?>("AllDiscountInput")
                         .HasColumnType("decimal(18,2)");
@@ -636,10 +640,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
-                    b.Property<string>("ShippingNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
                     b.Property<double?>("ShippingPrice")
                         .HasColumnType("float");
 
@@ -692,6 +692,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsKilogram")
+                        .HasColumnType("bit");
+
                     b.Property<decimal?>("MaximumDiscountPercentage")
                         .HasColumnType("decimal(18,2)");
 
@@ -699,6 +702,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("OtherShopsPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PricePerGram")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateOnly?>("ProductExpiryDate")
@@ -722,8 +728,8 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StockQuantity")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("StockQuantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("SupplierId")
                         .HasColumnType("int");

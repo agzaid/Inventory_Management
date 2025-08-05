@@ -52,7 +52,7 @@ namespace Application.Services.Implementation
             var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                //obj.BrandName = obj.BrandName?.ToLower();
+                obj.BrandName = obj.BrandName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
                 var lookForName = _unitOfWork.Brand.Get(s => s.BrandName == obj.BrandName);
                 if (obj?.ImagesFormFiles?.Count() > 0)

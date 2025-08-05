@@ -107,8 +107,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(800)
-                        .HasColumnType("nvarchar(800)");
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

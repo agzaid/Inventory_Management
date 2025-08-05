@@ -53,7 +53,7 @@ namespace Infrastructure.Data
             {
                 var districts = new List<District>
                     {
-                        new District { Id = 1, Name = "other" },
+                        new District {  Name = "other" },
                     };
                 context.ShippingFreight.AddRange(
                     new ShippingFreight { ShippingArea = "other", Price = 50, Districts = districts }
