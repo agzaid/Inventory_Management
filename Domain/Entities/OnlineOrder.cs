@@ -26,7 +26,7 @@ namespace Domain.Entities
         public double? AmountBeforeShipping{ get; set; }
         public decimal? AllDiscountInput { get; set; }
         [MaxLength(1000)]
-        public string? ShippingNotes { get; set; }
+        public string? Address { get; set; }
         public double? ShippingPrice { get; set; }
 
         [MaxLength(200)]

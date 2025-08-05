@@ -350,7 +350,7 @@ namespace Application.Services.Implementation
                         AmountBeforeShipping = cart.PriceBeforeShipping,
                         CustomerId = customer.Id,
                         ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
-                        ShippingNotes = cart.CustomerAddress,
+                        Address = cart.CustomerAddress,
                         DeliverySlotsAsString = cart.SelectedSlots,
                         //  UserDeliverySlots = userDeliverySlot,
                         OrderStatus = Status.InProgress,
@@ -544,6 +544,10 @@ namespace Application.Services.Implementation
                     //OrderStatus = s.OrderStatus.ToString(),
                     GrandTotalAmount = s.GrandTotalAmount,
                     Status = s.OrderStatus,
+                    Address = s.Address,
+                    DetailedAddress = $"{s.StreetName}, {s.BuildingNumber}, {s.Floor}, {s.ApartmentNumber}, {s.LandMark}",
+                    Location = s.Location,
+                    PhoneNumber = s.Customer?.Phone,
                     // Area = _unitOfWork.ShippingFreight.Get(d => d.Id == s.AreaId).ShippingArea,
                 }).ToList();
                 return Result<List<OnlineOrderVM>>.Success(orderVMs, "success");
