@@ -13,7 +13,7 @@ namespace Domain.Entities
         public string? BrandName { get; set; }
         [MaxLength(100)]
         public string? BrandNameAr { get; set; }
-        [MaxLength(800)]
+        [MaxLength(700)]
         public string? Description { get; set; }
 
         public ICollection<Product>? Products { get; set; }
