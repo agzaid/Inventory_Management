@@ -58,7 +58,7 @@ namespace Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BrandName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     BrandNameAr = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(800)", maxLength: 800, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
                     Create_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Modified_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -96,6 +96,7 @@ namespace Infrastructure.Migrations
                     CustomerNameAr = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    OtherPhone = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Area = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Create_Date = table.Column<DateTime>(type: "datetime2", nullable: true),

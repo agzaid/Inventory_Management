@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\UploadedFiles\rice\**" />
+    <Content Remove="wwwroot\UploadedFiles\rice\**" />
+    <EmbeddedResource Remove="wwwroot\UploadedFiles\rice\**" />
+    <None Remove="wwwroot\UploadedFiles\rice\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -25,7 +32,6 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="wwwroot\UploadedFiles\rice\" />
   </ItemGroup>
 
 </Project>

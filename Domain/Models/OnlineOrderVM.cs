@@ -16,6 +16,7 @@ namespace Domain.Models
         public string? Location { get; set; }
         public string? OrderStatus { get; set; }
         public string? PhoneNumber { get; set; }
+        //public string? OptionalPhoneNumber { get; set; }
         public Status Status { get; set; }
 
     }

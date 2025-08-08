@@ -18,6 +18,8 @@ namespace Domain.Entities
         [MaxLength(100)]
         public string? Phone { get; set; }
         [MaxLength(100)]
+        public string? OtherPhone { get; set; }
+        [MaxLength(100)]
         public string? Area { get; set; }
         [MaxLength(500)]
         public string? Address { get; set; }

@@ -1,10 +1,6 @@
 ﻿@model Domain.Models.BrandVM
 
 
-@{
-    var formToken = Guid.NewGuid().ToString("N");
-    TempData["FormToken"] = formToken;
-}
 <div class="page-wrapper">
     <div class="page-content">
         <div class="row">
@@ -26,8 +22,6 @@
                                                     <label class="form-label">Brand Name</label>
                                                     <input class="form-control" asp-for="BrandName">
                                                     <span asp-validation-for="BrandName" class="text-danger"></span>
-
-                                                    <input type="hidden" id="FormToken" name="FormToken" value="@formToken" />
                                                 </div>
                                                 <div class="col-12">
                                                     <label class="form-label">Brand Name Arabic</label>

@@ -86,7 +86,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>Total</strong></td>
+                        <td><strong>@Localizer["Total"]</strong></td>
                         <td><strong>$ <span id="total">0.0</span></strong></td>
                     </tr>
                 </table>
@@ -107,6 +107,14 @@
                         <td>
                             <input class="form-control" asp-for="CustomerPhone" type="text" placeholder="@Localizer["ContactNumber"]">
                             <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>@Localizer["OptionalContactNumber"]</strong></td>
+                        <td>
+                            <input class="form-control" asp-for="OptionalCustomerPhone" type="text" placeholder="@Localizer["OptionalContactNumber"]">
+                            <span asp-validation-for="OptionalCustomerPhone" class="text-danger"></span>
 
                         </td>
                     </tr>
@@ -246,6 +254,7 @@
                  var customerName = $("#CustomerName").val();
                  var customerAddress = $("#CustomerAddress").val();
                  var customerPhone = $("#CustomerPhone").val();
+                 var optionalCustomerPhone = $("#OptionalCustomerPhone").val();
                  var StreetName = $("#StreetName").val();
                  var BuildingNumber = $("#BuildingNumber").val();
                  var Floor = $("#Floor").val();
@@ -264,6 +273,7 @@
                      CustomerName: customerName,
                      CustomerAddress: customerAddress,
                      CustomerPhone: customerPhone,
+                     OptionalCustomerPhone: optoinalCustomerPhone,
                      StreetName: StreetName,
                      BuildingNumber: BuildingNumber,
                      Floor: Floor,

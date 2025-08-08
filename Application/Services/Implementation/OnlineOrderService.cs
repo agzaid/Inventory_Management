@@ -342,6 +342,7 @@ namespace Application.Services.Implementation
                             CustomerName = cart.CustomerName,
                             Address = cart.CustomerAddress,
                             Phone = cart.CustomerPhone,
+                            OtherPhone = cart.OptionalCustomerPhone,
                         };
                         _unitOfWork.Customer.Add(newCustomer);
                         customer = newCustomer;

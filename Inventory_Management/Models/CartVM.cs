@@ -36,6 +36,7 @@ namespace Inventory_Management.Models
         [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits (only numbers allowed).")]
         [LocalizedRequired("PhoneNumber_Required")]
         public string? CustomerPhone { get; set; }
+        public string? OptionalCustomerPhone { get; set; }
 
         //[LocalizedRequired("CustomerName_Required")]
         public string? StreetName { get; set; }

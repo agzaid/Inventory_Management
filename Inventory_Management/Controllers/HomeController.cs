@@ -99,6 +99,7 @@ namespace Inventory_Management.Controllers
                 CustomerName = data.CustomerName,
                 CustomerAddress = data.CustomerAddress,
                 CustomerPhone = data.CustomerPhone,
+                OptionalCustomerPhone = data.OptionalCustomerPhone,
                 StreetName = data.StreetName,
                 BuildingNumber = data.BuildingNumber,
                 Floor = data.Floor,

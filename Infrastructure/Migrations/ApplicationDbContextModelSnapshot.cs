@@ -192,6 +192,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OtherPhone")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250805124716_init")]
+    [Migration("20250807115014_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -110,8 +110,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(800)
-                        .HasColumnType("nvarchar(800)");
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -194,6 +194,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("OtherPhone")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(100)

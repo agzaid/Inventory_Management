@@ -21,6 +21,7 @@ namespace Domain.Models
         [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits (only numbers allowed).")]
         [Required(ErrorMessage = "Phone is required.")]
         public string? CustomerPhone { get; set; }
+        public string? OptionalCustomerPhone { get; set; }
         public string? StreetName { get; set; }
         //[LocalizedRequired("CustomerName_Required")]
         public string? BuildingNumber { get; set; }
