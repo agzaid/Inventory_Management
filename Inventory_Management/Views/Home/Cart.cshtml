@@ -27,8 +27,53 @@
 
             .time-slot.faded {
                 opacity: 0.5;
-                /* cursor: not-allowed; */
             }
+
+        media (max-width: 768px) {
+            #cart table, #cart-add table
+
+        {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        #cart table thead {
+            display: none; /* Hide table headers on mobile */
+        }
+
+        #cart table tr {
+            display: block;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff;
+        }
+
+        #cart table td {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+        }
+
+        .d-flex {
+            flex-direction: column;
+        }
+
+        #subtotal {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .time-slot {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        input, select, textarea, button {
+            font-size: 14px;
+        }
+
+        }
     </style>
 }
 
@@ -39,6 +84,7 @@
 
 @Html.AntiForgeryToken()
 <section id="cart" class="section-p1">
+    <div class="table-responsive">
     <table width="100%" id="cartTable">
         <thead>
             <tr>
@@ -53,6 +99,7 @@
         <tbody>
         </tbody>
     </table>
+    </div>
 </section>
 
 <section id="cart-add" class="section-p1">
@@ -66,7 +113,7 @@
     </div> *@
         <input class="form-control" asp-for="OrderNumber" hidden type="text">
 
-        <div class="d-flex">
+        <div class="row">
             <div id="subtotal" class="col-md-6 col-12">
                 <h3>@Localizer["CartTotals"]</h3>
                 <table>
