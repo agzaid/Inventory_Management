@@ -375,7 +375,7 @@ namespace Application.Services.Implementation
                         IndividualProductsQuatities = string.Join(", ", cart.ItemsVMs.Select(s => s.Quantity)),
                         GrandTotalAmount = cart.TotalPrice,
                         AmountBeforeShipping = cart.PriceBeforeShipping,
-                        CustomerId = customer.Id,
+                        Customer = customer,
                         ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
                         Address = cart.CustomerAddress,
                         DeliverySlotsAsString = cart.SelectedSlots,
