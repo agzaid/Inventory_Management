@@ -68,13 +68,13 @@ namespace Application.Services.Implementation
                 var productQuantityMap = new Dictionary<decimal, decimal>();
 
                 // check customer existence
-                var customer = _unitOfWork.Customer.Get(s => s.Phone == invoiceVM.PhoneNumber);
+                var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == invoiceVM.PhoneNumber);
                 if (customer == null)
                 {
                     return new string[] { "error", "Customer not found with this phone number." };
                 }
 
-                var existingInvoice = _unitOfWork.Invoice.Get(s => s.InvoiceNumber == invoiceVM.InvoiceNumber);
+                var existingInvoice = await _unitOfWork.Invoice.GetFirstOrDefaultAsync(s => s.InvoiceNumber == invoiceVM.InvoiceNumber);
                 if (existingInvoice != null)
                 {
                     return new string[] { "error", "Invoice already exists with this number." };
@@ -85,11 +85,11 @@ namespace Application.Services.Implementation
                     InvoiceItems = new List<InvoiceItem>()
                 };
 
-                var area = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == invoiceVM.shippingText);
+                var area = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.ShippingArea == invoiceVM.shippingText);
 
                 for (int i = 0; i < invoiceVM.productInput?.Count; i++)
                 {
-                    var product = _unitOfWork.Product.Get(s => s.ProductName == invoiceVM.productInput[i].ToLower());
+                    var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.ProductName == invoiceVM.productInput[i].ToLower());
                     if (product == null)
                     {
                         return new string[] { "error", $"Product '{invoiceVM.productInput[i]}' not found." };
@@ -121,7 +121,7 @@ namespace Application.Services.Implementation
                 // stock updates
                 foreach (var productEntry in productQuantityMap)
                 {
-                    var productUpdate = _unitOfWork.Product.Get(s => s.Id == productEntry.Key);
+                    var productUpdate = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == productEntry.Key);
                     if (productUpdate != null)
                     {
                         productUpdate.StockQuantity -= productEntry.Value;
@@ -140,9 +140,9 @@ namespace Application.Services.Implementation
                 invoice.ShippingNotes = invoiceVM.ShippingNotes;
                 invoice.ShippingPrice = area?.Price ?? 0; // fixed
 
-                _unitOfWork.Invoice.Add(invoice);
+                await _unitOfWork.Invoice.AddAsync(invoice);
 
-                var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == invoice.InvoiceNumber);
+                var onlineOrder = await _unitOfWork.OnlineOrder.GetFirstOrDefaultAsync(s => s.OrderNumber == invoice.InvoiceNumber);
                 if (onlineOrder == null)
                 {
                     return new string[] { "error", "Online order not found." };
@@ -152,7 +152,7 @@ namespace Application.Services.Implementation
 
                 _unitOfWork.OnlineOrder.Update(onlineOrder);
 
-                await _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
                 return new string[] { "success", "Invoice Created Successfully" };
             }
             catch (Exception ex)
@@ -203,11 +203,11 @@ namespace Application.Services.Implementation
             }
 
         }
-        public Result<CustomerVM> SearchForCustomer(string search)
+        public async Task<Result<CustomerVM>> SearchForCustomer(string search)
         {
             try
             {
-                var customer = _unitOfWork.Customer.Get(s => s.Phone.Contains(search));
+                var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone.Contains(search));
                 if (customer == null)
                 {
                     return Result<CustomerVM>.Failure("Customer not found...!!!", "error");
@@ -230,7 +230,6 @@ namespace Application.Services.Implementation
             {
                 throw;
             }
-
         }
         public InvoiceVM CreateInvoiceForViewing()
         {
@@ -251,12 +250,12 @@ namespace Application.Services.Implementation
             }
 
         }
-        public InvoiceVM GetInvoiceById()
+        public async Task<InvoiceVM> GetInvoiceById()
         {
             try
             {
                 var productVM = new InvoiceVM();
-                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                var freights = await _unitOfWork.ShippingFreight.GetAllAsync();
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
                     Text = v.ShippingArea,
@@ -271,17 +270,17 @@ namespace Application.Services.Implementation
 
         }
 
-        public bool DeleteInvoice(int id)
+        public async Task<bool> DeleteInvoice(int id)
         {
             try
             {
-                var oldInvoice = _unitOfWork.Invoice.Get(s => s.Id == id);
+                var oldInvoice = await _unitOfWork.Invoice.GetFirstOrDefaultAsync(s => s.Id == id);
                 if (oldInvoice != null)
                 {
                     oldInvoice.IsDeleted = true;
                     oldInvoice.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Invoice.Update(oldInvoice);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -293,11 +292,11 @@ namespace Application.Services.Implementation
                 return false; // Rethrow the exception after logging it
             }
         }
-        public bool HardDeleteInvoice(int id)
+        public async Task<bool> HardDeleteInvoice(int id)
         {
             try
             {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id, "Images");
+                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == id, "Images");
                 if (oldProduct != null)
                 {
                     if (oldProduct.Images?.Count > 0)
@@ -308,7 +307,7 @@ namespace Application.Services.Implementation
                         }
                     }
                     _unitOfWork.Product.Remove(oldProduct);
-                    _unitOfWork.Save();
+                    _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -385,14 +384,14 @@ namespace Application.Services.Implementation
             }
             return new InvoiceVM();
         }
-        public bool UpdateInvoice(ProductVM obj)
+        public async Task<bool> UpdateInvoice(ProductVM obj)
         {
             try
             {
                 // Prepare byte arrays for images
                 var imagesToBeInserted = new List<byte[]>();
 
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images");
+                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == obj.Id, "Images");
 
                 // Remove old images if necessary
                 RemoveOldImages(oldProduct);
@@ -410,7 +409,7 @@ namespace Application.Services.Implementation
 
                     // Save the updated product
                     _unitOfWork.Product.Update(oldProduct);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
 

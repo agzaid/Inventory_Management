@@ -89,7 +89,7 @@
         <thead>
             <tr>
                 <td>@Localizer["Remove"]</td>
-                <td>@Localizer["Image"]</td>
+                @* <td>@Localizer["Image"]</td> *@
                 <td>@Localizer["Product"]</td>
                 <td>@Localizer["Price"]</td>
                 <td>@Localizer["Quantity"]</td>
@@ -363,7 +363,6 @@
              var newRowHtml = `
                  <tr id="row-${rowIndex}">
                  <td><a onclick="Delete(event)"><i class="ri-close-circle-line"></i></a></td>
-                 <td><img src="img/products/f1.jpg" alt=""></td>
                  <td>
                      <div class="d-flex align-items-center justify-content-center">
                          <div class="font-weight-bold text-danger">${data.productName}</div>

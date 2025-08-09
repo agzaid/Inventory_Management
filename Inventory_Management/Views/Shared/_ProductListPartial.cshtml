@@ -23,7 +23,7 @@
                     <h4>$@Model[i].SellingPrice<br /><br /><del class="text-danger">$@Model[i].OtherShopsPrice</del></h4>
                     <h6>@Model[i].DifferencePercentage % @Localizer["Discount"]</h6>
                 </div>
-                <a href="#"><i class="ri-shopping-cart-2-line cart"></i></a>
+                <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model[i].Id"><i class="ri-shopping-cart-2-line cart"></i></a>
             </div>
         </a>
     }

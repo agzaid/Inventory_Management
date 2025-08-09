@@ -3,6 +3,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Application.Services.Implementation
 {
@@ -17,15 +18,15 @@ namespace Application.Services.Implementation
             _logger = logger;  // Initialize the logger
         }
 
-        public IEnumerable<ImageVM> GetAllImages()
+        public async Task<IEnumerable<ImageVM>> GetAllImages()
         {
             try
             {
-                var categories = _unitOfWork.Image.GetAll(s => s.IsDeleted == false);
+                var categories = await _unitOfWork.Image.GetAllAsync(s => s.IsDeleted == false);
                 var showCategories = categories.Select(s => new ImageVM()
                 {
                     Id = s.Id,
-                   
+
                     //CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                 }).ToList();
 
@@ -40,13 +41,13 @@ namespace Application.Services.Implementation
             }
         }
 
-        public string CreateImage(ImageVM obj)
+        public async Task<string> CreateImage(ImageVM obj)
         {
             try
             {
                 obj.ImageName = obj.ImageName?.ToLower();
                 //obj.Description = obj.Description?.ToLower();
-                var lookForName = _unitOfWork.Image.Get(s => s.ImageName == obj.ImageName);
+                var lookForName = await _unitOfWork.Image.GetFirstOrDefaultAsync(s => s.ImageName == obj.ImageName);
                 if (lookForName == null)
                 {
                     var image = new Image()
@@ -55,8 +56,8 @@ namespace Application.Services.Implementation
                         //Modified_Date = DateTime.Now,
                         //Description = obj.Description,
                     };
-                    _unitOfWork.Image.Add(image);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Image.AddAsync(image);
+                    await _unitOfWork.SaveAsync();
                     return "Category Created Successfully";
                 }
                 else
@@ -93,20 +94,20 @@ namespace Application.Services.Implementation
             return new ImageVM();
         }
 
-        public bool UpdateImage(ImageVM obj)
+        public async Task<bool> UpdateImage(ImageVM obj)
         {
             try
             {
                 obj.ImageName = obj.ImageName?.ToLower();
                 //obj.Description = obj.Description?.ToLower();
-                var oldImage = _unitOfWork.Image.Get(s => s.Id == obj.Id);
+                var oldImage = await _unitOfWork.Image.GetFirstOrDefaultAsync(s => s.Id == obj.Id);
                 if (oldImage != null)
                 {
-                    oldImage.ImageName= obj.ImageName;
+                    oldImage.ImageName = obj.ImageName;
                     //oldCategory.Description = obj.Description;
                     //oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Image.Update(oldImage);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -119,17 +120,17 @@ namespace Application.Services.Implementation
             }
         }
 
-        public bool DeleteImage(int id)
+        public async Task<bool> DeleteImage(int id)
         {
             try
             {
-                var oldImage = _unitOfWork.Image.Get(s => s.Id == id);
+                var oldImage = await _unitOfWork.Image.GetFirstOrDefaultAsync(s => s.Id == id);
                 if (oldImage != null)
                 {
                     oldImage.IsDeleted = true;
                     oldImage.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Image.Update(oldImage);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else

@@ -118,7 +118,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand");
+                    b.ToTable("Brand", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -152,7 +152,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
@@ -202,7 +202,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
@@ -239,7 +239,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliverySlot");
+                    b.ToTable("DeliverySlot", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.District", b =>
@@ -277,7 +277,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ShippingFreightId");
 
-                    b.ToTable("District");
+                    b.ToTable("District", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Image", b =>
@@ -323,7 +323,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Image");
+                    b.ToTable("Image", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Inventory", b =>
@@ -374,7 +374,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Inventory");
+                    b.ToTable("Inventory", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.InventoryLog", b =>
@@ -415,7 +415,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InventoryLog");
+                    b.ToTable("InventoryLog", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Invoice", b =>
@@ -472,7 +472,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Invoice");
+                    b.ToTable("Invoice", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.InvoiceItem", b =>
@@ -554,7 +554,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InvoiceItem");
+                    b.ToTable("InvoiceItem", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OnlineOrder", b =>
@@ -656,7 +656,7 @@ namespace Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[InvoiceId] IS NOT NULL");
 
-                    b.ToTable("OnlineOrder");
+                    b.ToTable("OnlineOrder", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -743,7 +743,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ShippingFreight", b =>
@@ -776,7 +776,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShippingFreight");
+                    b.ToTable("ShippingFreight", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Supplier", b =>
@@ -809,7 +809,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Supplier");
+                    b.ToTable("Supplier", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.UserDeliverySlot", b =>
@@ -841,7 +841,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OnlineOrderId");
 
-                    b.ToTable("UserDeliverySlot");
+                    b.ToTable("UserDeliverySlot", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

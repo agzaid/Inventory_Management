@@ -11,9 +11,9 @@ namespace Application.Services.Intrerfaces
     public interface IShippingFreightService
     {
         Result<IEnumerable<ShippingFreightVM>> GetAllShippingFrieght();
-        ShippingFreightVM GetShippingFreightById(int id);
         Task<Result<string>> CreateShippingFreight(ShippingFreightVM shippingFrieghtVM);
         Task<bool> UpdateShippingFreight(ShippingFreightVM ShippingFreightvm);
         Task<bool> DeleteShippingFreight(int id);
+        Task<ShippingFreightVM> GetShippingFreightById(int id);
     }
 }

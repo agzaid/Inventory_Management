@@ -319,7 +319,7 @@ namespace Application.Services.Implementation
                 }
                 else
                 {
-                    var existingOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == cart.OrderNumber);
+                    var existingOrder = await _unitOfWork.OnlineOrder.GetFirstOrDefaultAsync(s => s.OrderNumber == cart.OrderNumber);
                     if (existingOrder != null)
                     {
                         return Result<string>.Failure("Order with this number already exists", "error");
@@ -332,9 +332,9 @@ namespace Application.Services.Implementation
                     if (!string.IsNullOrWhiteSpace(cart.ShippingAreaPrice) && double.TryParse(cart.ShippingAreaPrice, out var parsedShippingPrice))
                     {
                         shippingPrice = parsedShippingPrice;
-                        shipping = _unitOfWork.ShippingFreight.Get(s => s.Price == parsedShippingPrice);
+                        shipping = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.Price == parsedShippingPrice);
                     }
-                    var customer = _unitOfWork.Customer.Get(s => s.Phone == cart.CustomerPhone);
+                    var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == cart.CustomerPhone);
                     if (customer == null)
                     {
                         var newCustomer = new Customer
@@ -344,14 +344,14 @@ namespace Application.Services.Implementation
                             Phone = cart.CustomerPhone,
                             OtherPhone = cart.OptionalCustomerPhone,
                         };
-                        _unitOfWork.Customer.Add(newCustomer);
+                        await _unitOfWork.Customer.AddAsync(newCustomer);
                         customer = newCustomer;
                     }
                     var userDeliverySlot = new List<UserDeliverySlot>();
                     if (cart.SelectedSlots?.Length > 0)
                     {
                         var deliverySlotVM = cart.SelectedSlots.Select(s => s.Split('-')[0].Trim());
-                        deliverySlot = _unitOfWork.DeliverySlot.GetAll(s => deliverySlotVM.Contains(s.StartTime));
+                        deliverySlot = await _unitOfWork.DeliverySlot.GetAllAsync(s => deliverySlotVM.Contains(s.StartTime));
                         foreach (var item in deliverySlot)
                         {
 
@@ -396,7 +396,7 @@ namespace Application.Services.Implementation
 
                     foreach (var item in cart.ItemsVMs)
                     {
-                        var product = _unitOfWork.Product.Get(s => s.Id == item.ProductId);
+                        var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == item.ProductId);
                         if (product != null)
                         {
                             var invoiceItem = new InvoiceItem()
@@ -421,8 +421,8 @@ namespace Application.Services.Implementation
                         }
                     }
                     onlineOrder.GrandTotalAmount = grandTotalPrice + onlineOrder.ShippingPrice;
-                    _unitOfWork.OnlineOrder.Add(onlineOrder);
-                    await _unitOfWork.Save();
+                    await _unitOfWork.OnlineOrder.AddAsync(onlineOrder);
+                    await _unitOfWork.SaveAsync();
                 }
                 return Result<string>.Success("success", "Online Order Created Successfully");
 
@@ -618,7 +618,7 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var getOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum);
+                var getOrder = await _unitOfWork.OnlineOrder.GetFirstOrDefaultAsync(s => s.OrderNumber == orderNum);
                 if (getOrder == null)
                 {
                     return Result<bool>.Failure("Order not found", "error");
@@ -632,7 +632,7 @@ namespace Application.Services.Implementation
                 };
 
                 _unitOfWork.OnlineOrder.Update(getOrder);
-                await _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
 
                 return Result<bool>.Success(true, "success");
             }

@@ -83,7 +83,7 @@ namespace Inventory_Management.Areas.Admin.Controllers
         //}
         public async Task<IActionResult> Delete(int id)
         {
-            var result = _invoiceService.DeleteInvoice(id);
+            var result = await _invoiceService.DeleteInvoice(id);
             if (result == true)
             {
                 TempData["success"] = "Invoice Deleted Successfully";

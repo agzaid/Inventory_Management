@@ -2,6 +2,7 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
@@ -54,9 +55,9 @@ namespace Inventory_Management.Areas.admin.Controllers
             return View();
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View(_categoryService.GetCategoryById(id));
+            return View(await _categoryService.GetCategoryById(id));
         }
 
         [HttpPost]

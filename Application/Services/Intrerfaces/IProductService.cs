@@ -10,15 +10,15 @@ namespace Application.Services.Intrerfaces
 {
     public interface IProductService
     {
-        IEnumerable<ProductVM> GetAllProducts();
-        IEnumerable<ProductVM> GetAllProductsForPortal();
-        ProductVM GetProductById(int id);
-        ProductVM GetProductDetails(int id);
+        Task<IEnumerable<ProductVM>> GetAllProducts();
         Task<string[]> CreateProduct(ProductVM product);
         ProductVM CreateProductForViewingInCreate();
         ProductVM CreateProductForViewingInCreate(ProductVM productVM);
         Task<bool> UpdateProduct(ProductVM productVM);
-        bool DeleteProduct(int id);
-        bool HardDeleteProduct(int id);
+        Task<bool> HardDeleteProduct(int id);
+        Task<bool> DeleteProduct(int id);
+        Task<IEnumerable<ProductVM>> GetAllProductsForPortal();
+        Task<ProductVM> GetProductById(int id);
+        Task<ProductVM> GetProductDetails(int id);
     }
 }

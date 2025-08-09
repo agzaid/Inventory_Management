@@ -34,7 +34,7 @@ namespace Application.Services.Implementation
             var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                var lookForName = _unitOfWork.Product.Get(s => s.ProductName == product.ProductName.ToLower().Trim());
+                var lookForName = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.ProductName == product.ProductName.ToLower().Trim());
                 if (lookForName != null)
                 {
                     return new string[] { "error", "Product Already Exists" };
@@ -92,8 +92,8 @@ namespace Application.Services.Implementation
                             ProductTags = product.ProductTags ?? "",
                             Images = listOfImages,
                         };
-                        _unitOfWork.Product.Add(Newproduct);
-                        _unitOfWork.Save();
+                        await _unitOfWork.Product.AddAsync(Newproduct);
+                        await _unitOfWork.SaveAsync();
                     }
                     return new string[] { "success", "Product Created Successfully" };
                 }
@@ -149,17 +149,17 @@ namespace Application.Services.Implementation
             }
         }
 
-        public bool DeleteProduct(int id)
+        public async Task<bool> DeleteProduct(int id)
         {
             try
             {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id);
+                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == id);
                 if (oldProduct != null)
                 {
                     oldProduct.IsDeleted = true;
                     oldProduct.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Product.Update(oldProduct);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -171,11 +171,11 @@ namespace Application.Services.Implementation
                 return false; // Rethrow the exception after logging it
             }
         }
-        public bool HardDeleteProduct(int id)
+        public async Task<bool> HardDeleteProduct(int id)
         {
             try
             {
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == id, "Images");
+                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == id, "Images");
                 if (oldProduct != null)
                 {
                     if (oldProduct.Images?.Count > 0)
@@ -186,7 +186,7 @@ namespace Application.Services.Implementation
                         }
                     }
                     _unitOfWork.Product.Remove(oldProduct);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -199,11 +199,11 @@ namespace Application.Services.Implementation
             }
         }
 
-        public IEnumerable<ProductVM> GetAllProducts()
+        public async Task<IEnumerable<ProductVM>> GetAllProducts()
         {
             try
             {
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Brand");
+                var products = await _unitOfWork.Product.GetAllAsync(s => s.IsDeleted == false, "Category,Brand");
                 var showProducts = products.Select(s => new ProductVM()
                 {
                     Id = s.Id,
@@ -228,14 +228,14 @@ namespace Application.Services.Implementation
                 throw;  // Rethrow the exception after logging it
             }
         }
-        public IEnumerable<ProductVM> GetAllProductsForPortal()
+        public async Task<IEnumerable<ProductVM>> GetAllProductsForPortal()
         {
             var retrievedImages = new List<string>();
             var image64 = new List<string>();
             var productVMs = new List<ProductVM>();
             try
             {
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images,Brand");
+                var products = await _unitOfWork.Product.GetAllAsync(s => s.IsDeleted == false, "Category,Images,Brand");
 
                 foreach (var item in products)
                 {
@@ -274,11 +274,11 @@ namespace Application.Services.Implementation
             }
         }
 
-        public ProductVM GetProductById(int id)
+        public async Task<ProductVM> GetProductById(int id)
         {
             try
             {
-                var product = _unitOfWork.Product.Get(u => u.Id == id, "Images,Brand");
+                var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(u => u.Id == id, "Images,Brand");
                 if (product != null)
                 {
                     var productVM = new ProductVM()
@@ -320,8 +320,8 @@ namespace Application.Services.Implementation
                             }
                         }
                     }
-                    var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                    var brands = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false).ToList();
+                    var category = await _unitOfWork.Category.GetAllAsync(s => s.IsDeleted == false);
+                    var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false);
                     productVM.ListOfCategory = category.Select(v => new SelectListItem
                     {
                         Text = v.CategoryName,
@@ -342,11 +342,11 @@ namespace Application.Services.Implementation
             }
             return new ProductVM();
         }
-        public ProductVM GetProductDetails(int id)
+        public async Task<ProductVM> GetProductDetails(int id)
         {
             try
             {
-                var product = GetProductById(id);
+                var product = await GetProductById(id);
                 return product;
             }
             catch (Exception ex)
@@ -362,7 +362,7 @@ namespace Application.Services.Implementation
                 // Prepare byte arrays for images
                 var imagesToBeInserted = new List<byte[]>();
 
-                var oldProduct = _unitOfWork.Product.Get(s => s.Id == obj.Id, "Images", true);
+                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == obj.Id, "Images", true);
 
                 // Remove old images if necessary
                 RemoveOldImages(oldProduct);
@@ -380,7 +380,7 @@ namespace Application.Services.Implementation
 
                     // Save the updated product
                     _unitOfWork.Product.Update(oldProduct);
-                    await _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
 

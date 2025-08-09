@@ -3,6 +3,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Application.Services.Implementation
@@ -48,7 +49,7 @@ namespace Application.Services.Implementation
             try
             {
                 var productVM = new ProductVM();
-                var category = _unitOfWork.Category.GetAll().ToList();
+                var category = await _unitOfWork.Category.GetAllAsync();
                 productVM.ListOfCategory = category.Select(v => new SelectListItem
                 {
                     Text = v.CategoryName,
@@ -67,7 +68,7 @@ namespace Application.Services.Implementation
             {
                 obj.Area = obj.Area?.ToLower();
                 //obj.Region = obj.Region?.ToLower();
-                var lookForName = _unitOfWork.ShippingFreight.Get(s => s.ShippingArea == obj.Area);
+                var lookForName = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.ShippingArea == obj.Area);
                 if (lookForName == null)
                 {
                     var newFreight = new ShippingFreight()
@@ -77,8 +78,8 @@ namespace Application.Services.Implementation
                         //Region = obj.Region,
                         Price = obj.Price,
                     };
-                    _unitOfWork.ShippingFreight.Add(newFreight);
-                    _unitOfWork.Save();
+                    await _unitOfWork.ShippingFreight.AddAsync(newFreight);
+                    await _unitOfWork.SaveAsync();
                     return Result<string>.Success("new Freight Created Successfully", "Success");
                 }
                 else
@@ -91,17 +92,17 @@ namespace Application.Services.Implementation
             }
         }
 
-        public ShippingFreightVM GetShippingFreightById(int id)
+        public async Task<ShippingFreightVM> GetShippingFreightById(int id)
         {
             try
             {
-                var shipping = _unitOfWork.ShippingFreight.Get(u => u.Id == id, "Districts");
+                var shipping = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(u => u.Id == id, "Districts");
                 if (shipping != null)
                 {
                     var shippingFrieghtVM = new ShippingFreightVM()
                     {
                         Area = shipping.ShippingArea,
-                        Districts = shipping.Districts?.Select(s=>s.Name).ToArray(),
+                        Districts = shipping.Districts?.Select(s => s.Name).ToArray(),
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd")
                     };
@@ -122,7 +123,7 @@ namespace Application.Services.Implementation
             {
                 obj.Area = obj.Area?.ToLower();
                 //obj.Region = obj.Region?.ToLower();
-                var oldCategory = _unitOfWork.ShippingFreight.Get(s => s.Id == obj.Id);
+                var oldCategory = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.Id == obj.Id);
                 if (oldCategory != null)
                 {
                     oldCategory.ShippingArea = obj.Area;
@@ -130,7 +131,7 @@ namespace Application.Services.Implementation
                     oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.ShippingFreight.Update(oldCategory);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -147,13 +148,13 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldCategory = _unitOfWork.ShippingFreight.Get(s => s.Id == id);
+                var oldCategory = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.Id == id);
                 if (oldCategory != null)
                 {
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.ShippingFreight.Update(oldCategory);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else

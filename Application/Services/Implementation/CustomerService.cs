@@ -3,6 +3,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Application.Services.Implementation
@@ -47,12 +48,12 @@ namespace Application.Services.Implementation
                 throw;  // Rethrow the exception after logging it
             }
         }
-        public CustomerVM CreateCustomerForViewing()
+        public async Task<CustomerVM> CreateCustomerForViewing()
         {
             try
             {
                 var customerVM = new CustomerVM();
-                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                var freights = await _unitOfWork.ShippingFreight.GetAllAsync();
                 customerVM.ListOfAreas = freights.Select(s => new SelectListItem
                 {
                     Text = s.ShippingArea,
@@ -73,7 +74,7 @@ namespace Application.Services.Implementation
             {
                 obj.CustomerName = obj.CustomerName?.ToLower();
                 obj.Email = obj.Email?.ToLower();
-                var lookForName = _unitOfWork.Customer.Get(s => s.Phone == obj.Phone);
+                var lookForName = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == obj.Phone);
                 if (lookForName == null)
                 {
                     var customer = new Customer()
@@ -86,8 +87,8 @@ namespace Application.Services.Implementation
                         Phone = obj.Phone,
                         Modified_Date = DateTime.Now,
                     };
-                    _unitOfWork.Customer.Add(customer);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Customer.AddAsync(customer);
+                    await _unitOfWork.SaveAsync();
                     return Result<string>.Success("Customer Created Successfully", "success");
                 }
                 else
@@ -100,11 +101,11 @@ namespace Application.Services.Implementation
             }
         }
 
-        public Result<CustomerVM> GetCustomerById(int id)
+        public async Task<Result<CustomerVM>> GetCustomerById(int id)
         {
             try
             {
-                var customer = _unitOfWork.Customer.Get(u => u.Id == id);
+                var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(u => u.Id == id);
                 if (customer != null)
                 {
                     var customerVM = new CustomerVM()
@@ -117,7 +118,7 @@ namespace Application.Services.Implementation
                         Phone = customer.Phone,
                         CreatedDate = customer.Create_Date?.ToString("yyyy-MM-dd")
                     };
-                    var customer1 = CreateCustomerForViewing();
+                    var customer1 = await CreateCustomerForViewing();
                     customerVM.ListOfAreas = customer1.ListOfAreas;
                     return Result<CustomerVM>.Success(customerVM, "success");
                 }
@@ -138,7 +139,7 @@ namespace Application.Services.Implementation
                 obj.CustomerName = obj.CustomerName?.ToLower();
                 obj.Email = obj.Email?.ToLower();
                 obj.Area = obj.Area?.ToLower();
-                var oldCustomer = _unitOfWork.Customer.Get(s => s.Id == obj.Id);
+                var oldCustomer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Id == obj.Id);
                 if (oldCustomer != null)
                 {
                     oldCustomer.CustomerName = obj.CustomerName;
@@ -146,11 +147,11 @@ namespace Application.Services.Implementation
                     oldCustomer.Area = obj.AreaId;
                     oldCustomer.Phone = obj.Phone;
                     oldCustomer.Email = obj.Email;
-                   // oldCustomer.Area = obj.Area;
+                    // oldCustomer.Area = obj.Area;
                     oldCustomer.Address = obj.Address;
                     oldCustomer.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Customer.Update(oldCustomer);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -167,13 +168,13 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldCustomer = _unitOfWork.Customer.Get(s => s.Id == id);
+                var oldCustomer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Id == id);
                 if (oldCustomer != null)
                 {
                     oldCustomer.IsDeleted = true;
                     oldCustomer.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Customer.Update(oldCustomer);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else

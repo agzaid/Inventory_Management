@@ -36,7 +36,7 @@ namespace Infrastructure.Repo
             OnlineOrder = new OnlineOrderRepository(_db);
             Brand = new BrandRepository(_db);
         }
-        public async Task Save()
+        public async Task SaveAsync()
         {
              await _db.SaveChangesAsync();
         }

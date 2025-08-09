@@ -14,11 +14,11 @@ namespace Application.Services.Intrerfaces
         InvoiceVM GetInvoiceById(int id);
         Task<string[]> CreateInvoice(InvoiceVM invoice);
         Result<List<ProductVM>> SearchForProducts(string search);
-        Result<CustomerVM> SearchForCustomer(string search);
+        Task<Result<CustomerVM>> SearchForCustomer(string search);
         InvoiceVM CreateInvoiceForViewing();
-        InvoiceVM GetInvoiceById();
-        bool UpdateInvoice(ProductVM productVM);
-        bool DeleteInvoice(int id);
-        bool HardDeleteInvoice(int id);
+        Task<InvoiceVM> GetInvoiceById();
+        Task<bool> UpdateInvoice(ProductVM productVM);
+        Task<bool> DeleteInvoice(int id);
+        Task<bool> HardDeleteInvoice(int id);
     }
 }

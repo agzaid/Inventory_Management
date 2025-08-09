@@ -54,7 +54,7 @@ namespace Application.Services.Implementation
             {
                 obj.BrandName = obj.BrandName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
-                var lookForName = _unitOfWork.Brand.Get(s => s.BrandName == obj.BrandName);
+                var lookForName = await _unitOfWork.Brand.GetFirstOrDefaultAsync(s => s.BrandName.ToLower() == obj.BrandName);
                 if (obj?.ImagesFormFiles?.Count() > 0)
                 {
                     var resultByteImage = new byte[0];
@@ -81,8 +81,8 @@ namespace Application.Services.Implementation
                         Description = obj.Description,
                         Images = listOfImages,
                     };
-                    _unitOfWork.Brand.Add(Brand);
-                    _unitOfWork.Save();
+                    await _unitOfWork.Brand.AddAsync(Brand);
+                    await _unitOfWork.SaveAsync();
                     return "Brand Created Successfully";
                 }
                 else
@@ -139,7 +139,7 @@ namespace Application.Services.Implementation
                 var imagesToBeInserted = new List<byte[]>();
 
                 // Load old brand with its images
-                var oldBrand = _unitOfWork.Brand.Get(s => s.Id == obj.Id, "Images", true);
+                var oldBrand = await _unitOfWork.Brand.GetFirstOrDefaultAsync(s => s.Id == obj.Id, "Images", true);
 
                 // Remove old images
                 RemoveOldImages(oldBrand);
@@ -160,7 +160,7 @@ namespace Application.Services.Implementation
                     oldBrand.Images = listOfImages;
 
                     _unitOfWork.Brand.Update(oldBrand);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
 
@@ -183,7 +183,7 @@ namespace Application.Services.Implementation
                     oldBrand.IsDeleted = true;
                     oldBrand.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.Brand.Update(oldBrand);
-                    await _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else

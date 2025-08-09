@@ -6,6 +6,7 @@ using Domain.Models;
 
 //using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.Admin.Controllers
 {
@@ -20,11 +21,11 @@ namespace Inventory_Management.Areas.Admin.Controllers
             _districtService = districtService;
             _logger = logger;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                var result = _districtService.GetAllDistrics();
+                var result = _districtService.GetAllDistricts();
                 return View(result.Data.ToList());
             }
             catch (Exception ex)

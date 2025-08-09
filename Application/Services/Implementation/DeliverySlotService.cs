@@ -47,7 +47,7 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var lookForName = _unitOfWork.DeliverySlot.Get(s => s.StartTime == obj.StartTime);
+                var lookForName = await _unitOfWork.DeliverySlot.GetFirstOrDefaultAsync(s => s.StartTime == obj.StartTime);
                 if (lookForName == null)
                 {
                     var delivery = new DeliverySlot()
@@ -56,11 +56,11 @@ namespace Application.Services.Implementation
                         EndTime = obj.EndTime,
                         AM_PM = obj.AM_PM,
                         IsAvailable = obj.IsAvailable,
-                        Create_Date= DateTime.Now,
+                        Create_Date = DateTime.Now,
                         Modified_Date = DateTime.Now,
                     };
-                    _unitOfWork.DeliverySlot.Add(delivery);
-                    _unitOfWork.Save();
+                    await _unitOfWork.DeliverySlot.AddAsync(delivery);
+                    await _unitOfWork.SaveAsync();
                     return "Delivery Slot Created Successfully";
                 }
                 else
@@ -104,7 +104,7 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldDeliverySlot = _unitOfWork.DeliverySlot.Get(s => s.Id == obj.Id);
+                var oldDeliverySlot = await _unitOfWork.DeliverySlot.GetFirstOrDefaultAsync(s => s.Id == obj.Id);
                 if (oldDeliverySlot != null)
                 {
                     oldDeliverySlot.StartTime = obj.StartTime;
@@ -113,7 +113,7 @@ namespace Application.Services.Implementation
                     oldDeliverySlot.IsAvailable = obj.IsAvailable;
                     oldDeliverySlot.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.DeliverySlot.Update(oldDeliverySlot);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
@@ -130,13 +130,13 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var oldDelivery = _unitOfWork.DeliverySlot.Get(s => s.Id == id);
+                var oldDelivery = await _unitOfWork.DeliverySlot.GetFirstOrDefaultAsync(s => s.Id == id);
                 if (oldDelivery != null)
                 {
                     oldDelivery.IsDeleted = true;
                     oldDelivery.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.DeliverySlot.Update(oldDelivery);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else

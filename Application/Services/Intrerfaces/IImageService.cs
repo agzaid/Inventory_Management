@@ -9,10 +9,10 @@ namespace Application.Services.Intrerfaces
 {
     public interface IImageService
     {
-        IEnumerable<ImageVM> GetAllImages();
         ImageVM GetImageById(int id);
-        string CreateImage(ImageVM category);
-        bool UpdateImage(ImageVM category);
-        bool DeleteImage(int id);
+        Task<IEnumerable<ImageVM>> GetAllImages();
+        Task<string> CreateImage(ImageVM obj);
+        Task<bool> UpdateImage(ImageVM obj);
+        Task<bool> DeleteImage(int id);
     }
 }

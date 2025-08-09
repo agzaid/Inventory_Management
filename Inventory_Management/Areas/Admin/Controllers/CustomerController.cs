@@ -5,6 +5,7 @@ using Domain.Models;
 
 //using Inventory_Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.Admin.Controllers
 {
@@ -49,14 +50,15 @@ namespace Inventory_Management.Areas.Admin.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
-            var secondResult = _customerService.CreateCustomerForViewing();
+            var secondResult = await _customerService.CreateCustomerForViewing();
             obj.ListOfAreas = secondResult.ListOfAreas;
             return View(obj);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View(_customerService.GetCustomerById(id).Data);
+            var result = await _customerService.GetCustomerById(id);
+            return View(result.Data);
         }
 
         [HttpPost]

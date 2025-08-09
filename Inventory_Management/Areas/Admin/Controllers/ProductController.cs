@@ -21,9 +21,9 @@ namespace Inventory_Management.Areas.admin.Controllers
             _categoryService = categoryService;
         }
         [HttpGet]
-        public IActionResult Index(string? status, string? message)
+        public async Task<IActionResult> Index(string? status, string? message)
         {
-            var products = _productService.GetAllProducts();
+            var products = await _productService.GetAllProducts();
             if (status == "success")
             {
                 TempData["success"] = message;
@@ -59,9 +59,10 @@ namespace Inventory_Management.Areas.admin.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View(_productService.GetProductById(id));
+            var result = await _productService.GetProductById(id);
+            return View(result);
         }
 
         [HttpPost]
@@ -70,7 +71,7 @@ namespace Inventory_Management.Areas.admin.Controllers
             if (ModelState.IsValid)
             {
 
-                var result =await _productService.UpdateProduct(obj);
+                var result = await _productService.UpdateProduct(obj);
                 if (result == true)
                 {
                     //TempData["success"] = result[1];
@@ -82,9 +83,9 @@ namespace Inventory_Management.Areas.admin.Controllers
             }
             return View(obj);
         }
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = _productService.DeleteProduct(id);
+            var result = await _productService.DeleteProduct(id);
             if (result == true)
             {
                 TempData["success"] = "Product Deleted Successfully";
@@ -93,9 +94,9 @@ namespace Inventory_Management.Areas.admin.Controllers
                 TempData["error"] = result;
             return RedirectToAction(nameof(Index));
         }
-        public IActionResult HardDelete(int id)
+        public async Task<IActionResult> HardDelete(int id)
         {
-            var result = _productService.HardDeleteProduct(id);
+            var result = await _productService.HardDeleteProduct(id);
             if (result == true)
             {
                 TempData["success"] = "Product Deleted Successfully";

@@ -26,9 +26,19 @@ namespace Infrastructure.Repo
             dbSet.Add(entity);
         }
 
+        public async Task AddAsync(T entity)
+        {
+            await dbSet.AddAsync(entity);
+        }
+
         public bool Any(Expression<Func<T, bool>> filter)
         {
             return dbSet.Any(filter);
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> filter)
+        {
+            return await dbSet.AnyAsync(filter);
         }
 
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
@@ -57,7 +67,26 @@ namespace Infrastructure.Repo
             }
             return query.FirstOrDefault();
         }
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        {
+            IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
 
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp.Trim());
+                }
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
         public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false)
         {
             IQueryable<T> query;
@@ -84,11 +113,66 @@ namespace Infrastructure.Repo
             return query.ToList();
         }
 
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false)
+        {
+            IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
 
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp.Trim());
+                }
+            }
+
+            return await query.ToListAsync();
+        }
         public void Remove(T entity)
         {
             dbSet.Remove(entity);
         }
+
+        public Task RemoveAsync(T entity)
+        {
+            dbSet.Remove(entity);
+            return Task.CompletedTask;
+        }
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        {
+            IQueryable<T> query;
+
+            if (tracked)
+            {
+                query = dbSet;
+            }
+            else
+            {
+                query = dbSet.AsNoTracking();
+            }
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp.Trim());
+                }
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<PaginatedResult<T>> GetPaginatedAsync(int pageNumber, int pageSize, Func<IQueryable<T>
             , IOrderedQueryable<T>> orderBy = null, Expression<Func<T, bool>> filter = null
             , params Expression<Func<T, object>>[] includes)

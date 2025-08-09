@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Application.Services.Implementation
 {
@@ -48,35 +49,46 @@ namespace Application.Services.Implementation
             {
                 obj.CategoryName = obj.CategoryName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
-                var lookForName = _unitOfWork.Category.Get(s => s.CategoryName == obj.CategoryName);
+
+                var lookForName = await _unitOfWork.Category.GetFirstOrDefaultAsync(
+                    s => s.CategoryName == obj.CategoryName
+                );
+
                 if (lookForName == null)
                 {
-                    var category = new Category()
+                    var category = new Category
                     {
                         CategoryName = obj.CategoryName,
                         CategoryNameAr = obj.CategoryNameAr,
-                        Modified_Date = DateTime.Now,
-                        Description = obj.Description,
+                        Modified_Date = DateTime.UtcNow,
+                        Description = obj.Description
                     };
-                    _unitOfWork.Category.Add(category);
-                    _unitOfWork.Save();
+
+                    await _unitOfWork.Category.AddAsync(category);
+                    await _unitOfWork.SaveAsync();
                     return "Category Created Successfully";
                 }
                 else
+                {
                     return "Category Already Exists";
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating category with CategoryName: {CategoryName}", obj.CategoryName);
-                return "Error Occured...";  // Rethrow the exception after logging it
+                _logger.LogError(ex,
+                    "An error occurred while creating category with CategoryName: {CategoryName}",
+                    obj.CategoryName
+                );
+                return "Error Occurred...";
             }
         }
 
-        public CategoryVM GetCategoryById(int id)
+
+        public async Task<CategoryVM> GetCategoryById(int id)
         {
             try
             {
-                var category = _unitOfWork.Category.Get(u => u.Id == id);
+                var category = await _unitOfWork.Category.GetAsync(u => u.Id == id);
                 if (category != null)
                 {
                     var categoryVM = new CategoryVM()
@@ -101,51 +113,62 @@ namespace Application.Services.Implementation
         {
             try
             {
+                var oldCategory = await _unitOfWork.Category
+                    .GetFirstOrDefaultAsync(s => s.Id == obj.Id, null, true);
+
+                if (oldCategory == null)
+                    return false;
+
+                // Normalize data
                 obj.CategoryName = obj.CategoryName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
-                var oldCategory = _unitOfWork.Category.Get(s => s.Id == obj.Id);
-                if (oldCategory != null)
-                {
-                    oldCategory.CategoryNameAr = obj.CategoryNameAr;
-                    oldCategory.Description = obj.Description;
-                    oldCategory.CategoryName = obj.CategoryName;
-                    oldCategory.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.Category.Update(oldCategory);
-                    _unitOfWork.Save();
-                    return true;
-                }
-                else
-                    return false;
+
+                // Update fields
+                oldCategory.CategoryNameAr = obj.CategoryNameAr;
+                oldCategory.Description = obj.Description;
+                oldCategory.CategoryName = obj.CategoryName;
+                oldCategory.Modified_Date = DateTime.UtcNow;
+
+                _unitOfWork.Category.Update(oldCategory);
+                await _unitOfWork.SaveAsync();
+
+                return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating category with Id: {Id}", obj.Id);
-                return false;  // Rethrow the exception after logging it
+                _logger.LogError(ex,
+                    "An error occurred while updating category with Id: {Id}", obj.Id);
+                return false;
             }
         }
+
 
         public async Task<bool> DeleteCategory(int id)
         {
             try
             {
-                var oldCategory = _unitOfWork.Category.Get(s => s.Id == id);
-                if (oldCategory != null)
-                {
-                    oldCategory.IsDeleted = true;
-                    oldCategory.Modified_Date = DateTime.UtcNow;
-                    _unitOfWork.Category.Update(oldCategory);
-                    await _unitOfWork.Save();
-                    return true;
-                }
-                else
+                var oldCategory = await _unitOfWork.Category
+                    .GetFirstOrDefaultAsync(s => s.Id == id, null, true);
+
+                if (oldCategory == null)
                     return false;
+
+                oldCategory.IsDeleted = true;
+                oldCategory.Modified_Date = DateTime.UtcNow;
+
+                _unitOfWork.Category.Update(oldCategory);
+                await _unitOfWork.SaveAsync();
+
+                return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting category with Id: {Id}", id);
-                return false; // Rethrow the exception after logging it
+                _logger.LogError(ex,
+                    "An error occurred while deleting category with Id: {Id}", id);
+                return false;
             }
         }
+
         public async Task<PaginatedResult<CategoryVM>> GetCategoryPaginated(int pageNumber, int pageSize)
         {
             try

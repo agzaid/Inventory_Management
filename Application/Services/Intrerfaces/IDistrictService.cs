@@ -11,10 +11,10 @@ namespace Application.Services.Intrerfaces
     public interface IDistrictService
     {
         DistrictVM GetDistrictForCreateView();
-        Result<IEnumerable<DistrictVM>> GetAllDistrics();
-        DistrictVM GetDistricById(int id);
         Task<Result<string>> CreateDistrict(DistrictVM shippingFrieghtVM);
         Task<bool> UpdateDistrict(DistrictVM ShippingFreightvm);
         Task<bool> DeleteDistrict(int id);
+        Task<DistrictVM> GetDistricById(int id);
+        Result<IEnumerable<DistrictVM>> GetAllDistricts();
     }
 }

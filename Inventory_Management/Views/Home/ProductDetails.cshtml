@@ -34,13 +34,17 @@
                 <div class="d-flex justify-content-center mb-3">
                     @for (int i = 0; i < Model.ListOfRetrievedImages?.Count; i++)
                     {
-                        <a data-fslightbox="mygalley" class="border mx-1 rounded-2" data-type="image">
+                        <a href="@Model.ListOfRetrievedImages[i]"
+                           data-fslightbox="mygalley"
+                           class="border mx-1 rounded-2"
+                           data-type="image">
                             <img src="@Model.ListOfRetrievedImages[i]"
                                  class="small-Img"
                                  alt="Additional Image @i"
                                  data-index="@i" />
                         </a>
                     }
+
                 </div>
                 <!-- thumbs-wrap.// -->
                 <!-- gallery-wrap .end// -->
@@ -132,12 +136,12 @@
                
                translatedMessages();
 
-               const productId = $('[data-product-id]').data('product-id');
-               if(isInCart(productId)){
-                  var num = cartQuantity(productId);
-                  $('.quantity-input').val(num);
-               }
+                    basketNumber();
 
+
+          $('.small-Img').on('click', function () {
+            $('#featured-image').attr('src', $(this).attr('src'));
+        });
         function getStepSize(unit) {
             return unit === 'kg' ? 0.25 : 1;
         }
@@ -217,6 +221,8 @@
 
                  localStorage.setItem('cart', JSON.stringify(cart));
                  $('#cartNum').text(cart.length);
+
+                       basketNumber();
              }
 
                function addToCart() {
@@ -246,7 +252,18 @@
                      localStorage.setItem('cart', JSON.stringify(cart));
                      $('#cartNum').text(cart.length);
                      _TOASTR.Success(decoded);
+
+                           basketNumber();
                  }
+
+              function basketNumber(){
+                      const productId = $('[data-product-id]').data('product-id');
+                 if(isInCart(productId)){
+                    var num = cartQuantity(productId);
+                    $('.quantity-input').val(num);
+                 }
+           }
+
                function translatedMessages() {
                  var encoded = $('#successMessageOnsubmission').data('val-custom');
                  decoded = $('<textarea/>').html(encoded).text();

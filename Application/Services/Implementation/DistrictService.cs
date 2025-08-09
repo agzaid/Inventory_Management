@@ -2,7 +2,9 @@
 using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Application.Services.Implementation
@@ -18,38 +20,43 @@ namespace Application.Services.Implementation
             _logger = logger;  // Initialize the logger
         }
 
-        public Result<IEnumerable<DistrictVM>> GetAllDistrics()
+        public Result<IEnumerable<DistrictVM>> GetAllDistricts()
         {
             try
             {
-                var district = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
-                var allDistricts = district.Select(s => new DistrictVM()
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    NameAr = s.NameAr,
-                    AreaName= s.ShippingFreight?.ShippingArea,
-                    Price = s.Price,
-                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
-                });
+                var allDistricts = _unitOfWork.District
+                    .GetAll(s => !s.IsDeleted, "ShippingFreight")
+                    .Select(s => new DistrictVM
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        NameAr = s.NameAr,
+                        AreaName = s.ShippingFreight.ShippingArea,
+                        Price = s.Price,
+                        CreatedDate = s.Create_Date.HasValue
+                            ? s.Create_Date.Value.ToString("yyyy-MM-dd")
+                            : null
+                    })
+                    .ToList();
 
-                _logger.LogInformation("GetAllShippingFrieght method completed. {allShippingFrieghtCount} allShippingFrieght retrieved.", allDistricts.ToList().Count);
+                _logger.LogInformation("GetAllDistricts method completed. {Count} districts retrieved.", allDistricts.Count);
 
-                return Result<IEnumerable<DistrictVM>>.Success(allDistricts, "ShippingFrieght retrieved successfully."); ;
+                return Result<IEnumerable<DistrictVM>>.Success(allDistricts, "Districts retrieved successfully.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving categories.");
-                throw;  // Rethrow the exception after logging it
+                _logger.LogError(ex, "An error occurred while retrieving districts.");
+                throw;
             }
         }
+
 
         public async Task<string> CreateShippingFrieghtForViewing(CategoryVM obj)
         {
             try
             {
                 var productVM = new ProductVM();
-                var category = _unitOfWork.Category.GetAll().ToList();
+                var category = await _unitOfWork.Category.GetAllAsync();
                 productVM.ListOfCategory = category.Select(v => new SelectListItem
                 {
                     Text = v.CategoryName,
@@ -67,7 +74,7 @@ namespace Application.Services.Implementation
             try
             {
                 obj.Name = obj.Name?.ToLower();
-                var lookForName = _unitOfWork.District.Get(s => s.Name == obj.Name);
+                var lookForName = await _unitOfWork.District.GetAsync(s => s.Name == obj.Name);
                 if (lookForName == null)
                 {
                     var newFreight = new District()
@@ -79,7 +86,7 @@ namespace Application.Services.Implementation
                         Price = obj.Price,
                     };
                     _unitOfWork.District.Add(newFreight);
-                    await _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return Result<string>.Success("new Freight Created Successfully", "Success");
                 }
                 else
@@ -92,11 +99,11 @@ namespace Application.Services.Implementation
             }
         }
 
-        public DistrictVM GetDistricById(int id)
+        public async Task<DistrictVM> GetDistricById(int id)
         {
             try
             {
-                var shipping = _unitOfWork.District.Get(u => u.Id == id);
+                var shipping = await _unitOfWork.District.GetAsync(u => u.Id == id);
                 if (shipping != null)
                 {
                     var shippingFrieghtVM = new DistrictVM()
@@ -106,9 +113,10 @@ namespace Application.Services.Implementation
                         AreaId = shipping.ShippingFreightId,
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd"),
-                        Areas = _unitOfWork.ShippingFreight.GetAll().Select(s=>new SelectListItem { 
-                            Text=s.ShippingArea,
-                            Value=s.Id.ToString()
+                        Areas = _unitOfWork.ShippingFreight.GetAll().Select(s => new SelectListItem
+                        {
+                            Text = s.ShippingArea,
+                            Value = s.Id.ToString()
                         }).ToList()
                     };
                     return shippingFrieghtVM;
@@ -127,39 +135,44 @@ namespace Application.Services.Implementation
             try
             {
                 obj.Name = obj.Name?.ToLower();
-                var oldCategory = _unitOfWork.District.Get(s => s.Id == obj.Id);
+
+                var oldCategory = await _unitOfWork.District
+                    .GetFirstOrDefaultAsync(s => s.Id == obj.Id, tracked: true);
+
                 if (oldCategory != null)
                 {
                     oldCategory.Name = obj.Name;
                     oldCategory.NameAr = obj.NameAr;
-                    //oldCategory.Region= obj.Region;
                     oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;
+
                     _unitOfWork.District.Update(oldCategory);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
-                else
-                    return false;
+
+                return false;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating category with Id: {Id}", obj.Id);
-                return false;  // Rethrow the exception after logging it
+                return false;
             }
         }
+
+
 
         public async Task<bool> DeleteDistrict(int id)
         {
             try
             {
-                var oldCategory = _unitOfWork.District.Get(s => s.Id == id);
+                var oldCategory = await _unitOfWork.District.GetAsync(s => s.Id == id);
                 if (oldCategory != null)
                 {
                     oldCategory.IsDeleted = true;
                     oldCategory.Modified_Date = DateTime.UtcNow;
                     _unitOfWork.District.Update(oldCategory);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     return true;
                 }
                 else
