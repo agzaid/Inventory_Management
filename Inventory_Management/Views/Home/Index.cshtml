@@ -1,6 +1,30 @@
 ﻿@model Domain.Models.PortalVM
 
 
+<style>
+    .category-scroll {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 5px;
+        scrollbar-width: thin; /* For Firefox */
+    }
+
+        .category-scroll::-webkit-scrollbar {
+            height: 6px; /* horizontal scrollbar height */
+        }
+
+        .category-scroll::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 3px;
+        }
+
+    .category-dropdown {
+        flex: 0 0 auto; /* prevent shrinking */
+    }
+
+</style>
+
 <partial name="_Hero">
     <!--end Hero -->
     <!--start feature -->
@@ -11,13 +35,18 @@
           @*   <h2>@Localizer["Greeting"]</h2>
             <h3>@Localizer["Welcome"]</h3> *@
         </div>
-        @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
-        {
-            <div class="category-dropdown mx-1 fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
-                <img src="img/features/f1.png" alt="">
-                <h6>@Model.CategoryVMs[i].CategoryName</h6>
-            </div>
-        }
+        <div class="category-scroll">
+            @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
+            {
+                <div class="category-dropdown mx-1 fe-box"
+                     data-value="@Model.CategoryVMs[i].Id"
+                     style="cursor:pointer;">
+                    <img src="img/features/f1.png" alt="">
+                    <h6>@Model.CategoryVMs[i].CategoryName</h6>
+                </div>
+            }
+        </div>
+
     </section>
     <section id="product1" class="section-p1">
         <h2>@Localizer["FeaturedProducts"]</h2>
