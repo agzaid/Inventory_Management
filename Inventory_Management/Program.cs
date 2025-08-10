@@ -93,7 +93,10 @@ catch (Exception ex)
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error"); // For exceptions
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+    //app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -103,7 +106,10 @@ else
 }
 
 // Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
-// app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(10));
+app.UseMiddleware<RateLimitingMiddleware>(20, TimeSpan.FromSeconds(10));
+
+
+
 var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(locOptions.Value);
 

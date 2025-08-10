@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 
 namespace Inventory_Management.Middleware
 {
+
     public class RateLimitingMiddleware
     {
         private readonly RequestDelegate _next;
-        private static readonly ConcurrentDictionary<string, RateLimitInfo> _requestTracker = new ConcurrentDictionary<string, RateLimitInfo>();
         private readonly int _maxRequests;
         private readonly TimeSpan _timeWindow;
+
+        // Key: IP address, Value: list of request timestamps
+        private static readonly ConcurrentDictionary<string, ConcurrentQueue<DateTime>> _requests
+            = new ConcurrentDictionary<string, ConcurrentQueue<DateTime>>();
 
         public RateLimitingMiddleware(RequestDelegate next, int maxRequests, TimeSpan timeWindow)
         {
@@ -23,55 +27,44 @@ namespace Inventory_Management.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var userKey = context.Connection.RemoteIpAddress?.ToString(); // Use IP address to identify user
-            if (userKey == null)
+            // File extensions you want to ignore
+            var excludedExtensions = new[]
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Unable to identify user.");
+        ".js", ".css", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg", ".woff", ".woff2", ".ttf", ".map"
+    };
+
+            var path = context.Request.Path.Value ?? "";
+
+            // Skip if request is for static files
+            if (excludedExtensions.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+            {
+                await _next(context);
                 return;
             }
 
-            var currentTime = DateTime.UtcNow;
-            var requestInfo = _requestTracker.GetOrAdd(userKey, new RateLimitInfo(currentTime));
+            var clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var now = DateTime.UtcNow;
 
-            bool isRateLimited = false;
-            lock (requestInfo)
+            var requestTimes = _requests.GetOrAdd(clientIp, _ => new ConcurrentQueue<DateTime>());
+            requestTimes.Enqueue(now);
+
+            // Remove old requests
+            while (requestTimes.TryPeek(out var oldest) && (now - oldest) > _timeWindow)
             {
-                // Clear expired requests
-                requestInfo.Requests = requestInfo.Requests.Where(r => r > currentTime - _timeWindow).ToList();
-
-                // Check if user exceeds the rate limit
-                if (requestInfo.Requests.Count >= _maxRequests)
-                {
-                    isRateLimited = true;
-                }
-                else
-                {
-                    // Add the current request timestamp
-                    requestInfo.Requests.Add(currentTime);
-                }
+                requestTimes.TryDequeue(out _);
             }
 
-            if (isRateLimited)
+            if (requestTimes.Count > _maxRequests)
             {
                 context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                await context.Response.WriteAsync("Too many requests. Please try again later.");
+                await context.Response.WriteAsync("Rate limit exceeded. Please wait before trying again.");
                 return;
             }
 
-            // Allow the request to continue to the next middleware
             await _next(context);
         }
 
-        private class RateLimitInfo
-        {
-            public RateLimitInfo(DateTime initialTime)
-            {
-                Requests = new List<DateTime> { initialTime };
-            }
 
-            public List<DateTime> Requests { get; set; }
-        }
     }
 
 }

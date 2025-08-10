@@ -137,12 +137,34 @@ namespace Inventory_Management.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [Route("Error")]
+        [Route("Error/{statusCode}")]
+        public IActionResult Error(int? statusCode = null)
         {
-            var exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
-            ViewBag.ErrorMessage = exception?.Message;
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (statusCode.HasValue)
+            {
+                // Handle HTTP status code errors
+                if (statusCode == 404)
+                    ViewData["ErrorMessage"] = "The page you are looking for could not be found.";
+                else if (statusCode == 500)
+                    ViewData["ErrorMessage"] = "Internal server error occurred.";
+                else
+                    ViewData["ErrorMessage"] = $"An error occurred. Status code: {statusCode}";
+            }
+            else
+            {
+                // Handle unhandled exceptions
+                var exception = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+                ViewData["ErrorMessage"] = "An unexpected error occurred.";
+                ViewData["ExceptionPath"] = exception?.Path;
+                ViewData["ExceptionMessage"] = exception?.Error.Message;
+            }
+
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }
