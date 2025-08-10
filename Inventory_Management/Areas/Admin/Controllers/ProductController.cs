@@ -70,7 +70,6 @@ namespace Inventory_Management.Areas.admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _productService.UpdateProduct(obj);
                 if (result == true)
                 {

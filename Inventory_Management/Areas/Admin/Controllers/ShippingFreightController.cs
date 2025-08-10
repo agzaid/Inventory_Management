@@ -43,7 +43,6 @@ namespace Inventory_Management.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _shippingFreightService.CreateShippingFreight(obj);
                 if (result.ErrorCode == "error")
                 {
@@ -66,7 +65,6 @@ namespace Inventory_Management.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _shippingFreightService.UpdateShippingFreight(obj);
                 if (result == true)
                 {

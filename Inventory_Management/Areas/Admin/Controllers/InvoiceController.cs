@@ -44,7 +44,6 @@ namespace Inventory_Management.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _invoiceService.CreateInvoice(obj);
                 if (result[0] == "success")
                 {

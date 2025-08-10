@@ -41,16 +41,12 @@ namespace Inventory_Management.Areas.admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryVM obj)
         {
-            var savedToken = TempData["FormToken"];
-            if (obj.FormToken?.Trim() == savedToken?.ToString()?.Trim())
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    var result = await _categoryService.CreateCategory(obj);
-                    TempData["success"] = result;
-                    TempData["FormToken"] = null;
-                    return RedirectToAction(nameof(Index));
-                }
+                var result = await _categoryService.CreateCategory(obj);
+                TempData["success"] = result;
+                TempData["FormToken"] = null;
+                return RedirectToAction(nameof(Index));
             }
             return View();
         }
@@ -65,7 +61,6 @@ namespace Inventory_Management.Areas.admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _categoryService.UpdateCategory(obj);
                 if (result == true)
                 {
