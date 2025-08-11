@@ -45,7 +45,6 @@ namespace Inventory_Management.Areas.admin.Controllers
             {
                 var result = await _categoryService.CreateCategory(obj);
                 TempData["success"] = result;
-                TempData["FormToken"] = null;
                 return RedirectToAction(nameof(Index));
             }
             return View();

@@ -333,7 +333,6 @@
                  if(customerName!="" && customerAddress!="" && customerPhone!=""){
                     _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
                      function (data) {
-                         debugger;
                          if (data.isSuccess == true) {
                          _TOASTR.Success(decoded);
                          _TOASTR.Success(decodedOurTeamWillContactYouSoon);
@@ -397,7 +396,6 @@
         }
 
          function calcItems(){
-             debugger;
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
             var subTotal = 0;
             cart.forEach(function(item){
@@ -408,7 +406,6 @@
             $("#cartSubTotal")[0].innerHTML= subTotal;
          }
          function Add(event) {
-             debugger;
                        var addBtn = $(event.target);
                        var inputField = addBtn.siblings('.stock-input');
                        var isKilogramInput = addBtn.siblings('.isKilogram');
