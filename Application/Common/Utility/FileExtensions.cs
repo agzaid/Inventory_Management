@@ -7,6 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Drawing;
+using Domain.Enums;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace Application.Common.Utility
 {
@@ -214,6 +218,39 @@ namespace Application.Common.Utility
                 return memoryStream.ToArray();
             }
         }
+        public static byte[] ConvertImageToByteArray(IFormFile imageFile, int targetWidth, long quality)
+        {
+            using (var inputStream = imageFile.OpenReadStream())
+            using (var image = Image.FromStream(inputStream))
+            {
+                int targetHeight = (int)(image.Height * ((float)targetWidth / image.Width));
+
+                using (var resizedImage = new Bitmap(targetWidth, targetHeight))
+                {
+                    using (var graphics = Graphics.FromImage(resizedImage))
+                    {
+                        graphics.CompositingQuality = CompositingQuality.HighQuality;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = SmoothingMode.HighQuality;
+                        graphics.DrawImage(image, 0, 0, targetWidth, targetHeight);
+                    }
+
+                    using (var ms = new MemoryStream())
+                    {
+                        var encoderParams = new EncoderParameters(1);
+                        encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+
+                        var jpegCodec = ImageCodecInfo.GetImageDecoders()
+                            .First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+
+                        resizedImage.Save(ms, jpegCodec, encoderParams);
+
+                        return ms.ToArray();
+                    }
+                }
+            }
+        }
+
         public static Image ByteArrayToImage(byte[] byteArray)
         {
             using (MemoryStream ms = new(byteArray))
@@ -246,5 +283,6 @@ namespace Application.Common.Utility
             byte[] imageBytes = Convert.FromBase64String(base64String);
             return imageBytes;
         }
+
     }
 }

@@ -347,6 +347,15 @@ namespace Application.Services.Implementation
                         await _unitOfWork.Customer.AddAsync(newCustomer);
                         customer = newCustomer;
                     }
+                    else
+                    {
+                        customer.CustomerName = cart.CustomerName;
+                        customer.Address = cart.CustomerAddress;
+                        customer.Phone = cart.CustomerPhone;
+                        customer.OtherPhone = cart.OptionalCustomerPhone;
+
+                        _unitOfWork.Customer.Update(customer);
+                    }
                     var userDeliverySlot = new List<UserDeliverySlot>();
                     if (cart.SelectedSlots?.Length > 0)
                     {
@@ -445,10 +454,11 @@ namespace Application.Services.Implementation
                 var onlineOrder = _unitOfWork.OnlineOrder.Get(s => s.OrderNumber == orderNum, "InvoiceItems,Customer");
 
                 var productVM = new InvoiceVM();
-                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                //var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                var freights = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
-                    Text = v.ShippingArea,
+                    Text = $"{v.Name} ({v.ShippingFreight?.ShippingArea}) ({v.Price})",
                     Value = v.Price.ToString()
                 }).ToList();
                 productVM.ListInvoiceItemVMs = onlineOrder.InvoiceItems?.Select(s => new InvoiceItemVM()

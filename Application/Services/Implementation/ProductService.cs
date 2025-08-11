@@ -56,7 +56,8 @@ namespace Application.Services.Implementation
                         //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
                         foreach (var item in product.ImagesFormFiles)
                         {
-                            resultByteImage = FileExtensions.ConvertImageToByteArray(item);
+                            //resultByteImage = FileExtensions.ConvertImageToByteArray(item);
+                             resultByteImage = FileExtensions.ConvertImageToByteArray(item, 700, 90);
                             imagesToBeRemoved.Add(resultByteImage);
                         }
                     }
@@ -417,7 +418,8 @@ namespace Application.Services.Implementation
             {
                 foreach (var item in newImages)
                 {
-                    var byteImage = FileExtensions.ConvertImageToByteArray(item);
+                    //var byteImage = FileExtensions.ConvertImageToByteArray(item);
+                    byte[] byteImage = FileExtensions.ConvertImageToByteArray(item, 700, 90);
                     imagesToBeInserted.Add(byteImage);
                 }
             }

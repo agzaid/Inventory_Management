@@ -446,7 +446,8 @@ namespace Application.Services.Implementation
             {
                 foreach (var item in newImages)
                 {
-                    var byteImage = FileExtensions.ConvertImageToByteArray(item);
+                    //var byteImage = FileExtensions.ConvertImageToByteArray(item);
+                    byte[] byteImage = FileExtensions.ConvertImageToByteArray(item, 700, 90);
                     imagesToBeInserted.Add(byteImage);
                 }
             }
