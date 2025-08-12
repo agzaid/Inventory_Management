@@ -34,7 +34,7 @@ namespace Application.Services.Implementation
             try
             {
                 var brands = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false, "Images").ToList();
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images");
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").Take(20);
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
                 foreach (var item in products)
                 {
