@@ -32,7 +32,7 @@
     <section id="feature" class="section-p1">
         <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
             <h6> @Localizer["AllProducts"] </h6>
-          @*   <h2>@Localizer["Greeting"]</h2>
+            @*   <h2>@Localizer["Greeting"]</h2>
             <h3>@Localizer["Welcome"]</h3> *@
         </div>
         <div class="category-scroll">
@@ -52,8 +52,10 @@
         <h2>@Localizer["FeaturedProducts"]</h2>
         @* <p>Summer Collection New Modern Design</p> *@
         <div id="products-container">
-            <div class="pro-container" id="pro-container">
-                <partial name="_ProductListPartial" model="Model.ProductVMs" />
+            <div class="pro-container" >
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3" id="pro-container">
+                    <partial name="_ProductListPartial" model="Model.ProductVMs" />
+                </div>
             </div>
         </div>
     </section>
@@ -250,7 +252,7 @@
             //
             $(document).ready(function() {
                  var pageNumber = 2;
-                 var pageSize = 10;
+                 var pageSize = 5;
 
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == [] || $("#cartNum").length==0){
@@ -278,7 +280,6 @@
                             });
                  });
                       $('#exploreMore').on('click', function () {
-                          debugger;
                              var $url = "@Url.Action("GetPaginatedProducts", "Home")";
                              var parameter = {
                                  pageNumber: pageNumber,
@@ -286,6 +287,7 @@
                              };
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                                  function (data) {
+                                     debugger;
                                      pageNumber++;
                                      $('#pro-container').append(data);
                                  },

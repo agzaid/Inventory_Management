@@ -462,27 +462,60 @@
                     updateTotalPrice();
                     }
           };
-          function SearchProduct() {
-                 var query = $('#inputSearch').val();
-                 // var $url = "@Url.Action("FilterPatientByDate", "Doctor")";
-                 var $url = "@Url.Action("SearchProduct", "Invoice")";
-                 var parameter = {
-                     data: query
-                 };
-                 _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
-                     function (data) {
-                         var res = JSON.parse(data);
-                         if (res != null && res.IsSuccess==true) {
-                             checkNoData();
-                             AddNewRow(res.Data[0]);
-                             updateTotalPrice();
-                         } else
-                             _SWAL.AlertWithoutNotification(res.Message);
-                     },
-                     function (xhr) {
-                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
-                     });
-             };
+                function SearchProduct() {
+            var query = $('#inputSearch').val();
+            var $url = "@Url.Action("SearchProduct", "Invoice")";
+            var parameter = { data: query };
+
+            _Ajax.GETWithParametersStringfy($url, parameter, "GET",
+                function () { }, // beforeSend
+
+                function (data) { // success
+                    var res = JSON.parse(data);
+                    if (res != null && res.IsSuccess == true) {
+                        checkNoData();
+
+                        if (res.Data.length === 1) {
+                            AddNewRow(res.Data[0]);
+                            updateTotalPrice();
+                        } else if (res.Data.length > 1) {
+                            let optionsHtml = "<ul style='list-style:none;padding:0;'>";
+                            res.Data.forEach((item, index) => {
+                                debugger;
+                                optionsHtml += `
+                                    <li style="margin:8px 0; cursor:pointer; border:1px solid #ccc; border-radius:6px; padding:10px;"
+                                        onclick="selectItem(${index})">
+                                        <strong>${item.DisplayProductName ?? 'Unnamed Item'}</strong> <strong>${item.Description ?? 'Unnamed Item'}</strong><br>
+                                        Price: ${item.SellingPrice ?? 0}
+                                    </li>`;
+                            });
+                            optionsHtml += "</ul>";
+
+                            Swal.fire({
+                                title: "Choose an item",
+                                html: optionsHtml,
+                                showConfirmButton: false,
+                                width: "400px"
+                            });
+
+                            window._popupData = res.Data;
+                        }
+                    } else {
+                        _SWAL.AlertWithoutNotification(res.Message);
+                    }
+                },
+
+                function (xhr) { // ❗ error callback must be here inside
+                    _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                }
+            );
+        }
+         function selectItem(index) {
+            const selected = window._popupData[index];
+            Swal.close(); // close popup
+            AddNewRow(selected);
+            updateTotalPrice();
+        }
          //window.Delete =
           function Delete(event) {
               

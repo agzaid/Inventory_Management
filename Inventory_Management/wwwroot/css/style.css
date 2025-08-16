@@ -235,12 +235,16 @@ position: relative;
 
     #product1 .pro-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
-        gap: 20px; /* Space between cards */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
         padding-top: 20px;
+        align-items: stretch; /* make all grid items same height */
     }
 
     #product1 .pro {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         position: relative;
         border: 1px solid #cce7d0;
         border-radius: 25px;
@@ -248,16 +252,63 @@ position: relative;
         box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.02);
         transition: 0.2s ease;
         background-color: white;
+        position: relative;
     }
 
         #product1 .pro img {
             width: 100%;
-            height: 200px; /* same height for all product images */
-            object-fit: cover; /* crop to fill without stretching */
+            height: 200px;
+            object-fit: cover;
             border-radius: 15px;
         }
+        #product1 .pro .discount-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e63946; /* red badge */
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            z-index: 2;
+        }
+        #product1 .pro h5,
+        #product1 .pro p {
+            margin: 5px 0;
+            text-align: center;
+        }
 
+        #product1 .pro button {
+            margin-top: auto; /* pushes button to bottom */
+        }
+.no-products-message {
+    text-align: center;
+    padding: 40px 20px;
+    border: 2px dashed #cce7d0;
+    border-radius: 20px;
+    background-color: #f9f9f9;
+    color: #555;
+    margin: 20px 0;
+}
 
+    .no-products-message i {
+        font-size: 40px;
+        color: #088178;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .no-products-message h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #1a1a1a;
+    }
+
+    .no-products-message p {
+        font-size: 14px;
+        color: #777;
+    }
 
 #product1 .pro:hover{
     box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.06);
@@ -1113,6 +1164,10 @@ object-fit: cover;
         width: 50%;
     }
 }
+@media (max-width: 600px) {
+    #product1 .pro-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
 @media (max-width:477px) {
     #header {

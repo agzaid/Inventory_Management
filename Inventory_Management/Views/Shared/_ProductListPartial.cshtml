@@ -1,42 +1,50 @@
 ﻿@if (Model != null && Model.Count > 0)
 {
     <!-- 2 on phones, 3 on small, 4 on medium, 5 on large, 6 on extra large -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
-        @foreach (var product in Model)
-        {
-            <div class="col">
-                <a asp-action="ProductDetails" asp-controller="Home" asp-route-id="@product.Id" class="text-decoration-none text-dark">
-                    <div class="pro mx-1">
-                        <img class="img-fluid"
-                             src="@(product?.ListOfRetrievedImages != null && product.ListOfRetrievedImages.Count > 0
-                                                                ? product.ListOfRetrievedImages[0]
-                                                                : Url.Content("~/images/default-product.png"))"
-                     alt="">
-                <div class="des">
-                    <span>@(product?.CategoryName ?? "No Category")</span>
-                    <h5>@(product?.ProductName ?? "No Name")</h5>
-                    <div class="star">
-                        <i class="ri-star-fill"></i>
-                        <i class="ri-star-fill"></i>
-                        <i class="ri-star-fill"></i>
-                        <i class="ri-star-fill"></i>
-                        <i class="ri-star-fill"></i>
+    @foreach (var product in Model)
+    {
+        <div class="col">
+            <a asp-action="ProductDetails" asp-controller="Home" asp-route-id="@product.Id" class="text-decoration-none text-dark">
+                <div class="pro mx-1">
+                    <img class="img-fluid"
+                         src="@(product?.ListOfRetrievedImages != null && product.ListOfRetrievedImages.Count > 0
+                                                                      ? product.ListOfRetrievedImages[0]
+                                                                      : Url.Content("~/images/default-product.png"))"
+                 alt="">
+
+                    <!-- Discount badge -->
+                    <span class="discount-badge">
+                        @(product?.DifferencePercentage ?? 0) % @Localizer["Discount"]
+                    </span>
+
+                    <div class="des">
+                        <span>@(product?.CategoryName ?? "No Category")</span>
+                        <h5>@(product?.ProductName ?? "No Name")</h5>
+                        <div class="star">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                        </div>
+                        <h4>
+                            $@(product?.SellingPrice ?? 0)
+                            <br /><br />
+                            <del class="text-danger">$@(product?.OtherShopsPrice ?? 0)</del>
+                        </h4>
                     </div>
-                    <h4>
-                        $@(product?.SellingPrice ?? 0)
-                        <br /><br />
-                        <del class="text-danger">$@(product?.OtherShopsPrice ?? 0)</del>
-                    </h4>
-                    <h6>@(product?.DifferencePercentage ?? 0) % @Localizer["Discount"]</h6>
+                    <i class="ri-shopping-cart-2-line cart"></i>
                 </div>
-                <i class="ri-shopping-cart-2-line cart"></i>
-            </div>
-        </a>
-    </div>
+            </a>
+        </div>
+
         }
-    </div>
 }
 else
 {
-    <h2>No Products Were Found</h2>
+    <div class="no-products-message">
+        <i class="ri-shopping-bag-3-line"></i>
+        <h3>No Products Found</h3>
+        <p>Try exploring other categories or check back later for new arrivals.</p>
+    </div>
 }

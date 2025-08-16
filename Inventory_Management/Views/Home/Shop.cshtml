@@ -1,5 +1,8 @@
 ﻿@model Domain.Models.PortalVM
 
+<style>
+
+</style>
 
 <div class="container mt-3">
     <div class="row d-flex justify-content-center">
@@ -34,31 +37,10 @@
     <h2>@Localizer["FeaturedProducts"]</h2>
     @* <p>Summer Collection New Modern Design</p> *@
     <div id="products-container">
-        <div class="pro-container" id="pro-container">
-
-            <partial name="_ProductListPartial" model="Model.ProductVMs" />
-
-            @*  @for (int i = 0; i < Model.ProductVMs?.Count; i++)
-        {
-            <a asp-action="ProductDetails" asp-controller="Home" asp-route-Id="@Model.ProductVMs[i].Id">
-                <div class="pro mx-1">
-                    <img src="@(Model.ProductVMs[i].ListOfRetrievedImages?.Count > 0 ?Model.ProductVMs[i].ListOfRetrievedImages?[0]:"")" alt="">
-                    <div class="des">
-                        <span>@Model.ProductVMs[i].CategoryName</span>
-                        <h5>@Model.ProductVMs[i].ProductName</h5>
-                        <div class="star">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                        </div>
-                        <h4>$@Model.ProductVMs[i].SellingPrice</h4>
-                    </div>
-                    <a href="#"><i class="ri-shopping-cart-2-line cart"></i></a>
-                </div>
-            </a>
-        } *@
+        <div class="pro-container">
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3" id="pro-container">
+                <partial name="_ProductListPartial" model="Model.ProductVMs" />
+            </div>
         </div>
     </div>
 </section>
@@ -254,7 +236,7 @@
         //
         $(document).ready(function() {
             var pageNumber = 2;
-            var pageSize = 10;
+            var pageSize = 5;
 
              var cart = JSON.parse(localStorage.getItem('cart')) || [];
              if(cart == [] || $("#cartNum").length==0){

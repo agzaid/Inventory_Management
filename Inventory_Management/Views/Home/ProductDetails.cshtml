@@ -136,7 +136,7 @@
                
                translatedMessages();
 
-                    basketNumber();
+                          setTimeout(basketNumber, 50);
 
 
           $('.small-Img').on('click', function () {
@@ -222,7 +222,7 @@
                  localStorage.setItem('cart', JSON.stringify(cart));
                  $('#cartNum').text(cart.length);
 
-                       basketNumber();
+                             setTimeout(basketNumber, 50);
              }
 
                function addToCart() {
@@ -253,7 +253,7 @@
                      $('#cartNum').text(cart.length);
                      _TOASTR.Success(decoded);
 
-                           basketNumber();
+                                 setTimeout(basketNumber, 50);
                  }
 
               function basketNumber(){
