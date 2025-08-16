@@ -1165,9 +1165,16 @@ object-fit: cover;
     }
 }
 @media (max-width: 600px) {
-    #product1 .pro-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    /*#product1 .pro-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;*/ /* smaller gap for mobile */
+    /*}
+
+    #product1 .pro {
+        margin: 0;*/ /* remove extra margin */
+    /*}*/
+}
+
 
 @media (max-width:477px) {
     #header {
