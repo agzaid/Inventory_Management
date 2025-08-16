@@ -29,23 +29,14 @@ namespace Infrastructure.DependencyInjection
         }
         public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)
         {
-            //services.AddIdentityCore<ApplicationUser>(options =>
-            //{
-            //    options.Password.RequireDigit = true;
-            //    options.Password.RequireLowercase = false;
-            //    options.Password.RequireUppercase = false;
-            //    options.Password.RequireNonAlphanumeric = false;
-            //    options.Password.RequiredLength = 10;
-            //    options.User.RequireUniqueEmail = true;
-            //});
             var builder = services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 10;
-                options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 6;
+                options.User.RequireUniqueEmail = false;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();

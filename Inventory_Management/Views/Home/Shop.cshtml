@@ -1,24 +1,36 @@
 ﻿@model Domain.Models.PortalVM
 
-@* <style>
-    #feature {
-    display: flex;
-    overflow-x: auto;   /* enables horizontal scrolling */
-    gap: 10px;          /* spacing between categories */
-    padding: 10px;
-    scroll-behavior: smooth; /* nice smooth scroll */
-}
+<style>
+    .category-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px; /* space between items */
+        padding-bottom: 10px;
+        scrollbar-width: thin; /* Firefox */
+    }
 
-#feature::-webkit-scrollbar {
-    height: 6px; /* small scrollbar */
-}
+        /* Optional: make it look cleaner */
+        .category-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
 
-#feature::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
+        .category-scroll::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
 
-</style> *@
+        .category-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+    .category-dropdown {
+        flex: 0 0 auto; /* prevent shrinking so items don’t collapse */
+        min-width: 120px; /* adjust as you like */
+        text-align: center;
+    }
+
+
+</style>
 
 <div class="container mt-3">
     <div class="row d-flex justify-content-center">
@@ -38,17 +50,19 @@
 <h5 class="mt-5 text-center">@Localizer["WelcomeToOurShop"]</h5>
 
 <section id="feature" class="section-p1">
-    <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
-        <h6>All Products</h6>
-    </div>
-    @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
-    {
-        <div class="category-dropdown mx-1 fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
-            @* <img src="img/features/f1.png" alt="@Model.CategoryVMs[i].CategoryName"> *@
-            <h6>@Model.CategoryVMs[i].CategoryName</h6>
+    <div class="category-scroll">
+        <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
+            <h6>All Products</h6>
         </div>
-    }
+        @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
+        {
+            <div class="category-dropdown mx-1 fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
+                <h6>@Model.CategoryVMs[i].CategoryName</h6>
+            </div>
+        }
+    </div>
 </section>
+
 <section id="product1" class="section-p1">
     <h2>@Localizer["FeaturedProducts"]</h2>
     @* <p>Summer Collection New Modern Design</p> *@

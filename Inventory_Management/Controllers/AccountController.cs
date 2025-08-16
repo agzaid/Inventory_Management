@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,22 +21,51 @@ public class AccountController : Controller
 
     // POST: /Account/Register
     [HttpPost]
-    public async Task<IActionResult> Register(string email, string password)
+    [HttpPost]
+    public async Task<IActionResult> Register(string identifier, string password)
     {
-        var user = new ApplicationUser { UserName = email, Email = email };
+        if (string.IsNullOrWhiteSpace(identifier))
+        {
+            TempData["error"] = "Email or phone number is required.";
+            return View();
+        }
+
+        ApplicationUser user;
+
+        if (identifier.Contains("@"))
+        {
+            // Email registration
+            user = new ApplicationUser
+            {
+                UserName = identifier,
+                Email = identifier
+            };
+        }
+        else
+        {
+            // Phone registration
+            user = new ApplicationUser
+            {
+                UserName = identifier,   // still needs a UserName for identity
+                PhoneNumber = identifier,
+                Email = null
+            };
+        }
+
         var result = await _userManager.CreateAsync(user, password);
 
         if (result.Succeeded)
         {
+            TempData["success"] = "Account Created Successfully";
             await _signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Home");
         }
 
-        foreach (var error in result.Errors)
-            ModelState.AddModelError("", error.Description);
-
+        TempData["error"] = result.Errors?.FirstOrDefault()?.Description;
         return View();
     }
+
+
 
     // GET: /Account/Login
     [HttpGet]
@@ -43,17 +73,41 @@ public class AccountController : Controller
 
     // POST: /Account/Login
     [HttpPost]
-    public async Task<IActionResult> Login(string email, string password)
+    [HttpPost]
+    public async Task<IActionResult> Login(string identifier, string password)
     {
-        var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+        ApplicationUser user = null;
+
+        if (identifier.Contains("@"))
+        {
+            // Try find by email
+            user = await _userManager.FindByEmailAsync(identifier);
+        }
+        else
+        {
+            // Try find by phone
+            user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == identifier);
+        }
+
+        if (user == null)
+        {
+            TempData["error"] = "Invalid login attempt.";
+            return View();
+        }
+
+        // Use UserName for sign in
+        var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, false);
+
         if (result.Succeeded)
         {
+            TempData["success"] = "Signed in Successfully";
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("", "Invalid login attempt.");
+        TempData["error"] = "Invalid login attempt.";
         return View();
     }
+
 
     // POST: /Account/Logout
     [HttpPost]

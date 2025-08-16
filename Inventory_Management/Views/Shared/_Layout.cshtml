@@ -23,50 +23,52 @@
         <!--end header -->
         <!--start hero -->
         <!--end feature -->
-        @RenderBody()
+        <partial name="_Notification">
+
+            @RenderBody()
 
 
 
-        <footer class="section-p1">
-            <div class="col">
-                <img class="logo" src="~/images/logo.png" />
-                <h4>Contact</h4>
-                <p><strong>@Localizer["Address"]: </strong>Mokattab, Cairo</p>
-                <p><strong>@Localizer["Phone"]: </strong>01063181497</p>
-                <p><strong>@Localizer["Hours"]: </strong>10:00 - 18:00, Mon - Sat</p>
-                <div class="follow">
-                    <h4>@Localizer["FollowUs"]</h4>
-                    <div class="icon">
-                        <i class="ri-facebook-fill"></i>
-                        <i class="ri-twitter-x-line"></i>
-                        <i class="ri-instagram-line"></i>
-                        <i class="ri-pinterest-line"></i>
-                        <i class="ri-youtube-fill"></i>
+            <footer class="section-p1">
+                <div class="col">
+                    <img class="logo" src="~/images/logo.png" />
+                    <h4>Contact</h4>
+                    <p><strong>@Localizer["Address"]: </strong>Mokattab, Cairo</p>
+                    <p><strong>@Localizer["Phone"]: </strong>01063181497</p>
+                    <p><strong>@Localizer["Hours"]: </strong>10:00 - 18:00, Mon - Sat</p>
+                    <div class="follow">
+                        <h4>@Localizer["FollowUs"]</h4>
+                        <div class="icon">
+                            <i class="ri-facebook-fill"></i>
+                            <i class="ri-twitter-x-line"></i>
+                            <i class="ri-instagram-line"></i>
+                            <i class="ri-pinterest-line"></i>
+                            <i class="ri-youtube-fill"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col">
-                <h4>About</h4>
-                <a href="#">@Localizer["AboutUs"]</a>
-                <a href="#">@Localizer["DeliverInformation"]</a>
-                <a href="#">@Localizer["PrivacyInformation"]</a>
-                <a href="#">@Localizer["TermsAndCondtion"]</a>
-                <a href="#">@Localizer["ContactUs"]</a>
-            </div>
+                <div class="col">
+                    <h4>About</h4>
+                    <a href="#">@Localizer["AboutUs"]</a>
+                    <a href="#">@Localizer["DeliverInformation"]</a>
+                    <a href="#">@Localizer["PrivacyInformation"]</a>
+                    <a href="#">@Localizer["TermsAndCondtion"]</a>
+                    <a href="#">@Localizer["ContactUs"]</a>
+                </div>
 
-            <div class="col">
-                <h4>@Localizer["About"]</h4>
-                <a href="#">@Localizer["MyContact"]</a>
-                <a href="#">@Localizer["SignIn"]</a>
-                <a href="#">@Localizer["ViewCart"]</a>
-                <a href="#">@Localizer["MyWishList"]</a>
-                <a href="#">@Localizer["TrackMyOrder"]</a>
-                <a href="#">@Localizer["Help"]</a>
-            </div>
+                <div class="col">
+                    <h4>@Localizer["About"]</h4>
+                    <a href="#">@Localizer["MyContact"]</a>
+                    <a href="#">@Localizer["SignIn"]</a>
+                    <a href="#">@Localizer["ViewCart"]</a>
+                    <a href="#">@Localizer["MyWishList"]</a>
+                    <a href="#">@Localizer["TrackMyOrder"]</a>
+                    <a href="#">@Localizer["Help"]</a>
+                </div>
 
-            <div class="col install">
-                @* <h4>Install App</h4>
+                <div class="col install">
+                    @* <h4>Install App</h4>
                 <p>From App Store or Google Play</p>
                 <div class="row">
                     <img src="img/pay/app.jpg" alt="">
@@ -75,51 +77,51 @@
                 <p>Secured Payment Gateways</p>
                 <img src="img/pay/pay.png" alt="">
             </div> *@
-            <div class="copyright">
-                <p>© 2025 JimmyZ Market. All Rights Reserved.</p>
-            </div>
-        </footer>
+                    <div class="copyright">
+                        <p>© 2025 JimmyZ Market. All Rights Reserved.</p>
+                    </div>
+            </footer>
 
 
-        <script src="~/js/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-        <script src="~/js/bootstrap.bundle.min.js"></script>
-        <!--plugins-->
-        <script src="https://cdn.jsdelivr.net/npm/fslightbox/index.js"></script>a
-        <script src="~/plugins/Drag-And-Drop/dist/imageuploadify.min.js"></script>
-        <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
-        <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
-        <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-        <script src="~/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
-        <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-        <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-        <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
-        <script src="~/plugins/select2/js/select2.full.min.js"></script>
-        <script src="~/plugins/moment/moment.js"></script>
-        <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-        <script src="~/js/app.js" asp-append-version="true"></script>
-        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-        <script src="~/js/default.js" asp-append-version="true"></script>
-        <script src="~/js/script.js"></script>
-        @* <script src="~/js/cart.js"></script> *@
-        @RenderSection("scripts", required: false)
+            <script src="~/js/jquery.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script src="~/js/bootstrap.bundle.min.js"></script>
+            <!--plugins-->
+            <script src="https://cdn.jsdelivr.net/npm/fslightbox/index.js"></script>a
+            <script src="~/plugins/Drag-And-Drop/dist/imageuploadify.min.js"></script>
+            <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
+            <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
+            <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="~/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+            <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+            <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+            <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+            <script src="~/plugins/select2/js/select2.full.min.js"></script>
+            <script src="~/plugins/moment/moment.js"></script>
+            <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+            <script src="~/js/app.js" asp-append-version="true"></script>
+            <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+            <script src="~/js/default.js" asp-append-version="true"></script>
+            <script src="~/js/script.js"></script>
+            @* <script src="~/js/cart.js"></script> *@
+            @RenderSection("scripts", required: false)
 
             <script>
-                    $(document).ready(function() {
-                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
-                 if(cart == [] || $("#cartNum").length==0){
-                     var cartt = $("#cartNum").length;
-                     $("#cartNum")[0].innerHTML= 0;
-                     $("#cartNum1")[0].innerHTML= 0;
-                 }else{
-                     $("#cartNum")[0].innerHTML= cart.length;
-                     $("#cartNum1")[0].innerHTML= cart.length;
-                 }
+                        $(document).ready(function() {
+                     var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                     if(cart == [] || $("#cartNum").length==0){
+                         var cartt = $("#cartNum").length;
+                         $("#cartNum")[0].innerHTML= 0;
+                         $("#cartNum1")[0].innerHTML= 0;
+                     }else{
+                         $("#cartNum")[0].innerHTML= cart.length;
+                         $("#cartNum1")[0].innerHTML= cart.length;
+                     }
 
-            });
+                });
             </script>
 
 </body>
