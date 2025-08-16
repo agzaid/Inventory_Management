@@ -1,6 +1,7 @@
 ﻿using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ using System.Threading.Tasks;
 namespace Inventory_Management.Areas.admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+
     public class OnlineOrderController : Controller
     {
         private readonly IOnlineOrderService _onlineOrderService;

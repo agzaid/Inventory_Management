@@ -2,11 +2,13 @@ using System.Diagnostics;
 using Application.Services.Intrerfaces;
 using Infrastructure.Data;
 using Inventory_Management.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="card shadow-lg border-0 rounded-4 p-2" style="max-width: 500px; width: 100%;">
+        <div class="card-body">
+            <h3 class="text-center mb-4 fw-bold text-success">Create Account</h3>
+
+            <form method="post" asp-action="Register">
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                        <input type="text" name="fullName" placeholder="Enter your name" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                        <input type="email" name="email" placeholder="Enter your email" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" name="password" placeholder="Enter your password" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Confirm Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+                        <input type="password" name="confirmPassword" placeholder="Confirm password" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- Register Button -->
+                <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill">Register</button>
+
+                <!-- Divider -->
+                <div class="text-center my-3 text-muted">or</div>
+
+                <!-- Login Redirect -->
+                <a href="/Account/Login" class="btn btn-outline-secondary w-100 fw-semibold rounded-pill">
+                    Already have an account? Login
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

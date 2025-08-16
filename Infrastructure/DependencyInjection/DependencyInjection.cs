@@ -50,6 +50,14 @@ namespace Infrastructure.DependencyInjection
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login"; // Redirect here if not logged in
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
+
             return services;
         }
     }

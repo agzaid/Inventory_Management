@@ -28,40 +28,41 @@ namespace Infrastructure.Data
         public DbSet<Brand> Brand { get; set; }
 
 
-        public static void SeedData(ApplicationDbContext context)
-        {
-            // Check if the data is already seeded to avoid duplication
-            if (!context.Category.Any())
-            {
-                context.Category.AddRange(
-                    new Category { CategoryName = "rice" }
-                );
+        //public static void SeedData(ApplicationDbContext context)
+        //{
+        //    // Check if the data is already seeded to avoid duplication
+        //    if (!context.Category.Any())
+        //    {
+        //        context.Category.AddRange(
+        //            new Category { CategoryName = "rice" }
+        //        );
 
-                context.SaveChanges();
-            }
-            if (!context.DeliverySlot.Any())
-            {
-                context.DeliverySlot.AddRange(
-                    new DeliverySlot { StartTime = "7", EndTime = "8", AM_PM = "pm" },
-                    new DeliverySlot { StartTime = "8", EndTime = "9", AM_PM = "pm" }
-                );
+        //        context.SaveChanges();
+        //    }
+        //    if (!context.DeliverySlot.Any())
+        //    {
+        //        context.DeliverySlot.AddRange(
+        //            new DeliverySlot { StartTime = "7", EndTime = "8", AM_PM = "pm" },
+        //            new DeliverySlot { StartTime = "8", EndTime = "9", AM_PM = "pm" }
+        //        );
 
-                context.SaveChanges();
-            }
-            // Check if the data is already seeded to avoid duplication
-            if (!context.ShippingFreight.Any())
-            {
-                var districts = new List<District>
-                    {
-                        new District {  Name = "other" ,Price = 50},
-                    };
-                context.ShippingFreight.AddRange(
-                    new ShippingFreight { ShippingArea = "other", Price = 50, Districts = districts }
-                );
+        //        context.SaveChanges();
+        //    }
+        //    // Check if the data is already seeded to avoid duplication
+        //    if (!context.ShippingFreight.Any())
+        //    {
+        //        var districts = new List<District>
+        //            {
+        //                new District {  Name = "other" ,Price = 50},
+        //            };
+        //        context.ShippingFreight.AddRange(
+        //            new ShippingFreight { ShippingArea = "other", Price = 50, Districts = districts }
+        //        );
 
-                context.SaveChanges();
-            }
-        }
+        //        context.SaveChanges();
+        //    }
+        //}
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

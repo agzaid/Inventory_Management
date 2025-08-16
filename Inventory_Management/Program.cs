@@ -2,6 +2,7 @@ using Application.Common.Interfaces;
 using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
 using Infrastructure.Data;
+using Infrastructure.DependencyInjection;
 using Infrastructure.Localization;
 using Infrastructure.Repo;
 using Inventory_Management.DependencyInjection;
@@ -24,12 +25,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>()
-//    .AddDefaultTokenProviders();
-
-
 // adding Dependency Injection
+
 builder.Services.AddAppDI();
 
 // localization setup
@@ -81,7 +78,10 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        ApplicationDbContext.SeedData(dbContext);
+        DbInitializer.SeedData(dbContext);
+        //ApplicationDbContext.SeedData(dbContext);
+
+        await IdentitySeeder.SeedAdminUserAsync(scope.ServiceProvider);
     }
 
 }
@@ -117,7 +117,7 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-app.UseRequestLocalization();
+//app.UseRequestLocalization();
 
 app.UseRouting();
 

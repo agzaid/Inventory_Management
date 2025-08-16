@@ -4,11 +4,13 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class ProductController : Controller
     {
