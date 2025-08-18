@@ -4,34 +4,46 @@
     .category-scroll {
         display: flex;
         overflow-x: auto;
-        gap: 10px; /* space between items */
-        padding-bottom: 10px;
-        scrollbar-width: thin; /* Firefox */
+        gap: 12px;
+        padding: 12px 5px;
+        scrollbar-width: none; /* hide scrollbar (Firefox) */
+        -ms-overflow-style: none; /* hide scrollbar (IE) */
     }
 
-        /* Optional: make it look cleaner */
         .category-scroll::-webkit-scrollbar {
-            height: 6px;
+            display: none; /* hide scrollbar (Chrome/Safari) */
         }
 
-        .category-scroll::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 10px;
-        }
-
-        .category-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-    .category-dropdown {
-        flex: 0 0 auto; /* prevent shrinking so items don’t collapse */
-        min-width: 120px; /* adjust as you like */
-        text-align: center;
+    .category-pill {
+        flex: 0 0 auto;
+        padding: 12px 22px;
+        border-radius: 50px;
+        background: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        color: #444;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+        cursor: pointer;
+        white-space: nowrap;
     }
 
+        .category-pill:hover {
+            transform: translateY(-2px) scale(1.03);
+            background: #28a745;
+            color: #fff;
+            border-color: #28a745;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
 
+        .category-pill.active {
+            background: #28a745;
+            color: #fff;
+            border-color: #28a745;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.25);
+        }
 </style>
-
 <div class="container mt-3">
     <div class="row d-flex justify-content-center">
         <div class="col-md-8">
@@ -39,7 +51,7 @@
                 <div class="mb-0">
                     <div class="input-group input-group-lg">
                         <span class="input-group-text bg-transparent" id="porductSearch" style="cursor:pointer"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input id="inputSearch" type="text" class="form-control" placeholder="Search products">
+                        <input id="inputSearch" type="text" class="form-control" placeholder="@Localizer["Searchproducts"]">
                     </div>
                 </div>
             </div>
@@ -51,17 +63,18 @@
 
 <section id="feature" class="section-p1">
     <div class="category-scroll">
-        <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
+        <div class="category-dropdown fe-box active" style="cursor:pointer;">
             <h6>All Products</h6>
         </div>
         @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
         {
-            <div class="category-dropdown mx-1 fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
+            <div class="category-dropdown fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
                 <h6>@Model.CategoryVMs[i].CategoryName</h6>
             </div>
         }
     </div>
 </section>
+
 
 <section id="product1" class="section-p1">
     <h2>@Localizer["FeaturedProducts"]</h2>
