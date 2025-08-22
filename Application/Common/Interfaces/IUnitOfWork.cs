@@ -18,6 +18,7 @@ namespace Application.Common.Interfaces
         IDistrictRepository District { get; }
         IOnlineOrderRepository OnlineOrder { get; }
         IBrandRepository Brand { get; }
+        IFeedbackRepository Feedback { get; }
         Task SaveAsync();
 
     }

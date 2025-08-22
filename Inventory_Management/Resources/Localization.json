@@ -79,11 +79,14 @@
     "AddressName_Required": "Address Name Required",
     "PhoneNumber_Required": "Phone Number Required",
     "CustomerName_Required": "Customer Name Required",
-    "YourOrderIsSubmittedSuccessfully": "Your order is submitted successfully",
+    "YourOrderIsSubmittedSuccessfully": "added to cart",
     "OurTeamWillContactYouSoon": "Our Team will contact you soon",
     "FollowUs": "Follow Us",
     "ItemWasDeletedSuccessfully": "Item was deleted successfully",
-    "TradeInOffer": "Trade-in Offer"
+    "TradeInOffer": "Trade-in Offer",
+    "Currency": "EGP",
+    "NoProductsFound": "No Products Found",
+    "TryExploring": "Try exploring other categories or check back later for new arrivals."
   },
   "ar": {
     "Greeting": "كيف حالك",
@@ -164,9 +167,12 @@
     "AddressName_Required": "الرجاء إدخال اسم العنوان",
     "PhoneNumber_Required": "الرجاء إدخال رقم الهاتف",
     "CustomerName_Required": "الرجاء إدخال اسم العميل",
-    "YourOrderIsSubmittedSuccessfully": "تم إرسال طلبك بنجاح",
+    "YourOrderIsSubmittedSuccessfully": "تم الاضافه للسله",
     "OurTeamWillContactYouSoon": "سيتواصل معك فريقنا قريبًا",
     "FollowUs": "تابعونا",
-    "ItemWasDeletedSuccessfully": "تم حذف العنصر بنجاح"
+    "ItemWasDeletedSuccessfully": "تم حذف العنصر بنجاح",
+    "Currency": "EGP",
+    "NoProductsFound": "لا يوجد منتجات اخرى",
+    "TryExploring": "حاول استكشاف فئات أخرى أو تحقق مرة أخرى لاحقًا لوصول منتجات جديدة."
   }
 }

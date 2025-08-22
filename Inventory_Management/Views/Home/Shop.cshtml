@@ -311,8 +311,12 @@
                                  pageNumber: pageNumber,
                                  pageSize: pageSize
                              };
+                             $('#loader').show();
+
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                                  function (data) {
+                             $('#loader').hide();
+
                                      pageNumber++;
                                      $('#pro-container').append(data);
                                  },

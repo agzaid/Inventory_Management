@@ -1,4 +1,54 @@
-﻿@if (Model != null && Model.Count > 0)
+﻿<style>
+    .price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .price-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+        .price-info .current {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .price-info .old {
+            font-size: 0.9rem;
+            text-decoration: line-through;
+            color: #ef4444;
+        }
+
+    .cart-btn {
+        background: #f3f4f6; /* light gray */
+        color: #111827; /* dark text/icon */
+        border: none;
+        width: 40px; /* fixed width */
+        height: 40px; /* fixed height */
+        border-radius: 50%; /* perfect circle */
+        display: flex; /* center icon */
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08); /* subtle shadow */
+    }
+
+        .cart-btn:hover {
+            background: #e0f2fe; /* light sky blue */
+            color: #0284c7; /* blue accent */
+        }
+
+
+
+</style>
+
+@if (Model != null && Model.Count > 0)
 {
     <!-- 2 on phones, 3 on small, 4 on medium, 5 on large, 6 on extra large -->
     @foreach (var product in Model)
@@ -27,13 +77,17 @@
                             <i class="ri-star-fill"></i>
                             <i class="ri-star-fill"></i>
                         </div>
-                        <h4>
-                            $@(product?.SellingPrice ?? 0)
-                            <br /><br />
-                            <del class="text-danger">$@(product?.OtherShopsPrice ?? 0)</del>
-                        </h4>
+                        <div class="price">
+                            <div class="price-info">
+                                <span class="current">@Localizer["Currency"] @(product?.SellingPrice ?? 0)</span>
+                                <span class="old">@Localizer["Currency"] @(product?.OtherShopsPrice ?? 0)</span>
+                            </div>
+                            <button class="cart-btn">
+                                <i class="ri-shopping-cart-2-line"></i>
+                            </button>
+                        </div>
+
                     </div>
-                    <i class="ri-shopping-cart-2-line cart"></i>
                 </div>
             </a>
         </div>
@@ -44,7 +98,7 @@ else
 {
     <div class="no-products-message">
         <i class="ri-shopping-bag-3-line"></i>
-        <h3>No Products Found</h3>
-        <p>Try exploring other categories or check back later for new arrivals.</p>
+        <h3>@Localizer["NoProductsFound"]</h3>
+        <p>@Localizer["tryExploring"]</p>
     </div>
 }
