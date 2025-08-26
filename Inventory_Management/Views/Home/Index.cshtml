@@ -52,7 +52,7 @@
         <h2>@Localizer["FeaturedProducts"]</h2>
         @* <p>Summer Collection New Modern Design</p> *@
         <div id="products-container">
-            <div class="pro-container" >
+            <div class="pro-container">
                 <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3" id="pro-container">
                     <partial name="_ProductListPartial" model="Model.ProductVMs" />
                 </div>
@@ -259,22 +259,22 @@
                      var cartt = $("#cartNum").length;
                      $("#cartNum")[0].innerHTML= 0;
                      $("#cartNum1")[0].innerHTML= 0;
-                 }else{
-                     $("#cartNum")[0].innerHTML= cart.length;
-                     $("#cartNum1")[0].innerHTML= cart.length;
-                 }
-
-
+                      }else{
+                          $("#cartNum")[0].innerHTML= cart.length;
+                          $("#cartNum1")[0].innerHTML= cart.length;
+                      }
                       $('.category-dropdown').on('click', function () {
                           debugger;
                             var categoryId = $(this).data('value');
                             var categoryName = $(this).innerText;
                             $('#productSpecified').text(categoryName);
+                            $('#loader').show();
                             $.ajax({
                                 url: '/Home/GetProductsByCategory',
                                 type: 'GET',
                                 data: { categoryId: categoryId },
                                 success: function (data) {
+                                    $('#loader').hide();
                                     $('#pro-container').html(data);
                                 }
                             });
@@ -288,16 +288,15 @@
                              $('#loader').show();
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                                  function (data) {
-                                     debugger;
                                      $('#loader').hide();
                                      pageNumber++;
                                      $('#pro-container').append(data);
                                  },
                                  function (xhr) {
+                                     $('#loader').hide();
                                      _SWAL.AlertWithoutNotification("Something went wrong..!!");
                                  });
                          });
-
             });
         </script>
 }

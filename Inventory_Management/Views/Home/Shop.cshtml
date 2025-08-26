@@ -312,15 +312,14 @@
                                  pageSize: pageSize
                              };
                              $('#loader').show();
-
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                                  function (data) {
-                             $('#loader').hide();
-
+                                    $('#loader').hide();
                                      pageNumber++;
                                      $('#pro-container').append(data);
                                  },
                                  function (xhr) {
+                                    $('#loader').hide();
                                      _SWAL.AlertWithoutNotification("Something went wrong..!!");
                                  });
                          });
@@ -331,11 +330,15 @@
                  var parameter = {
                      categoryId: inputSearch
                  };
+                 $('#loader').show();
+
                  _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                      function (data) {
+                         $('#loader').hide();
                          $('#pro-container').html(data);
                      },
                      function (xhr) {
+                         $('#loader').hide();
                          _SWAL.AlertWithoutNotification("@Localizer["SomethingWentWrong"]");
                          // _SWAL.AlertWithoutNotification(`@Html.Raw(Localizer["SomethingWentWrong"])`);
                      });
@@ -346,11 +349,15 @@
                  var parameter = {
                      name: inputSearch
                  };
+                 $('#loader').show();
+
                  _Ajax.ReturnHTML($url, parameter, "GET", function () { },
                      function (data) {
+                         $('#loader').hide();
                          $('#pro-container').html(data);
                      },
                      function (xhr) {
+                       $('#loader').hide();
                          _SWAL.AlertWithoutNotification("Something went wrong..!!");
                      });
                     };

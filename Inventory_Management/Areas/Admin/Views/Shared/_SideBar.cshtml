@@ -1,4 +1,32 @@
-﻿<div class="sidebar-wrapper" data-simplebar="true">
+﻿<style>
+    .sidebar-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .sidebar-footer {
+        border-top: 1px solid #e0e0e0;
+        padding: 10px;
+        background: #f9f9f9;
+    }
+
+        .sidebar-footer a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+            .sidebar-footer a:hover {
+                color: #088178; /* green hover */
+            }
+
+</style>
+
+
+<div class="sidebar-wrapper" data-simplebar="true">
     <div class="sidebar-header">
         <div>
             @* <img src="~/images/HealthcareLogoSymbolCopy.png" width="20px"height="20px" class="logo-icon" alt="logo icon"> *@
@@ -11,8 +39,9 @@
             <i class='bx bx-arrow-back'></i>
         </div>
     </div>
+    <div class="sidebar-wrapper d-flex flex-column">
     <!--navigation-->
-    <ul class="metismenu" id="menu">
+        <ul class="metismenu flex-grow-1" id="menu">
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon">
@@ -131,7 +160,6 @@
                 </li>
             </ul>
         </li>
-
         @* <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon">
@@ -224,5 +252,15 @@
             </li> *@
 
     </ul>
+   
     <!--end navigation-->
+        <div class="sidebar-footer">
+            <a asp-action="Index" asp-controller="Home" asp-area="" class="d-flex align-items-center p-2">
+                <div class="parent-icon">
+                    <i class="bx bx-home"></i>
+                </div>
+                <div class="menu-title ms-2">Return to Home</div>
+            </a>
+        </div>
+    </div>
 </div>
