@@ -12,5 +12,10 @@ namespace Domain.Entities
         public string? Email { get; set; }
         public string? Subject { get; set; }
         public string? Message { get; set; }
+        public string? Phone { get; set; }
+        public int? CustomerId { get; set; }
+
+        public virtual ICollection<Image>? Images { get; set; } // Navigation property
+
     }
 }

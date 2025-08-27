@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using System.Web.Razor.Tokenizer.Symbols;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -71,10 +72,10 @@ namespace Inventory_Management.Controllers
         public IActionResult ProductDetails(int Id)
         {
             var products = _onlineOrderService.GetProductDetails(Id);
-            
+
             return View(products);
         }
-       
+
         public async Task<IActionResult> Cart()
         {
             var cartvm = new Inventory_Management.Models.CartVM()
@@ -121,10 +122,30 @@ namespace Inventory_Management.Controllers
             if (cart != null)
             {
                 return Json(cart.Result);
-            }else
-                return View(cart); 
+            }
+            else
+                return View(cart);
         }
-        public async Task<IActionResult> GetPaginatedProducts(int pageNumber = 1, int pageSize = 10)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Feedback(string name, string email, string subject, string phone, string message, List<IFormFile> ImagesFormFiles)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(message) || string.IsNullOrEmpty(phone))
+            {
+                return BadRequest("Please fill all properties");
+            }
+            var result = _onlineOrderService.CreateFeedback(new FeedbackVM() { Name = name, Email = email, Subject = subject, Phone = phone, Message = message, ImagesFormFiles = ImagesFormFiles });
+            if (result != null)
+            {
+                return Json(result);
+            }
+            else
+            {
+                return BadRequest("Failed to Create Feedback");
+            }
+        }
+        public async Task<IActionResult> GetPaginatedProducts(int pageNumber = 1, int pageSize = 20)
         {
             var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize);
             return PartialView("_ProductListPartial", product.Data.Items);

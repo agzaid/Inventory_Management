@@ -16,5 +16,7 @@ namespace Domain.Entities
 
         public int? BrandId { get; set; }
         public Brand? Brand { get; set; }
+        public int? FeedbackId { get; set; }
+        public Feedback? Feedback { get; set; }
     }
 }
