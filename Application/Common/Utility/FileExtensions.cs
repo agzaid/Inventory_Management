@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Domain.Enums;
+using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Drawing;
-using Domain.Enums;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 
 namespace Application.Common.Utility
 {
@@ -87,71 +89,48 @@ namespace Application.Common.Utility
                 throw;
             }
         }
-        public static async Task<List<string>> CreateImages(List<IFormFile> images, string name)
+        public static async Task<string> SaveImageOptimized(IFormFile file, string folder)
         {
-            try
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("Invalid image file");
+
+            string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folder);
+
+            if (!Directory.Exists(uploadDir))
+                Directory.CreateDirectory(uploadDir);
+
+            // Generate unique file name
+            string fileName = $"{Guid.NewGuid()}.webp";
+            string filePath = Path.Combine(uploadDir, fileName);
+
+            using var image = await SixLabors.ImageSharp.Image.LoadAsync(file.OpenReadStream());
+
+            // Resize if bigger than 1200px wide
+            if (image.Width > 1200)
             {
-                // Check if there are images in the list
-                if (images == null || images.Count == 0)
-                {
-                    return new List<string>();  // Return an empty list if no images were provided
-                }
-
-                var uploadedFilePaths = new List<string>();
-
-                // Directory to save files (path includes the provided name)
-                var uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadedFiles", name);
-
-                // Create the directory if it doesn't exist
-                if (!Directory.Exists(uploadDirectory))
-                {
-                    Directory.CreateDirectory(uploadDirectory);
-                }
-
-                // Iterate over each file and save it
-                foreach (var file in images)
-                {
-                    if (file.Length > 0)
-                    {
-                        if (file.Length > 5 * 1024 * 1024) // 5 MB limit
-                        {
-                            throw new InvalidOperationException("File size must be less than 5 MB.");
-                        }
-                        // Generate a unique file name to avoid overwriting
-                        string fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                        string fileExtension = Path.GetExtension(file.FileName);
-
-                        // Add a timestamp or GUID to make the filename unique
-                        string uniqueFileName = $"{fileName}_{Guid.NewGuid()}{fileExtension}";
-                        string filePath = Path.Combine(uploadDirectory, uniqueFileName);
-
-                        try
-                        {
-                            // Save the file to the specified path
-                            using (var fileStream = new FileStream(filePath, FileMode.Create))
-                            {
-                                await file.CopyToAsync(fileStream);
-                                // Add the relative file path to the list
-                                uploadedFilePaths.Add($"/UploadedFiles/{name}/{uniqueFileName}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Log the error (you can use a logger or simply print it)
-                            uploadedFilePaths.Add($"Error uploading file {file.FileName}: {ex.Message}");
-                            // You can optionally return an error message or handle this differently.
-                        }
-                    }
-                }
-                // Return the list of uploaded file paths
-                return uploadedFilePaths;
+                image.Mutate(x => x.Resize(1200, 0)); // keep aspect ratio
             }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
+            // Save as WebP (smaller & faster than JPG/PNG)
+            await image.SaveAsWebpAsync(filePath);
+
+            // return relative path for later use
+            return $"/{folder}/{fileName}";
         }
+        public static async Task<List<string>> SaveImagesOptimized(List<IFormFile> files, string folder)
+        {
+            var uploadedFiles = new List<string>();
+
+            foreach (var file in files)
+            {
+                string savedPath = await SaveImageOptimized(file, folder);
+                uploadedFiles.Add(savedPath);
+            }
+
+            return uploadedFiles;
+        }
+
+
 
         public static async Task DeleteImages(List<string> images)
         {
@@ -221,7 +200,7 @@ namespace Application.Common.Utility
         public static byte[] ConvertImageToByteArray(IFormFile imageFile, int targetWidth, long quality)
         {
             using (var inputStream = imageFile.OpenReadStream())
-            using (var image = Image.FromStream(inputStream))
+            using (var image = System.Drawing.Image.FromStream(inputStream))
             {
                 int targetHeight = (int)(image.Height * ((float)targetWidth / image.Width));
 
@@ -251,11 +230,11 @@ namespace Application.Common.Utility
             }
         }
 
-        public static Image ByteArrayToImage(byte[] byteArray)
+        public static System.Drawing.Image ByteArrayToImage(byte[] byteArray)
         {
             using (MemoryStream ms = new(byteArray))
             {
-                return Image.FromStream(ms);
+                return System.Drawing.Image.FromStream(ms);
             }
         }
         public static string ByteArrayToImageBase64(byte[] byteArray)

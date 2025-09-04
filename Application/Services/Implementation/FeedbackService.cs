@@ -25,35 +25,30 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var retrievedImages = new List<string>();
-                var image64 = new List<string>();
                 var feedbackVMs = new List<FeedbackVM>();
 
-                var Feedbacks = _unitOfWork.Feedback.GetAll(s => s.IsDeleted == false, "Images");
-                foreach (var item in Feedbacks)
-                {
-                    retrievedImages.Clear();
-                    if (item.Images?.Count() > 0)
-                    {
-                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                        retrievedImages.AddRange(image64);
-                    }
-                    var showFeedbacks = Feedbacks.Select(s => new FeedbackVM()
-                    {
-                        Id = s.Id,
-                        Email = s.Email,
-                        Name = s.Name,
-                        Subject = s.Subject,
-                        Message = s.Message,
-                        Phone = s.Phone,
-                        retrievedImages = image64,
-                        CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
-                    }).ToList();
-                    feedbackVMs.AddRange(showFeedbacks);
-                }
-                _logger.LogInformation("GetAllFeedbacks method completed. {FeedbackCount} Feedbacks retrieved.", feedbackVMs.Count);
+                var feedbacks = _unitOfWork.Feedback.GetAll(s => s.IsDeleted == false, "Images");
 
-                return feedbackVMs;
+                foreach (var item in feedbacks)
+                {
+                    var image64 = item.Images?.Select(s => s.FilePath).ToList() ?? new List<string>();
+
+                    var feedbackVM = new FeedbackVM
+                    {
+                        Id = item.Id,
+                        Email = item.Email,
+                        Name = item.Name,
+                        Subject = item.Subject,
+                        Message = item.Message,
+                        Phone = item.Phone,
+                        retrievedImages = image64,
+                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd")
+                    };
+
+                    feedbackVMs.Add(feedbackVM);
+                }
+
+                return feedbackVMs; // or wrap in your PortalVM
             }
             catch (Exception ex)
             {
@@ -66,28 +61,25 @@ namespace Application.Services.Implementation
         {
             try
             {
-                //byte[] resultByteImage;
-                List<byte[]> imagesToBeAdded = new List<byte[]>();
 
-               // var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == feedback.Phone);
+                var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == feedback.Phone);
 
                 var imagesToBeDeleted = new List<string>();
-                var imagesToBeRemoved = new List<byte[]>();
+                var imagesToBeAdded = new List<string>();
 
                 if (feedback?.ImagesFormFiles?.Count() > 0)
                 {
-                    var resultByteImage = new byte[0];
                     //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
                     foreach (var item in feedback.ImagesFormFiles)
                     {
-                        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                        imagesToBeRemoved.Add(resultByteImage);
+                        var resultImagePath = await FileExtensions.SaveImageOptimized(item, "Feedback");
+                        imagesToBeAdded.Add(resultImagePath);
                     }
                 }
                 //imagesToBeDeleted = result;
-                var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
+                var listOfImages = imagesToBeAdded.Select(s => new Domain.Entities.Image()
                 {
-                    ImageByteArray = s ?? new byte[0],
+                    FilePath = s ,
                     Create_Date = DateTime.Now,
                 }).ToList();
 
@@ -99,7 +91,7 @@ namespace Application.Services.Implementation
                     Phone = feedback.Phone,
                     Message = feedback.Message,
                     CustomerId = 1,
-                     Images = listOfImages
+                    Images = listOfImages
                 };
 
                 await _unitOfWork.Feedback.AddAsync(newFeedback);
@@ -131,7 +123,9 @@ namespace Application.Services.Implementation
                         Email = Feedback.Email,
                         Message = Feedback.Message,
                         Subject = Feedback.Subject,
-                        CreatedDate = Feedback.Create_Date?.ToString("yyyy-MM-dd")
+                        Phone = Feedback.Phone,
+                        CreatedDate = Feedback.Create_Date?.ToString("yyyy-MM-dd"),
+                        retrievedImages  = Feedback.Images?.Select(s => s.FilePath).ToList()
                     };
                     //if (Feedback.Images?.Count() > 0)
                     //{
