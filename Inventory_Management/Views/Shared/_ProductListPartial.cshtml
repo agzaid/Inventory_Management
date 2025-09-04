@@ -44,7 +44,30 @@
             color: #0284c7; /* blue accent */
         }
 
+    .pro {
+        height: 420px; /* adjust as needed */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* keeps price/cart at bottom */
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+    }
 
+        .pro img {
+            max-height: 180px; /* limit image height */
+            object-fit: cover; /* crop instead of stretching */
+            width: 100%;
+            border-radius: 8px;
+        }
+
+    .des {
+        flex: 1; /* fills available space */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
 </style>
 

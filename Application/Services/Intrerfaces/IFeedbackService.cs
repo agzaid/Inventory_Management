@@ -11,7 +11,7 @@ namespace Application.Services.Intrerfaces
     {
         IEnumerable<FeedbackVM> GetAllFeedbacks();
         FeedbackVM GetFeedbackById(int id);
-        Task<string> CreateFeedback(FeedbackVM category);
+        Task<Result<string>> CreateFeedback(FeedbackVM category);
         Task<bool> UpdateFeedback(FeedbackVM category);
         Task<bool> DeleteFeedback(int id);
         Task<PaginatedResult<FeedbackVM>> GetFeedbackPaginated(int pageNumber, int pageSide);

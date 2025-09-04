@@ -25,6 +25,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IDeliverySlotService, DeliverySlotService>();
             services.AddScoped<IDistrictService, DistrictService>();
             services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
             return services;
         }
         public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)

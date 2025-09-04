@@ -21,17 +21,21 @@ namespace Inventory_Management.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IOnlineOrderService _onlineOrderService;
+        private readonly IFeedbackService _feedbackService;
         private readonly IStringLocalizer _localizer;
 
-        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService, IStringLocalizer localizer)
+        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IStringLocalizer localizer)
         {
             _logger = logger;
             _onlineOrderService = onlineOrderService;
+            _feedbackService = feedbackService;
             _localizer = localizer;
         }
 
         public IActionResult Index(string? message)
         {
+            //var stopwatch = Stopwatch.StartNew();
+
             var portal = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
             //{
@@ -42,10 +46,15 @@ namespace Inventory_Management.Controllers
             //    TempData["error"] = message;
             //}
             //ViewData["Greeting"] = _localizer["Greeting"];
+            //stopwatch.Stop();
+            //Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
             return View(portal);
         }
         public IActionResult Shop()
         {
+            //var stopwatch = Stopwatch.StartNew();
+
+           
             var products = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
             //{
@@ -55,6 +64,9 @@ namespace Inventory_Management.Controllers
             //{
             //    TempData["error"] = message;
             //}
+
+            //stopwatch.Stop();
+            //Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
             return View(products);
         }
         [HttpGet]
@@ -129,19 +141,24 @@ namespace Inventory_Management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Feedback(string name, string email, string subject, string phone, string message, List<IFormFile> ImagesFormFiles)
+        public async Task<IActionResult> Feedback(string name, string email, string subject, string phone, string message, List<IFormFile> ImagesFormFiles)
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(message) || string.IsNullOrEmpty(phone))
-            {
-                return BadRequest("Please fill all properties");
-            }
-            var result = _onlineOrderService.CreateFeedback(new FeedbackVM() { Name = name, Email = email, Subject = subject, Phone = phone, Message = message, ImagesFormFiles = ImagesFormFiles });
+            //if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(message) || string.IsNullOrEmpty(phone))
+            //{
+            //    TempData["error"] = "Please fill empty fields";
+            //    return RedirectToAction("Contact");
+            //}
+            var result = await _feedbackService.CreateFeedback(new FeedbackVM() { Name = name, Email = email, Subject = subject, Phone = phone, Message = message, ImagesFormFiles = ImagesFormFiles });
             if (result != null)
             {
-                return Json(result);
+                TempData["success"] = "Feedback created successfully";
+
+                return RedirectToAction("Index");
             }
             else
             {
+                TempData["error"] = "Failed to Create Feedback";
+
                 return BadRequest("Failed to Create Feedback");
             }
         }

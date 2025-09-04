@@ -33,9 +33,10 @@ namespace Inventory_Management.Areas.Admin.Controllers
                 throw;
             }
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(_customerService.CreateCustomerForViewing());
+            var customer = await _customerService.CreateCustomerForViewing();
+            return View(customer);
         }
 
         [HttpPost]

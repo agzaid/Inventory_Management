@@ -17,6 +17,34 @@
         border-radius: 12px 12px 0 0;
     }
 
+    .custom-file-upload .upload-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f3f4f6;
+        color: #111827;
+        padding: 10px 18px;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+        .custom-file-upload .upload-label:hover {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            color: #0284c7;
+        }
+
+    .preview img {
+        max-height: 80px;
+        margin: 5px;
+        border-radius: 6px;
+        object-fit: cover;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
 </style>
 
 
@@ -81,11 +109,20 @@
                 <textarea class="form-control rounded-4" name="message" rows="5" placeholder="@Localizer["YourMessage"]"></textarea>
             </div>
             <div class="mb-3 col-12">
-                <div class="mb-3">
-                    <label class="form-label">Images</label>
-                    <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
+                <label class="form-label fw-bold">Images</label>
+
+                <div class="custom-file-upload">
+                    <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple hidden>
+                    <label for="ImagesFormFiles" class="upload-label">
+                        <i class="ri-upload-cloud-2-line"></i> Choose Images
+                    </label>
+                    <small class="form-text text-muted d-block mt-1">You can select multiple images.</small>
                 </div>
+
+                <!-- Preview area -->
+                <div id="preview" class="preview mt-3"></div>
             </div>
+
 
             <button class="btn btn-success w-100 rounded-pill fw-semibold">@Localizer["Submit"]</button>
         </form>
@@ -120,6 +157,33 @@
     </div>
 </section>
 
+@section Scripts {
+
+    <script>
+                $("#ImagesFormFiles").on("change", function () {
+            let preview = $("#preview");
+            preview.empty(); // clear old previews
+
+            $.each(this.files, function (i, file) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    $("<img>")
+                        .attr("src", e.target.result)
+                        .css({
+                            "max-height": "80px",
+                            "margin": "5px",
+                            "border-radius": "6px",
+                            "object-fit": "cover",
+                            "box-shadow": "0 2px 6px rgba(0,0,0,0.1)"
+                        })
+                        .appendTo(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+    </script>
+}
 <!-- Newsletter -->
 @* <section id="newsletter" class="section-p1 section-m1 bg-success text-white py-5">
     <div class="container d-flex flex-wrap justify-content-between align-items-center">

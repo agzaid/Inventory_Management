@@ -25,8 +25,6 @@ namespace Application.Services.Implementation
 
         public PortalVM GetAllProductsForPortal()
         {
-            var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-
             var retrievedImages = new List<string>();
             var image64 = new List<string>();
             var productVMs = new List<ProductVM>();
@@ -653,54 +651,54 @@ namespace Application.Services.Implementation
             }
         }
 
-        public async Task<Result<string>> CreateFeedback(FeedbackVM feedback)
-        {
-            try
-            {
-                byte[] resultByteImage;
-                List<byte[]> imagesToBeAdded = new List<byte[]>();
+        //public async Task<Result<string>> CreateFeedback(FeedbackVM feedback)
+        //{
+        //    try
+        //    {
+        //        byte[] resultByteImage;
+        //        List<byte[]> imagesToBeAdded = new List<byte[]>();
 
-                var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == feedback.Phone);
+        //        var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == feedback.Phone);
 
-                if (feedback?.ImagesFormFiles?.Count() > 0)
-                {
-                    foreach (var item in feedback.ImagesFormFiles)
-                    {
-                        resultByteImage = FileExtensions.ConvertImageToByteArray(item, 700, 90);
-                        imagesToBeAdded.Add(resultByteImage);
-                    }
-                }
+        //        if (feedback?.ImagesFormFiles?.Count() > 0)
+        //        {
+        //            foreach (var item in feedback.ImagesFormFiles)
+        //            {
+        //                resultByteImage = FileExtensions.ConvertImageToByteArray(item, 700, 90);
+        //                imagesToBeAdded.Add(resultByteImage);
+        //            }
+        //        }
 
-                var listOfImages = imagesToBeAdded.Select(s => new Domain.Entities.Image()
-                {
-                    ImageByteArray = s ?? new byte[0],
-                    Create_Date = DateTime.Now,
-                }).ToList();
-                var newFeedback = new Feedback()
-                {
-                    Name = feedback.Name,
-                    Email = feedback.Email,
-                    Subject = feedback.Subject,
-                    Phone = feedback.Phone,
-                    Message = feedback.Message,
-                    CustomerId = customer?.Id,
-                    Images = listOfImages
-                };
+        //        var listOfImages = imagesToBeAdded.Select(s => new Domain.Entities.Image()
+        //        {
+        //            ImageByteArray = s ?? new byte[0],
+        //            Create_Date = DateTime.Now,
+        //        }).ToList();
+        //        var newFeedback = new Feedback()
+        //        {
+        //            Name = feedback.Name,
+        //            Email = feedback.Email,
+        //            Subject = feedback.Subject,
+        //            Phone = feedback.Phone,
+        //            Message = feedback.Message,
+        //            CustomerId = customer?.Id,
+        //            Images = listOfImages
+        //        };
 
-                await _unitOfWork.Feedback.AddAsync(newFeedback);
-                await _unitOfWork.SaveAsync();
-                return Result<string>.Success("success", "Feedback Created Successfully");
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    _logger.LogError(ex, ex.InnerException.Message);
-                }
-                else
-                    _logger.LogError(ex, ex.Message);
-                return Result<string>.Failure("Error Occured...", "error");
-            }
-        }
+        //        await _unitOfWork.Feedback.AddAsync(newFeedback);
+        //        await _unitOfWork.SaveAsync();
+        //        return Result<string>.Success("success", "Feedback Created Successfully");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (ex.InnerException != null)
+        //        {
+        //            _logger.LogError(ex, ex.InnerException.Message);
+        //        }
+        //        else
+        //            _logger.LogError(ex, ex.Message);
+        //        return Result<string>.Failure("Error Occured...", "error");
+        //    }
+        //}
     }
 }

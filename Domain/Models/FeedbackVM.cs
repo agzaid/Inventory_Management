@@ -14,5 +14,7 @@ namespace Domain.Models
         public string? Phone { get; set; }
         public string? CreatedDate { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
+        public List<string>? retrievedImages { get; set; }
+
     }
 }

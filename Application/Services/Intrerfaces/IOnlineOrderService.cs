@@ -17,7 +17,7 @@ namespace Application.Services.Intrerfaces
         Task<List<DeliverySlotVM>> DeliverySlot();
         InvoiceVM CreateInvoiceForViewing(string orderNum);
         Task<Result<string>> CreateOrder(CartVM cart);
-        Task<Result<string>> CreateFeedback(FeedbackVM feedback);
+        //Task<Result<string>> CreateFeedback(FeedbackVM feedback);
         PortalVM GetAllProductsForPortal();
         ProductVM GetProductDetails(int id);
         ProductVM GetProductById(int id);

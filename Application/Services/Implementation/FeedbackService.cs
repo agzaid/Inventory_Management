@@ -25,20 +25,35 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var Feedbacks = _unitOfWork.Feedback.GetAll(s => s.IsDeleted == false);
-                var showFeedbacks = Feedbacks.Select(s => new FeedbackVM()
+                var retrievedImages = new List<string>();
+                var image64 = new List<string>();
+                var feedbackVMs = new List<FeedbackVM>();
+
+                var Feedbacks = _unitOfWork.Feedback.GetAll(s => s.IsDeleted == false, "Images");
+                foreach (var item in Feedbacks)
                 {
-                    Id = s.Id,
-                    Email = s.Email,
-                    Name = s.Name,
-                    Subject = s.Subject,
-                    Message = s.Message,
-                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
-                }).ToList();
+                    retrievedImages.Clear();
+                    if (item.Images?.Count() > 0)
+                    {
+                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                        retrievedImages.AddRange(image64);
+                    }
+                    var showFeedbacks = Feedbacks.Select(s => new FeedbackVM()
+                    {
+                        Id = s.Id,
+                        Email = s.Email,
+                        Name = s.Name,
+                        Subject = s.Subject,
+                        Message = s.Message,
+                        Phone = s.Phone,
+                        retrievedImages = image64,
+                        CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    }).ToList();
+                    feedbackVMs.AddRange(showFeedbacks);
+                }
+                _logger.LogInformation("GetAllFeedbacks method completed. {FeedbackCount} Feedbacks retrieved.", feedbackVMs.Count);
 
-                _logger.LogInformation("GetAllFeedbacks method completed. {FeedbackCount} Feedbacks retrieved.", showFeedbacks.Count);
-
-                return showFeedbacks;
+                return feedbackVMs;
             }
             catch (Exception ex)
             {
@@ -47,54 +62,59 @@ namespace Application.Services.Implementation
             }
         }
 
-        public async Task<string> CreateFeedback(FeedbackVM obj)
+        public async Task<Result<string>> CreateFeedback(FeedbackVM feedback)
         {
-            var imagesToBeDeleted = new List<string>();
-            var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                //obj.FeedbackName = obj.FeedbackName?.ToLower();
-                //obj.Description = obj.Description?.ToLower();
-                var lookForName = await _unitOfWork.Feedback.GetFirstOrDefaultAsync(s => s.Email.ToLower() == obj.Email);
-                //if (obj?.ImagesFormFiles?.Count() > 0)
-                //{
-                //    var resultByteImage = new byte[0];
-                //    //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
-                //    foreach (var item in obj.ImagesFormFiles)
-                //    {
-                //        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                //        imagesToBeRemoved.Add(resultByteImage);
-                //    }
-                //}
+                //byte[] resultByteImage;
+                List<byte[]> imagesToBeAdded = new List<byte[]>();
+
+               // var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == feedback.Phone);
+
+                var imagesToBeDeleted = new List<string>();
+                var imagesToBeRemoved = new List<byte[]>();
+
+                if (feedback?.ImagesFormFiles?.Count() > 0)
+                {
+                    var resultByteImage = new byte[0];
+                    //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
+                    foreach (var item in feedback.ImagesFormFiles)
+                    {
+                        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
+                        imagesToBeRemoved.Add(resultByteImage);
+                    }
+                }
                 //imagesToBeDeleted = result;
                 var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
                 {
                     ImageByteArray = s ?? new byte[0],
                     Create_Date = DateTime.Now,
                 }).ToList();
-                if (lookForName == null)
+
+                var newFeedback = new Feedback()
                 {
-                    var Feedback = new Feedback()
-                    {
-                        Email = obj.Email,
-                        Name = obj.Name,
-                        Modified_Date = DateTime.Now,
-                        Message = obj.Message,
-                        Subject = obj.Subject,
-                        Create_Date = DateTime.Now,
-                        //Images = listOfImages,
-                    };
-                    await _unitOfWork.Feedback.AddAsync(Feedback);
-                    await _unitOfWork.SaveAsync();
-                    return "Feedback Created Successfully";
-                }
-                else
-                    return "Feedback Already Exists";
+                    Name = feedback.Name,
+                    Email = feedback.Email,
+                    Subject = feedback.Subject,
+                    Phone = feedback.Phone,
+                    Message = feedback.Message,
+                    CustomerId = 1,
+                     Images = listOfImages
+                };
+
+                await _unitOfWork.Feedback.AddAsync(newFeedback);
+                await _unitOfWork.SaveAsync();
+                return Result<string>.Success("success", "Feedback Created Successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating Feedback with Name: {Name}", obj.Name);
-                return "Error Occured...";  // Rethrow the exception after logging it
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
+                return Result<string>.Failure("Error Occured...", "error");
             }
         }
 
