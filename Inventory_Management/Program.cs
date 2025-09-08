@@ -23,7 +23,10 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
-option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           //.LogTo(Console.WriteLine, LogLevel.Information) // log SQL queries to know the query time
+           //.EnableDetailedErrors()
+           );
 
 // adding Dependency Injection
 

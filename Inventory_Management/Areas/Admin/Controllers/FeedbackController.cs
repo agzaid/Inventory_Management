@@ -52,9 +52,12 @@ namespace Inventory_Management.Areas.admin.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _feedbackService.CreateFeedback(obj);
-                TempData["success"] = result;
-                TempData["FormToken"] = null;
-                return RedirectToAction(nameof(Index), new { status = "success", message = result });
+                if (result.Data == "success")
+                {
+                    return RedirectToAction(nameof(Index), new { status = "success", message = "Feedback Updated Successfully" });
+                }
+                else
+                    return RedirectToAction(nameof(Index), new { status = "error", message = "Something Went wrong" });
             }
             return View();
         }
@@ -69,15 +72,13 @@ namespace Inventory_Management.Areas.admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _feedbackService.UpdateFeedback(obj);
                 if (result == true)
                 {
-                    TempData["success"] = "Brand Updated Successfully";
+                    return RedirectToAction(nameof(Index), new { status = "success", message = "Feedback Updated Successfully" });
                 }
                 else
-                    TempData["error"] = result;
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index), new { status = "error", message = "Something Went wrong" });
             }
             return View();
         }
@@ -86,11 +87,10 @@ namespace Inventory_Management.Areas.admin.Controllers
             var result = await _feedbackService.DeleteFeedback(id);
             if (result == true)
             {
-                TempData["success"] = "Brand Deleted Successfully";
+                return RedirectToAction(nameof(Index), new { status = "success", message = "Feedback Deleted Successfully" });
             }
             else
-                TempData["error"] = result;
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { status = "error", message = "Something Went wrong" });
         }
 
         public async Task<IActionResult> GetPaginatedBrand(int pageNumber = 1, int pageSize = 2)

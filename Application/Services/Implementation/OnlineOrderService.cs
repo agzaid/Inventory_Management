@@ -34,34 +34,52 @@ namespace Application.Services.Implementation
                 var brands = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false, "Images").ToList();
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.ProductName).Take(20);
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                foreach (var item in products)
+                //foreach (var item in products)
+                //{
+                //    retrievedImages.Clear();
+                //    if (item.Images?.Count() > 0)
+                //    {
+                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                //        retrievedImages.AddRange(image64);
+                //    }
+                //    var productVM = new ProductVM()
+                //    {
+                //        Id = item.Id,
+                //        ProductName = item.DisplayProductName,
+                //        Description = item.Description,
+                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                //        SellingPrice = item.SellingPrice,
+                //        IsKilogram = item.IsKilogram,
+                //        PricePerGram = item.PricePerGram,
+                //        OtherShopsPrice = item.OtherShopsPrice,
+                //        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                //        StockQuantity = item.StockQuantity,
+                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                //        Barcode = item.Barcode,
+                //        ListOfRetrievedImages = image64,
+                //    };
+                //    productVMs.Add(productVM);
+                //}
+
+                var prvm = products.Select(s => new ProductVM()
                 {
-                    retrievedImages.Clear();
-                    if (item.Images?.Count() > 0)
-                    {
-                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                        retrievedImages.AddRange(image64);
-                    }
-                    var productVM = new ProductVM()
-                    {
-                        Id = item.Id,
-                        ProductName = item.DisplayProductName,
-                        Description = item.Description,
-                        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                        SellingPrice = item.SellingPrice,
-                        IsKilogram = item.IsKilogram,
-                        PricePerGram = item.PricePerGram,
-                        OtherShopsPrice = item.OtherShopsPrice,
-                        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
-                        StockQuantity = item.StockQuantity,
-                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                        Barcode = item.Barcode,
-                        ListOfRetrievedImages = image64,
-                    };
-                    productVMs.Add(productVM);
-                }
-                portalVM.ProductVMs = productVMs;
+                    Id = s.Id,
+                    ProductName = s.DisplayProductName,
+                    Description = s.Description,
+                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    SellingPrice = s.SellingPrice,
+                    IsKilogram = s.IsKilogram,
+                    PricePerGram = s.PricePerGram,
+                    OtherShopsPrice = s.OtherShopsPrice,
+                    DifferencePercentage = Math.Ceiling(s.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                    StockQuantity = s.StockQuantity,
+                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    Barcode = s.Barcode,
+                    ListOfRetrievedImages = s.Images?.Select(s => s.FilePath)?.ToList(),
+                }).ToList();
+                portalVM.ProductVMs = prvm;
                 portalVM.CategoryVMs = categories.Select(s => new CategoryVM
                 {
                     Id = s.Id,
@@ -95,33 +113,47 @@ namespace Application.Services.Implementation
 
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images");
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                foreach (var item in products)
+                //foreach (var item in products)
+                //{
+                //    retrievedImages.Clear();
+                //    if (item.Images?.Count() > 0)
+                //    {
+                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                //        retrievedImages.AddRange(image64);
+                //    }
+                //    var productVM = new ProductVM()
+                //    {
+                //        Id = item.Id,
+                //        ProductName = item.ProductName?.ToUpper(),
+                //        Description = item.Description,
+                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                //        SellingPrice = item.SellingPrice,
+                //        OtherShopsPrice = item.OtherShopsPrice,
+                //        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                //        StockQuantity = item.StockQuantity,
+                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                //        Barcode = item.Barcode,
+                //        ListOfRetrievedImages = image64,
+                //    };
+                //    productVMs.Add(productVM);
+                //}
+                var productsVMS = products.Select(s => new ProductVM()
                 {
-                    retrievedImages.Clear();
-                    if (item.Images?.Count() > 0)
-                    {
-                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                        retrievedImages.AddRange(image64);
-                    }
-                    var productVM = new ProductVM()
-                    {
-                        Id = item.Id,
-                        ProductName = item.ProductName?.ToUpper(),
-                        Description = item.Description,
-                        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                        SellingPrice = item.SellingPrice,
-                        OtherShopsPrice = item.OtherShopsPrice,
-                        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
-                        StockQuantity = item.StockQuantity,
-                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                        Barcode = item.Barcode,
-                        ListOfRetrievedImages = image64,
-                    };
-                    productVMs.Add(productVM);
-                }
-
-                return Task.FromResult(Result<List<ProductVM>>.Success(productVMs, "success"));
+                    Id = s.Id,
+                    ProductName = s.ProductName?.ToUpper(),
+                    Description = s.Description,
+                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    SellingPrice = s.SellingPrice,
+                    OtherShopsPrice = s.OtherShopsPrice,
+                    DifferencePercentage = Math.Ceiling(s.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                    StockQuantity = s.StockQuantity,
+                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    Barcode = s.Barcode,
+                    ListOfRetrievedImages = s.Images?.Select(a => a.FilePath).ToList(),
+                }).ToList();
+                return Task.FromResult(Result<List<ProductVM>>.Success(productsVMS, "success"));
             }
             catch (Exception ex)
             {
@@ -146,33 +178,48 @@ namespace Application.Services.Implementation
 
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && s.ProductName.Contains(name), "Category,Images");
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                foreach (var item in products)
+                //foreach (var item in products)
+                //{
+                //    retrievedImages.Clear();
+                //    if (item.Images?.Count() > 0)
+                //    {
+                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                //        retrievedImages.AddRange(image64);
+                //    }
+                //    var productVM = new ProductVM()
+                //    {
+                //        Id = item.Id,
+                //        ProductName = item.ProductName?.ToUpper(),
+                //        Description = item.Description,
+                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                //        SellingPrice = item.SellingPrice,
+                //        OtherShopsPrice = item.OtherShopsPrice,
+                //        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                //        StockQuantity = item.StockQuantity,
+                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                //        Barcode = item.Barcode,
+                //        ListOfRetrievedImages = image64,
+                //    };
+                //    productVMs.Add(productVM);
+                //}
+                var productsVMS = products.Select(s => new ProductVM()
                 {
-                    retrievedImages.Clear();
-                    if (item.Images?.Count() > 0)
-                    {
-                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                        retrievedImages.AddRange(image64);
-                    }
-                    var productVM = new ProductVM()
-                    {
-                        Id = item.Id,
-                        ProductName = item.ProductName?.ToUpper(),
-                        Description = item.Description,
-                        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                        SellingPrice = item.SellingPrice,
-                        OtherShopsPrice = item.OtherShopsPrice,
-                        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
-                        StockQuantity = item.StockQuantity,
-                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                        Barcode = item.Barcode,
-                        ListOfRetrievedImages = image64,
-                    };
-                    productVMs.Add(productVM);
-                }
+                    Id = s.Id,
+                    ProductName = s.ProductName?.ToUpper(),
+                    Description = s.Description,
+                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    SellingPrice = s.SellingPrice,
+                    OtherShopsPrice = s.OtherShopsPrice,
+                    DifferencePercentage = Math.Ceiling(s.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
+                    StockQuantity = s.StockQuantity,
+                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    Barcode = s.Barcode,
+                    ListOfRetrievedImages = s.Images?.Select(a => a.FilePath).ToList(),
+                }).ToList();
 
-                return Task.FromResult(Result<List<ProductVM>>.Success(productVMs, "success"));
+                return Task.FromResult(Result<List<ProductVM>>.Success(productsVMS, "success"));
             }
             catch (Exception ex)
             {
@@ -211,7 +258,7 @@ namespace Application.Services.Implementation
                     ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     Barcode = s.Barcode,
-                    ListOfRetrievedImages = s.Images?.Select(a => FileExtensions.ByteArrayToImageBase64(a.ImageByteArray)).ToList(),
+                    ListOfRetrievedImages = s.Images?.Select(a => a.FilePath).ToList(),
                 }).ToList();
                 var paginatedResult = new PaginatedResult<ProductVM>
                 {
@@ -525,6 +572,7 @@ namespace Application.Services.Implementation
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
                         IsKilogram = product.IsKilogram,
+                        ListOfRetrievedImages = product.Images?.Select(s=>s.FilePath)?.ToList(),
                         //Images = result.Select(s => new Image()
                         //{
                         //    FilePath = s,
@@ -532,18 +580,18 @@ namespace Application.Services.Implementation
                         //    Create_Date = DateTime.Now,
                         //}).ToList()
                     };
-                    if (product.Images?.Count() > 0)
-                    {
-                        foreach (var item in product.Images)
-                        {
-                            //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
-                            if (item.ImageByteArray?.Length > 0)
-                            {
-                                var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
-                                productVM.ListOfRetrievedImages?.Add(stringImages);
-                            }
-                        }
-                    }
+                    //if (product.Images?.Count() > 0)
+                    //{
+                    //    foreach (var item in product.Images)
+                    //    {
+                    //        //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
+                    //        if (item.ImageByteArray?.Length > 0)
+                    //        {
+                    //            var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
+                    //            productVM.ListOfRetrievedImages?.Add(stringImages);
+                    //        }
+                    //    }
+                    //}
                     var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
                     productVM.ListOfCategory = category.Select(v => new SelectListItem
                     {

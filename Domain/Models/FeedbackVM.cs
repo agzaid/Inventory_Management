@@ -15,6 +15,8 @@ namespace Domain.Models
         public string? CreatedDate { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
         public List<string>? retrievedImages { get; set; }
+        public List<string>? OldImagesBytes { get; set; } = new List<string>();
+
 
     }
 }

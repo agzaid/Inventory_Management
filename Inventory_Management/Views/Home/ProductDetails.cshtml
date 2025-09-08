@@ -28,7 +28,7 @@
             <aside class="col-lg-6">
                 <div class="border rounded-4 mb-3 d-flex justify-content-center">
                     <a data-fslightbox="mygalley" class="rounded-4" data-type="image">
-                        <img style="max-width: auto; height: 65vh; margin: auto; width:100%;" id="featured-image" class="rounded-4 fit" src="@(Model.ListOfRetrievedImages?.Count > 0 ? Model.ListOfRetrievedImages[0] : "/images/placeholder.jpg")" />
+                        <img style="max-width: auto; height: 50vh; margin: auto; width:100%;" id="featured-image" class="rounded-4 fit" src="@(Model.ListOfRetrievedImages?.Count > 0 ? Model.ListOfRetrievedImages[0] : "/images/placeholder.jpg")" />
                     </a>
                 </div>
                 <div class="d-flex justify-content-center mb-3">
@@ -113,10 +113,10 @@
 
                     </div>
                     @* <a class="btn btn-warning shadow-0"> Buy now </a> *@
-                    <button class="btn btn-danger remove-from-cart" data-product-id="@Model.Id">
+                    <button class="btn btn-danger remove-from-cart py-3" data-product-id="@Model.Id">
                         <i class="fa fa-trash"></i> Remove from cart
                     </button>
-                    <a class="btn btn-primary shadow-0" onclick="addToCart()"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
+                    <a class="btn btn-primary py-3 shadow-0" onclick="addToCart()"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
                     @* <a class="btn btn-light border border-secondary py-2 icon-hover px-3"> <i class="me-1 fa fa-heart fa-lg"></i> Save </a> *@
 
                     <input id="successMessageOnsubmission" hidden type="text" data-val-custom="@Html.Encode(Localizer["YourOrderIsSubmittedSuccessfully"])">

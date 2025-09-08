@@ -29,7 +29,7 @@ namespace Application.Common.Utility
                         throw new InvalidOperationException("File size must be less than 5 MB.");
                     }
                     var img = Guid.NewGuid();
-                    var directoryPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Uploads\\" + userDirectory;
+                    var directoryPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\UploadedFiles\\" + userDirectory;
                     if (!Directory.Exists(directoryPath))
                     {
                         Directory.CreateDirectory(directoryPath);
@@ -56,8 +56,8 @@ namespace Application.Common.Utility
                 //List<string> uploadedFiles = new List<string>(); // Track uploaded files
                 var date = wantedDate.ToShortDateString();
                 var changedDate = date.Replace('/', ',');
-                var directoryPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Uploads\\" + userMRN;
-                var directoryPath2 = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Uploads\\" + userMRN + "\\" + userDirectory + changedDate;
+                var directoryPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\UploadedFiles\\" + userMRN;
+                var directoryPath2 = $"{Directory.GetCurrentDirectory()}\\wwwroot\\UploadedFiles\\" + userMRN + "\\" + userDirectory + changedDate;
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
@@ -94,7 +94,7 @@ namespace Application.Common.Utility
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Invalid image file");
 
-            string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folder);
+            string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadedFiles", folder);
 
             if (!Directory.Exists(uploadDir))
                 Directory.CreateDirectory(uploadDir);
@@ -108,14 +108,15 @@ namespace Application.Common.Utility
             // Resize if bigger than 1200px wide
             if (image.Width > 1200)
             {
-                image.Mutate(x => x.Resize(1200, 0)); // keep aspect ratio
+                //image.Mutate(x => x.Resize(1200, 0)); // keep aspect ratio
+                image.Mutate(x => x.Resize(800, 600)); // fixed size resize
             }
 
             // Save as WebP (smaller & faster than JPG/PNG)
             await image.SaveAsWebpAsync(filePath);
 
             // return relative path for later use
-            return $"/{folder}/{fileName}";
+            return $"/UploadedFiles/{folder}/{fileName}";
         }
         public static async Task<List<string>> SaveImagesOptimized(List<IFormFile> files, string folder)
         {
@@ -131,6 +132,34 @@ namespace Application.Common.Utility
         }
 
 
+        public static bool DeleteImageOptimized(string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return false;
+
+            // Ensure it’s a safe relative path (avoid accidental root deletes)
+            if (!relativePath.StartsWith("/"))
+                relativePath = "/" + relativePath;
+
+            // Build full absolute path
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", relativePath.TrimStart('/'));
+
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+                return true; // deleted successfully
+            }
+
+            return false; // file not found
+        }
+        public static void DeleteImagesIptimized(List<string> relativePaths)
+        {
+            foreach (var relativePath in relativePaths)
+            {
+                DeleteImageOptimized(relativePath);
+            }
+        }
+
 
         public static async Task DeleteImages(List<string> images)
         {
@@ -138,7 +167,7 @@ namespace Application.Common.Utility
             {
                 try
                 {
-                    var image = "wwwroot" + imagePath;
+                    var image = "wwwroot"+ "UploadedFiles" + imagePath;
                     
                     if (File.Exists(image))
                     {

@@ -6,6 +6,7 @@ using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Application.Services.Implementation
@@ -27,7 +28,7 @@ namespace Application.Services.Implementation
             {
                 var feedbackVMs = new List<FeedbackVM>();
 
-                var feedbacks = _unitOfWork.Feedback.GetAll(s => s.IsDeleted == false, "Images");
+                var feedbacks = _unitOfWork.Feedback.GetAll(s => s.IsDeleted == false);
 
                 foreach (var item in feedbacks)
                 {
@@ -59,13 +60,13 @@ namespace Application.Services.Implementation
 
         public async Task<Result<string>> CreateFeedback(FeedbackVM feedback)
         {
+            var imagesToBeAdded = new List<string>();
             try
             {
 
                 var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == feedback.Phone);
 
                 var imagesToBeDeleted = new List<string>();
-                var imagesToBeAdded = new List<string>();
 
                 if (feedback?.ImagesFormFiles?.Count() > 0)
                 {
@@ -79,7 +80,7 @@ namespace Application.Services.Implementation
                 //imagesToBeDeleted = result;
                 var listOfImages = imagesToBeAdded.Select(s => new Domain.Entities.Image()
                 {
-                    FilePath = s ,
+                    FilePath = s,
                     Create_Date = DateTime.Now,
                 }).ToList();
 
@@ -90,7 +91,7 @@ namespace Application.Services.Implementation
                     Subject = feedback.Subject,
                     Phone = feedback.Phone,
                     Message = feedback.Message,
-                    CustomerId = 1,
+                    CustomerId = customer?.Id,
                     Images = listOfImages
                 };
 
@@ -100,6 +101,11 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
+                // cleanup saved files
+                if (imagesToBeAdded != null && imagesToBeAdded.Any())
+                {
+                    FileExtensions.DeleteImagesIptimized(imagesToBeAdded);
+                }
                 if (ex.InnerException != null)
                 {
                     _logger.LogError(ex, ex.InnerException.Message);
@@ -125,7 +131,7 @@ namespace Application.Services.Implementation
                         Subject = Feedback.Subject,
                         Phone = Feedback.Phone,
                         CreatedDate = Feedback.Create_Date?.ToString("yyyy-MM-dd"),
-                        retrievedImages  = Feedback.Images?.Select(s => s.FilePath).ToList()
+                        retrievedImages = Feedback.Images?.Select(s => s.FilePath).ToList()
                     };
                     //if (Feedback.Images?.Count() > 0)
                     //{
@@ -155,20 +161,16 @@ namespace Application.Services.Implementation
             try
             {
                 var imagesToBeInserted = new List<byte[]>();
+                var listOfImages = new List<Image>();
 
                 // Load old Feedback with its images
+                // var stopwatch = Stopwatch.StartNew();
+
                 var oldFeedback = await _unitOfWork.Feedback.GetFirstOrDefaultAsync(s => s.Id == obj.Id, "Images", true);
 
-                //// Remove old images
-                //RemoveOldImages(oldFeedback);
+                // stopwatch.Stop();
+                //Console.WriteLine($"GetFirstOrDefaultAsync took: {stopwatch.ElapsedMilliseconds} ms");
 
-                //// Prepare new images
-                //AddNewImages(obj.ImagesFormFiles, obj.OldImagesBytes, imagesToBeInserted);
-
-                //// Create image entities
-                //var listOfImages = CreateImageEntities(imagesToBeInserted);
-
-                // Update Feedback properties
                 if (oldFeedback != null)
                 {
                     oldFeedback.Name = obj.Name?.ToLower();
@@ -176,13 +178,37 @@ namespace Application.Services.Implementation
                     oldFeedback.Message = obj.Message;
                     oldFeedback.Subject = obj.Subject;
                     oldFeedback.Modified_Date = DateTime.UtcNow;
-                    //oldFeedback.Images = listOfImages;
 
+                    // 1. Remove unwanted old images
+                    var imagesToBeRemoved = oldFeedback.Images
+                        .Where(s => !obj.OldImagesBytes.Contains(s.FilePath))
+                        .ToList();
+                    foreach (var img in imagesToBeRemoved)
+                    {
+                        _unitOfWork.Image.Remove(img); // remove DB record
+                    }
+
+                    // 2. Add new uploaded images
+                    if (obj.ImagesFormFiles?.Count > 0)
+                    {
+                        var resultImagePaths = await FileExtensions.SaveImagesOptimized(obj.ImagesFormFiles, "Feedback");
+                        var newImages = resultImagePaths.Select(s => new Domain.Entities.Image
+                        {
+                            FilePath = s,
+                            Create_Date = DateTime.Now,
+                        }).ToList();
+
+                        foreach (var img in newImages)
+                        {
+                            oldFeedback.Images.Add(img); // add new images to the same collection
+                        }
+                    }
+
+                    // 3. Update Feedback
                     _unitOfWork.Feedback.Update(oldFeedback);
                     await _unitOfWork.SaveAsync();
                     return true;
                 }
-
                 return false;
             }
             catch (Exception ex)

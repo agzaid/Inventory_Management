@@ -49,14 +49,14 @@ namespace Inventory_Management.Areas.admin.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _productService.CreateProduct(obj);
-                if (result != null && result[0] == "success")
+                if (result != null && result.Data == "success")
                 {
                     //TempData["success"] = result[1];
-                    return RedirectToAction(nameof(Index), new { status = "success", message = result[1] });
+                    return RedirectToAction(nameof(Index), new { status = "success", message = result.Message });
                 }
                 else
                     //TempData["error"] = result[1];
-                    return RedirectToAction(nameof(Index), new { status = "error", message = result[1] });
+                    return RedirectToAction(nameof(Index), new { status = "error", message = result.Message });
             }
             return View(obj);
         }

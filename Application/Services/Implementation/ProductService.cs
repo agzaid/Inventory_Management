@@ -28,85 +28,85 @@ namespace Application.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<string[]> CreateProduct(ProductVM product)
+        public async Task<Result<string>> CreateProduct(ProductVM product)
         {
-            var imagesToBeDeleted = new List<string>();
-            var imagesToBeRemoved = new List<byte[]>();
             try
             {
-                var lookForName = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.ProductName == product.ProductName.ToLower().Trim());
-                if (lookForName != null)
-                {
-                    return new string[] { "error", "Product Already Exists" };
-                }
-                else
-                {
-                    product.ProductName = product.ProductName?.ToLower().Trim();
-                    product.ProductNameAr = product.ProductNameAr?.Trim();
-                    product.Description = product.Description?.ToLower().Trim();
-                    product.Brand = product.Brand?.ToLower().Trim();
-                    product.ProductTags = product.ProductTags?.ToLower().Trim();
-                    product.Barcode = product.Barcode?.ToLower().Trim();
-                    product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
-                    product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
-                    var result = new List<string>();
-                    var resultByteImage = new byte[0];
-                    if (product?.ImagesFormFiles?.Count() > 0)
-                    {
-                        //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
-                        foreach (var item in product.ImagesFormFiles)
-                        {
-                            //resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                             resultByteImage = FileExtensions.ConvertImageToByteArray(item, 700, 90);
-                            imagesToBeRemoved.Add(resultByteImage);
-                        }
-                    }
-                    //imagesToBeDeleted = result;
-                    var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
-                    {
-                        ImageByteArray = s ?? new byte[0],
-                        Create_Date = DateTime.Now,
-                    }).ToList();
+                // 1. Check duplicate product name
+                var existingProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(
+                    s => s.ProductName == product.ProductName.ToLower().Trim()
+                );
 
-                    if (!(result == null && result.Contains("Error")))
-                    {
-                        var Newproduct = new Product()
-                        {
-                            ProductName = product.ProductName,
-                            ProductNameAr = product.ProductNameAr,
-                            Description = product.Description,
-                            Barcode = product.Barcode,
-                            Create_Date = DateTime.Now,
-                            IsKilogram = product.IsKilogram,
-                            PricePerGram = product.PricePerGram,
-                            SellingPrice = product.SellingPrice,
-                            BuyingPrice = product.BuyingPrice,
-                            DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
-                            IsDeleted = false,
-                            MaximumDiscountPercentage = decimal.Parse(product.MaximumDiscountPercentage ?? "0.00"),
-                            OtherShopsPrice = product.OtherShopsPrice,
-                            StockQuantity = product.StockQuantity,
-                            ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "1-1-2000"),
-                            CategoryId = int.Parse(product.CategoryId),
-                            BrandId = int.Parse(product.BrandId),
-                            StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
-                            ProductTags = product.ProductTags ?? "",
-                            Images = listOfImages,
-                        };
-                        await _unitOfWork.Product.AddAsync(Newproduct);
-                        await _unitOfWork.SaveAsync();
-                    }
-                    return new string[] { "success", "Product Created Successfully" };
+                if (existingProduct != null)
+                {
+                    return Result<string>.Failure("Product Already Exists", "error");
                 }
+
+                // 2. Normalize fields
+                product.ProductName = product.ProductName?.ToLower().Trim();
+                product.ProductNameAr = product.ProductNameAr?.Trim();
+                product.Description = product.Description?.ToLower().Trim();
+                product.Brand = product.Brand?.ToLower().Trim();
+                product.ProductTags = product.ProductTags?.ToLower().Trim();
+                product.Barcode = product.Barcode?.ToLower().Trim();
+                product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
+                product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
+
+                // 3. Handle image saving (just like Feedback)
+                var imagesToBeAdded = new List<string>();
+                if (product?.ImagesFormFiles?.Count > 0)
+                {
+                    foreach (var file in product.ImagesFormFiles)
+                    {
+                        var resultImagePath = await FileExtensions.SaveImageOptimized(file, "Products");
+                        imagesToBeAdded.Add(resultImagePath);
+                    }
+                }
+
+                var listOfImages = imagesToBeAdded.Select(path => new Domain.Entities.Image
+                {
+                    FilePath = path,
+                    Create_Date = DateTime.Now,
+                }).ToList();
+
+                // 4. Create product entity
+                var newProduct = new Product
+                {
+                    ProductName = product.ProductName,
+                    ProductNameAr = product.ProductNameAr,
+                    Description = product.Description,
+                    Barcode = product.Barcode,
+                    Create_Date = DateTime.Now,
+                    IsKilogram = product.IsKilogram,
+                    PricePerGram = product.PricePerGram,
+                    SellingPrice = product.SellingPrice,
+                    BuyingPrice = product.BuyingPrice,
+                    DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
+                    IsDeleted = false,
+                    MaximumDiscountPercentage = decimal.Parse(product.MaximumDiscountPercentage ?? "0.00"),
+                    OtherShopsPrice = product.OtherShopsPrice,
+                    StockQuantity = product.StockQuantity,
+                    ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "2000-01-01"),
+                    CategoryId = int.Parse(product.CategoryId),
+                    BrandId = int.Parse(product.BrandId),
+                    StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
+                    ProductTags = product.ProductTags ?? "",
+                    Images = listOfImages
+                };
+
+                // 5. Save to DB
+                await _unitOfWork.Product.AddAsync(newProduct);
+                await _unitOfWork.SaveAsync();
+
+                return Result<string>.Success("success", "Product Created Successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating product with ProductName: {ProductName}", product.ProductName);
-                //await FileExtensions.DeleteImages(imagesToBeDeleted);
-
-                return new string[] { "error", "Error Occured..." };  // Rethrow the exception after logging it
+                return Result<string>.Failure("Error Occured...", "error");
             }
         }
+
 
         public ProductVM CreateProductForViewingInCreate()
         {
@@ -238,33 +238,50 @@ namespace Application.Services.Implementation
             {
                 var products = await _unitOfWork.Product.GetAllAsync(s => s.IsDeleted == false, "Category,Images,Brand");
 
-                foreach (var item in products)
+                //foreach (var item in products)
+                //{
+                //    retrievedImages.Clear();
+                //    if (item.Images?.Count() > 0)
+                //    {
+                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
+                //        retrievedImages.AddRange(image64);
+                //    }
+                //    var productVM = new ProductVM()
+                //    {
+                //        Id = item.Id,
+                //        ProductName = item.ProductName?.ToUpper(),
+                //        ProductNameAr = item.ProductNameAr,
+                //        Description = item.Description,
+                //        //Brand = item.Brand,
+                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
+                //        SellingPrice = item.SellingPrice,
+                //        IsKilogram = item.IsKilogram,
+                //        PricePerGram = item.PricePerGram,
+                //        StockQuantity = item.StockQuantity,
+                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                //        Barcode = item.Barcode,
+                //        ListOfRetrievedImages = image64,
+                //    };
+                //    productVMs.Add(productVM);
+                //}
+                productVMs = products.Select(item => new ProductVM()
                 {
-                    retrievedImages.Clear();
-                    if (item.Images?.Count() > 0)
-                    {
-                        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                        retrievedImages.AddRange(image64);
-                    }
-                    var productVM = new ProductVM()
-                    {
-                        Id = item.Id,
-                        ProductName = item.ProductName?.ToUpper(),
-                        ProductNameAr = item.ProductNameAr,
-                        Description = item.Description,
-                        //Brand = item.Brand,
-                        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                        SellingPrice = item.SellingPrice,
-                        IsKilogram = item.IsKilogram,
-                        PricePerGram = item.PricePerGram,
-                        StockQuantity = item.StockQuantity,
-                        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                        Barcode = item.Barcode,
-                        ListOfRetrievedImages = image64,
-                    };
-                    productVMs.Add(productVM);
-                }
+                    Id = item.Id,
+                    ProductName = item.ProductName?.ToUpper(),
+                    ProductNameAr = item.ProductNameAr,
+                    Description = item.Description,
+                    //Brand = item.Brand,
+                    CategoryName = item.Category?.CategoryName?.ToUpper(),
+                    SellingPrice = item.SellingPrice,
+                    IsKilogram = item.IsKilogram,
+                    PricePerGram = item.PricePerGram,
+                    StockQuantity = item.StockQuantity,
+                    ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                    CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
+                    Barcode = item.Barcode,
+                    ListOfRetrievedImages = item.Images?.Select(s => s.FilePath).ToList() ?? new List<string>()
+                }).ToList();
                 _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", productVMs.Count);
                 return productVMs;
             }
@@ -302,25 +319,20 @@ namespace Application.Services.Implementation
                         BrandId = product.BrandId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
-                        //Images = result.Select(s => new Image()
-                        //{
-                        //    FilePath = s,
-                        //    ImageName = s,
-                        //    Create_Date = DateTime.Now,
-                        //}).ToList()
+                        ListOfRetrievedImages = product.Images?.Select(s => s.FilePath).ToList() ?? new List<string>(),
                     };
-                    if (product.Images?.Count() > 0)
-                    {
-                        foreach (var item in product.Images)
-                        {
-                            //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
-                            if (item.ImageByteArray?.Length > 0)
-                            {
-                                var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
-                                productVM.ListOfRetrievedImages?.Add(stringImages);
-                            }
-                        }
-                    }
+                    //if (product.Images?.Count() > 0)
+                    //{
+                    //    foreach (var item in product.Images)
+                    //    {
+                    //        //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
+                    //        if (item.ImageByteArray?.Length > 0)
+                    //        {
+                    //            var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
+                    //            productVM.ListOfRetrievedImages?.Add(stringImages);
+                    //        }
+                    //    }
+                    //}
                     var category = await _unitOfWork.Category.GetAllAsync(s => s.IsDeleted == false);
                     var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false);
                     productVM.ListOfCategory = category.Select(v => new SelectListItem
@@ -360,26 +372,63 @@ namespace Application.Services.Implementation
         {
             try
             {
-                // Prepare byte arrays for images
-                var imagesToBeInserted = new List<byte[]>();
+                // Load old product with its images (tracked)
+                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(
+                    s => s.Id == obj.Id,
+                    "Images",
+                    true);
 
-                var oldProduct = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == obj.Id, "Images", true);
-
-                // Remove old images if necessary
-                RemoveOldImages(oldProduct);
-
-                // Add new images from form files or old image bytes
-                AddNewImages(obj.ImagesFormFiles, obj.OldImagesBytes, imagesToBeInserted);
-
-                // Create Image entities from byte arrays
-                var listOfImages = CreateImageEntities(imagesToBeInserted);
-
-                // Update product properties
                 if (oldProduct != null)
                 {
-                    UpdateProductProperties(oldProduct, obj, listOfImages);
+                    // 1. Update product properties
+                    oldProduct.ProductName = obj.ProductName?.ToLower().Trim();
+                    oldProduct.ProductNameAr = obj.ProductNameAr?.Trim();
+                    oldProduct.Description = obj.Description?.ToLower().Trim();
+                    oldProduct.Barcode = obj.Barcode?.ToLower().Trim();
+                    oldProduct.Modified_Date = DateTime.UtcNow;
+                    oldProduct.IsKilogram = obj.IsKilogram;
+                    oldProduct.PricePerGram = obj.PricePerGram;
+                    oldProduct.SellingPrice = obj.SellingPrice;
+                    oldProduct.BuyingPrice = obj.BuyingPrice;
+                    oldProduct.DifferencePercentage = decimal.Parse(obj.DifferencePercentage ?? "0.00");
+                    oldProduct.MaximumDiscountPercentage = decimal.Parse(obj.MaximumDiscountPercentage ?? "0.00");
+                    oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
+                    oldProduct.StockQuantity = obj.StockQuantity;
+                    oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "2000-01-01");
+                    oldProduct.CategoryId = int.Parse(obj.CategoryId);
+                    oldProduct.BrandId = int.Parse(obj.BrandId);
+                    oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
+                    oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
 
-                    // Save the updated product
+                    // 2. Remove unwanted old images
+                    var imagesToBeRemoved = oldProduct.Images
+                        .Where(s => !obj.OldImagesBytes.Contains(s.FilePath))
+                        .ToList();
+
+                    foreach (var img in imagesToBeRemoved)
+                    {
+                        _unitOfWork.Image.Remove(img); // remove from DB
+                        await FileExtensions.DeleteImages(new List<string> { img.FilePath }); // remove from wwwroot
+                    }
+
+                    // 3. Add new uploaded images
+                    if (obj.ImagesFormFiles?.Count > 0)
+                    {
+                        var resultImagePaths = await FileExtensions.SaveImagesOptimized(obj.ImagesFormFiles, "Products");
+
+                        var newImages = resultImagePaths.Select(s => new Domain.Entities.Image
+                        {
+                            FilePath = s,
+                            Create_Date = DateTime.Now,
+                        }).ToList();
+
+                        foreach (var img in newImages)
+                        {
+                            oldProduct.Images.Add(img);
+                        }
+                    }
+
+                    // 4. Save changes
                     _unitOfWork.Product.Update(oldProduct);
                     await _unitOfWork.SaveAsync();
                     return true;
@@ -389,7 +438,7 @@ namespace Application.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating product with Id: {Id}", obj.Id);
+                _logger.LogError(ex, "An error occurred while updating Product with Id: {Id}", obj.Id);
                 return false;
             }
         }

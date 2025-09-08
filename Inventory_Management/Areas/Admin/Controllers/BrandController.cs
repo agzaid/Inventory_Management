@@ -52,9 +52,8 @@ namespace Inventory_Management.Areas.admin.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _brandService.CreateBrand(obj);
-                TempData["success"] = result;
-                TempData["FormToken"] = null;
-                return RedirectToAction(nameof(Index), new { status = "success", message = result });
+                TempData["success"] = result.Message;
+                return RedirectToAction(nameof(Index), new { result.Data, message = result.Message });
             }
             return View();
         }
@@ -74,10 +73,10 @@ namespace Inventory_Management.Areas.admin.Controllers
                 if (result == true)
                 {
                     TempData["success"] = "Brand Updated Successfully";
+                    return RedirectToAction(nameof(Index), new { status = "success", message = "Brand Updated Successfully" });
                 }
                 else
-                    TempData["error"] = result;
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index), new { status = "error", message = "Something Went wrong" });
             }
             return View();
         }
@@ -86,11 +85,11 @@ namespace Inventory_Management.Areas.admin.Controllers
             var result = await _brandService.DeleteBrand(id);
             if (result == true)
             {
-                TempData["success"] = "Brand Deleted Successfully";
+                TempData["success"] = "Brand Updated Successfully";
+                return RedirectToAction(nameof(Index), new { status = "success", message = "Brand Updated Successfully" });
             }
             else
-                TempData["error"] = result;
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { status = "error", message = "Something Went wrong" });
         }
 
         public async Task<IActionResult> GetPaginatedBrand(int pageNumber = 1, int pageSize = 2)

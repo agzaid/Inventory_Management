@@ -46,54 +46,113 @@ namespace Application.Services.Implementation
             }
         }
 
-        public async Task<string> CreateBrand(BrandVM obj)
+        //public async Task<string> CreateBrand(BrandVM obj)
+        //{
+        //    var imagesToBeDeleted = new List<string>();
+        //    var imagesToBeRemoved = new List<string>();
+        //    try
+        //    {
+        //        obj.BrandName = obj.BrandName?.ToLower();
+        //        obj.Description = obj.Description?.ToLower();
+        //        var lookForName = await _unitOfWork.Brand.GetFirstOrDefaultAsync(s => s.BrandName.ToLower() == obj.BrandName);
+        //        if (obj?.ImagesFormFiles?.Count() > 0)
+        //        {
+        //            var resultByteImage = new byte[0];
+        //            //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
+        //            foreach (var item in obj.ImagesFormFiles)
+        //            {
+        //                var resultImagePath = await FileExtensions.SaveImageOptimized(item, "Brand");
+
+        //                imagesToBeRemoved.Add(resultImagePath);
+        //            }
+        //        }
+        //        //imagesToBeDeleted = result;
+        //        var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
+        //        {
+        //            FilePath = s,
+        //            Create_Date = DateTime.Now,
+        //        }).ToList();
+        //        if (lookForName == null)
+        //        {
+        //            var Brand = new Brand()
+        //            {
+        //                BrandName = obj.BrandName,
+        //                BrandNameAr = obj.BrandNameAr,
+        //                Modified_Date = DateTime.Now,
+        //                Description = obj.Description,
+        //                Images = listOfImages,
+        //            };
+        //            await _unitOfWork.Brand.AddAsync(Brand);
+        //            await _unitOfWork.SaveAsync();
+        //            return "Brand Created Successfully";
+        //        }
+        //        else
+        //            return "Brand Already Exists";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "An error occurred while creating Brand with BrandName: {BrandName}", obj.BrandName);
+        //        return "Error Occured...";  // Rethrow the exception after logging it
+        //    }
+        //}
+        public async Task<Result<string>> CreateBrand(BrandVM obj)
         {
-            var imagesToBeDeleted = new List<string>();
-            var imagesToBeRemoved = new List<byte[]>();
             try
             {
+                // normalize inputs
                 obj.BrandName = obj.BrandName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
-                var lookForName = await _unitOfWork.Brand.GetFirstOrDefaultAsync(s => s.BrandName.ToLower() == obj.BrandName);
-                if (obj?.ImagesFormFiles?.Count() > 0)
+
+                // check if brand exists
+                var existingBrand = await _unitOfWork.Brand
+                    .GetFirstOrDefaultAsync(s => s.BrandName.ToLower() == obj.BrandName);
+
+                if (existingBrand != null)
                 {
-                    var resultByteImage = new byte[0];
-                    //result = await FileExtensions.CreateImages(product.ImagesFormFiles, product?.ProductName);
+                    return Result<string>.Failure("Brand already exists", "duplicate");
+                }
+
+                var imagesToBeAdded = new List<string>();
+
+                // save images if provided
+                if (obj?.ImagesFormFiles?.Count > 0)
+                {
                     foreach (var item in obj.ImagesFormFiles)
                     {
-                        resultByteImage = FileExtensions.ConvertImageToByteArray(item);
-                        imagesToBeRemoved.Add(resultByteImage);
+                        var resultImagePath = await FileExtensions.SaveImageOptimized(item, "Brand");
+                        imagesToBeAdded.Add(resultImagePath);
                     }
                 }
-                //imagesToBeDeleted = result;
-                var listOfImages = imagesToBeRemoved.Select(s => new Domain.Entities.Image()
+
+                // map to Image entities
+                var listOfImages = imagesToBeAdded.Select(s => new Domain.Entities.Image
                 {
-                    ImageByteArray = s ?? new byte[0],
-                    Create_Date = DateTime.Now,
+                    FilePath = s,
+                    Create_Date = DateTime.Now
                 }).ToList();
-                if (lookForName == null)
+
+                // create brand entity
+                var brand = new Brand
                 {
-                    var Brand = new Brand()
-                    {
-                        BrandName = obj.BrandName,
-                        BrandNameAr = obj.BrandNameAr,
-                        Modified_Date = DateTime.Now,
-                        Description = obj.Description,
-                        Images = listOfImages,
-                    };
-                    await _unitOfWork.Brand.AddAsync(Brand);
-                    await _unitOfWork.SaveAsync();
-                    return "Brand Created Successfully";
-                }
-                else
-                    return "Brand Already Exists";
+                    BrandName = obj.BrandName,
+                    BrandNameAr = obj.BrandNameAr,
+                    Description = obj.Description,
+                    Modified_Date = DateTime.Now,
+                    Images = listOfImages
+                };
+
+                await _unitOfWork.Brand.AddAsync(brand);
+                await _unitOfWork.SaveAsync();
+
+                return Result<string>.Success("success", "Brand Created Successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating Brand with BrandName: {BrandName}", obj.BrandName);
-                return "Error Occured...";  // Rethrow the exception after logging it
+                return Result<string>.Failure("Error Occurred while creating brand", "error");
             }
         }
+
 
         public BrandVM GetBrandById(int id)
         {
@@ -107,20 +166,10 @@ namespace Application.Services.Implementation
                         BrandName = Brand.BrandName,
                         BrandNameAr = Brand.BrandNameAr,
                         Description = Brand.Description,
-                        CreatedDate = Brand.Create_Date?.ToString("yyyy-MM-dd")
+                        CreatedDate = Brand.Create_Date?.ToString("yyyy-MM-dd"),
+                        ListOfRetrievedImages = Brand.Images?.Select(s => s.FilePath).ToList()
                     };
-                    if (Brand.Images?.Count() > 0)
-                    {
-                        foreach (var item in Brand.Images)
-                        {
-                            //var s = FileExtensions.ByteArrayToImage(item.ImageByteArray);
-                            if (item.ImageByteArray?.Length > 0)
-                            {
-                                var stringImages = FileExtensions.ByteArrayToImageBase64(item.ImageByteArray);
-                                BrandVM.ListOfRetrievedImages?.Add(stringImages);
-                            }
-                        }
-                    }
+
                     return BrandVM;
                 }
             }
@@ -136,29 +185,49 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var imagesToBeInserted = new List<byte[]>();
+                // Load old brand with its images (tracked)
+                var oldBrand = await _unitOfWork.Brand.GetFirstOrDefaultAsync(
+                    s => s.Id == obj.Id,
+                    "Images",
+                    true);
 
-                // Load old brand with its images
-                var oldBrand = await _unitOfWork.Brand.GetFirstOrDefaultAsync(s => s.Id == obj.Id, "Images", true);
-
-                // Remove old images
-                RemoveOldImages(oldBrand);
-
-                // Prepare new images
-                AddNewImages(obj.ImagesFormFiles, obj.OldImagesBytes, imagesToBeInserted);
-
-                // Create image entities
-                var listOfImages = CreateImageEntities(imagesToBeInserted);
-
-                // Update brand properties
                 if (oldBrand != null)
                 {
+                    // Update main Brand properties
                     oldBrand.BrandName = obj.BrandName?.ToLower();
                     oldBrand.BrandNameAr = obj.BrandNameAr;
                     oldBrand.Description = obj.Description?.ToLower();
                     oldBrand.Modified_Date = DateTime.UtcNow;
-                    oldBrand.Images = listOfImages;
 
+                    // 1. Remove unwanted old images
+                    var imagesToBeRemoved = oldBrand.Images
+                        .Where(s => !obj.OldImagesBytes.Contains(s.FilePath))
+                        .ToList();
+
+                    foreach (var img in imagesToBeRemoved)
+                    {
+                        _unitOfWork.Image.Remove(img); // remove from DB
+                        await FileExtensions.DeleteImages(new List<string> { img.FilePath }); // remove from wwwroot
+                    }
+
+                    // 2. Add new uploaded images
+                    if (obj.ImagesFormFiles?.Count > 0)
+                    {
+                        var resultImagePaths = await FileExtensions.SaveImagesOptimized(obj.ImagesFormFiles, "Brand");
+
+                        var newImages = resultImagePaths.Select(s => new Domain.Entities.Image
+                        {
+                            FilePath = s,
+                            Create_Date = DateTime.Now,
+                        }).ToList();
+
+                        foreach (var img in newImages)
+                        {
+                            oldBrand.Images.Add(img);
+                        }
+                    }
+
+                    // 3. Save changes
                     _unitOfWork.Brand.Update(oldBrand);
                     await _unitOfWork.SaveAsync();
                     return true;
@@ -203,7 +272,7 @@ namespace Application.Services.Implementation
                 Func<IQueryable<Brand>, IOrderedQueryable<Brand>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.BrandName);
 
-                var Brands = await _unitOfWork.Brand.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter);
+                var Brands = await _unitOfWork.Brand.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter,x=>x.Images);
                 var showBrands = Brands.Items.Select(s => new BrandVM()
                 {
                     Id = s.Id,
@@ -211,6 +280,7 @@ namespace Application.Services.Implementation
                     BrandNameAr = s.BrandNameAr,
                     BrandName = s.BrandName,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    ListOfRetrievedImages = s.Images?.Select(img => img.FilePath).ToList()
                 }).ToList();
                 var paginatedResult = new PaginatedResult<BrandVM>
                 {

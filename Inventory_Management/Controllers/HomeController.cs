@@ -32,19 +32,19 @@ namespace Inventory_Management.Controllers
             _localizer = localizer;
         }
 
-        public IActionResult Index(string? message)
+        public IActionResult Index(string? status, string? message)
         {
             //var stopwatch = Stopwatch.StartNew();
 
             var portal = _onlineOrderService.GetAllProductsForPortal();
-            //if (status == "success")
-            //{
-            //    TempData["success"] = message;
-            //}
-            //else
-            //{
-            //    TempData["error"] = message;
-            //}
+            if (status == "success")
+            {
+                TempData["success"] = message;
+            }
+            else
+            {
+                TempData["error"] = message;
+            }
             //ViewData["Greeting"] = _localizer["Greeting"];
             //stopwatch.Stop();
             //Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
@@ -54,7 +54,7 @@ namespace Inventory_Management.Controllers
         {
             //var stopwatch = Stopwatch.StartNew();
 
-           
+
             var products = _onlineOrderService.GetAllProductsForPortal();
             //if (status == "success")
             //{
@@ -149,7 +149,7 @@ namespace Inventory_Management.Controllers
             //    return RedirectToAction("Contact");
             //}
             var result = await _feedbackService.CreateFeedback(new FeedbackVM() { Name = name, Email = email, Subject = subject, Phone = phone, Message = message, ImagesFormFiles = ImagesFormFiles });
-            if (result != null)
+            if (result.Data == "success")
             {
                 TempData["success"] = "Feedback created successfully";
 
@@ -159,7 +159,7 @@ namespace Inventory_Management.Controllers
             {
                 TempData["error"] = "Failed to Create Feedback";
 
-                return BadRequest("Failed to Create Feedback");
+                return RedirectToAction("Index", new { status = "error", message = "Failed to Create Feedback" });
             }
         }
         public async Task<IActionResult> GetPaginatedProducts(int pageNumber = 1, int pageSize = 20)

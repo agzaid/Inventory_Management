@@ -6,13 +6,13 @@
             <div class="col">
                 <div class="card radius-10">
                     <div class="card-body p-4">
-                        <h5 class="card-title">Edit Brand</h5>
+                        <h5 class="card-title">Edit Feedback</h5>
                         <hr />
                         <div class="form-body mt-4">
                             <div class="row">
                                 <div class="col-lg-8">
                                     <div class="border border-3 p-4 rounded">
-                                        <form asp-action="Edit" asp-controller="Brand" enctype="multipart/form-data">
+                                        <form id="editForm" asp-action="Edit" asp-controller="Feedback" enctype="multipart/form-data">
                                             <div class="form-body mt-4">
                                                 @* <div class="row">
                                                     <div class="col-lg-8">
@@ -44,7 +44,7 @@
                                                     <span asp-validation-for="Message" class="text-danger"></span>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="inputProductDescription" class="form-label">Brand Images</label>
+                                                    <label for="inputProductDescription" class="form-label">Feedback Images</label>
                                                     <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
                                                 </div>
                                                 <div class="mb-3 d-flex" style="height:auto">
