@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250807115014_init")]
-    partial class init
+    [Migration("20250908212550_customerName_Invoice")]
+    partial class customerName_Invoice
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -283,6 +283,46 @@ namespace Infrastructure.Migrations
                     b.ToTable("District");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Create_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Feedback");
+                });
+
             modelBuilder.Entity("Domain.Entities.Image", b =>
                 {
                     b.Property<int>("Id")
@@ -296,6 +336,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("FeedbackId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FilePath")
                         .HasMaxLength(800)
@@ -323,6 +366,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
+
+                    b.HasIndex("FeedbackId");
 
                     b.HasIndex("ProductId");
 
@@ -444,6 +489,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("GrandTotalAmount")
                         .HasColumnType("float");
@@ -827,7 +875,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -995,11 +1046,17 @@ namespace Infrastructure.Migrations
                         .WithMany("Images")
                         .HasForeignKey("BrandId");
 
+                    b.HasOne("Domain.Entities.Feedback", "Feedback")
+                        .WithMany("Images")
+                        .HasForeignKey("FeedbackId");
+
                     b.HasOne("Domain.Entities.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId");
 
                     b.Navigation("Brand");
+
+                    b.Navigation("Feedback");
 
                     b.Navigation("Product");
                 });
@@ -1188,6 +1245,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.DeliverySlot", b =>
                 {
                     b.Navigation("UserDeliverySlots");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Feedback", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Domain.Entities.Invoice", b =>

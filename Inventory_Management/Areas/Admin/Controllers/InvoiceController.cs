@@ -102,9 +102,9 @@ namespace Inventory_Management.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchCustomer(string data)
         {
-            var result = _invoiceService.SearchForCustomer(data);
-            var res = JsonConvert.SerializeObject(result);
-            return Json(res);
+            var result = await _invoiceService.SearchForCustomer(data);
+          //  var res = JsonConvert.SerializeObject(result);
+            return Json(result);
         }
     }
 }

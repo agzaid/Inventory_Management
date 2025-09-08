@@ -69,9 +69,9 @@ namespace Application.Services.Implementation
 
                 // check customer existence
                 var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == invoiceVM.PhoneNumber);
-                if (customer == null)
+                if (string.IsNullOrEmpty(invoiceVM.CustomerName) || string.IsNullOrEmpty(invoiceVM.PhoneNumber))
                 {
-                    return new string[] { "error", "Customer not found with this phone number." };
+                    return new string[] { "error", "Please provide us with phone number and name for customer" };
                 }
 
                 var existingInvoice = await _unitOfWork.Invoice.GetFirstOrDefaultAsync(s => s.InvoiceNumber == invoiceVM.InvoiceNumber);
@@ -85,7 +85,7 @@ namespace Application.Services.Implementation
                     InvoiceItems = new List<InvoiceItem>()
                 };
 
-                var area = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.ShippingArea == invoiceVM.shippingText);
+                var area = await _unitOfWork.District.GetFirstOrDefaultAsync(s => s.Id == int.Parse(invoiceVM.AreaId));
 
                 for (int i = 0; i < invoiceVM.productInput?.Count; i++)
                 {
@@ -132,6 +132,7 @@ namespace Application.Services.Implementation
                 invoice.InvoiceNumber = invoiceVM.InvoiceNumber;
                 invoice.AreaId = area?.Id;
                 invoice.CustomerId = customer?.Id;
+                invoice.CustomerName = invoiceVM.CustomerName;
                 invoice.OrderDate = DateTime.UtcNow;
                 invoice.AllDiscountInput = decimal.Parse(invoiceVM.allDiscountInput ?? "0.00");
                 invoice.GrandTotalAmount = invoiceVM.grandTotalInput;

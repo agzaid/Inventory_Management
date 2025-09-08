@@ -292,9 +292,8 @@
                  };
                  _Ajax.GETWithParametersStringfy($url, parameter, "GET", function () { },
                      function (data) {
-                         
-                         var res = JSON.parse(data);
-                         if (res != null && res.IsSuccess==true) {
+                         var res = data;
+                         if (res != null && res.isSuccess==true) {
                             MappingToFields(res);
                          } else
                              _SWAL.AlertWithoutNotification(res.Message);
@@ -306,13 +305,13 @@
 
         async function MappingToFields(res){
             
-               var result = await _SWAL.CustomAlertWithOwnMessage("A Customer Was Found, Do you want to use that customer???","Yes","No");
+               var result = await _SWAL.CustomAlertWithOwnMessage("A Customer Was Found, Do you want to use that customer ???","Yes","No");
               if(result){
-                   $('#CustomerName').val(res.Data.CustomerName);
-                   $('#ShippingNotes').val(res.Data.Address);
-                   $('#PhoneNumber').val(res.Data.Phone);
+                   $('#CustomerName').val(res.data.customerName);
+                   $('#ShippingNotes').val(res.data.address);
+                   $('#PhoneNumber').val(res.data.phone);
                    var selectedValue = $('#AreaId option').filter(function() {
-                             return $(this).text() === res.Data.Area;
+                             return $(this).text() === res.data.area;
                            }).val();
                    $('#AreaId').val(selectedValue).change();
               }

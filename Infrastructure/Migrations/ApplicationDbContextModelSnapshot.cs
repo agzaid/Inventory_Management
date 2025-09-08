@@ -487,6 +487,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double?>("GrandTotalAmount")
                         .HasColumnType("float");
 

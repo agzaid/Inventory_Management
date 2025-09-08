@@ -309,7 +309,7 @@ namespace Application.Services.Implementation
                 var vm = shipping.Select(s => new SelectListItem()
                 {
                     Text = $"{s.Name} ({s.ShippingFreight?.ShippingArea}) ({s.Price})",
-                    Value = s.Price.ToString()
+                    Value = s.Id.ToString()
                 }).ToList();
                 return vm;
             }

@@ -20,6 +20,7 @@ namespace Domain.Entities
         [MaxLength(1000)]
         public string? ShippingNotes { get; set; }
         public double? ShippingPrice { get; set; }
+        public string? CustomerName { get; set; } //added this to keep customer name at the time of invoice creation because customer name can be changed later in customer entity
 
         public int? AreaId { get; set; }
         public int? CustomerId { get; set; } // Foreign Key
