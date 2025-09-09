@@ -43,7 +43,8 @@ namespace Application.Services.Implementation
                     InvoiceNumber = s.InvoiceNumber,
                     TotalAmount = (decimal)s.GrandTotalAmount,
                     PhoneNumber = s.Customer?.Phone,
-                    AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.Name,
+                    AreaId = areas?.FirstOrDefault(a => a.Id == s.AreaId)?.Id,
+                    shippingText = areas?.FirstOrDefault(a => a.Id == s.AreaId)?.Name,
                     ShippingNotes = s.ShippingNotes,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     AllProductsForIndexViewing = s.AllProductItems,
@@ -85,7 +86,7 @@ namespace Application.Services.Implementation
                     InvoiceItems = new List<InvoiceItem>()
                 };
 
-                var area = await _unitOfWork.District.GetFirstOrDefaultAsync(s => s.Id == int.Parse(invoiceVM.AreaId));
+                var area = await _unitOfWork.District.GetFirstOrDefaultAsync(s => s.Id == invoiceVM.AreaId);
 
                 for (int i = 0; i < invoiceVM.productInput?.Count; i++)
                 {
@@ -335,6 +336,7 @@ namespace Application.Services.Implementation
                 {
                     var invoiceVM = new InvoiceVM()
                     {
+                        Id = id,
                         CustomerName = invoice.Customer?.CustomerName,
                         InvoiceNumber = invoice.InvoiceNumber,
                         AllProductsForIndexViewing = invoice.AllProductItems,
@@ -343,7 +345,7 @@ namespace Application.Services.Implementation
                         totalAmountInput = invoice.ProductsOnlyAmount == null ? 0.00 : (double)invoice.ProductsOnlyAmount,
                         TotalAmount = invoice.ProductsOnlyAmount == null ? 0 : (decimal)invoice.ProductsOnlyAmount,
                         shippingInput = invoice.ShippingPrice,
-                        AreaId = invoice.AreaId.ToString(),
+                        AreaId = invoice.AreaId ?? 1,
                         individualDiscount = invoice.InvoiceItems?.Select(s => s.IndividualDiscount.ToString()).ToList(),
                         PhoneNumber = invoice.Customer?.Phone,
                         ShippingNotes = invoice.ShippingNotes,
@@ -354,7 +356,7 @@ namespace Application.Services.Implementation
                         ListOfAreas = freights.Select(v => new SelectListItem
                         {
                             Text = $"{v.Id} - {v.Name} ({v.ShippingFreight?.ShippingArea}) ({v.Price})",
-                            Value = v.Price.ToString()
+                            Value = v.Id.ToString()
                         }).ToList()
 
                     };

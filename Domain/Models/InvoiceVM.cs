@@ -36,7 +36,7 @@ namespace Domain.Models
         public string? shippingText { get; set; }
         public double? grandTotalInput { get; set; }
         public decimal? TotalAmount { get; set; }
-        public string? AreaId { get; set; }
+        public int? AreaId { get; set; }
         public string? CreatedDate { get; set; }
         public int? ProductId { get; set; }
         public int? OnlineOrderId { get; set; }
