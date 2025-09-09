@@ -8,6 +8,7 @@
                     <div class="card-body p-4">
                         <form asp-action="Create" asp-controller="Invoice" id="myForm" enctype="multipart/form-data">
                             <h5 class="card-title">Create Invoice <span class="badge bg-success rounded-pill ">@Model.InvoiceNumber</span></h5>
+                            <a class="btn btn-inverse-primary" asp-action="Receipt" asp-controller="Invoice" asp-area="admin" asp-route-id="@Model.Id">Receipt</a>
                             <hr />
                             <div class="card-body">
                                 <div class="fm-search">

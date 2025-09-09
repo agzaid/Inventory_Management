@@ -33,6 +33,7 @@ namespace Inventory_Management.Areas.Admin.Controllers
                 throw;
             }
         }
+       
         public IActionResult Create()
         {
             return View(_invoiceService.CreateInvoiceForViewing());
@@ -105,6 +106,18 @@ namespace Inventory_Management.Areas.Admin.Controllers
             var result = await _invoiceService.SearchForCustomer(data);
           //  var res = JsonConvert.SerializeObject(result);
             return Json(result);
+        }
+        public IActionResult Receipt(int id)
+        {
+            try
+            {
+                return View(_invoiceService.GetInvoiceById(id));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred");
+                throw;
+            }
         }
     }
 }

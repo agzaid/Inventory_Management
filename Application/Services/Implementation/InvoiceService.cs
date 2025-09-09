@@ -33,7 +33,7 @@ namespace Application.Services.Implementation
             try
             {
                 var invoices = _unitOfWork.Invoice.GetAll(s => s.IsDeleted == false, "InvoiceItems,Customer");
-                var areas = _unitOfWork.ShippingFreight.GetAll().ToList();
+                var areas = _unitOfWork.District.GetAll(s => true, "ShippingFreight").ToList();
 
                 var invoiceVMs = invoices.Select(s => new InvoiceVM
                 {
@@ -43,7 +43,7 @@ namespace Application.Services.Implementation
                     InvoiceNumber = s.InvoiceNumber,
                     TotalAmount = (decimal)s.GrandTotalAmount,
                     PhoneNumber = s.Customer?.Phone,
-                    AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.ShippingArea?.ToString(),
+                    AreaId = areas.FirstOrDefault(a => a.Id == s.AreaId)?.Name,
                     ShippingNotes = s.ShippingNotes,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     AllProductsForIndexViewing = s.AllProductItems,
@@ -144,14 +144,13 @@ namespace Application.Services.Implementation
                 await _unitOfWork.Invoice.AddAsync(invoice);
 
                 var onlineOrder = await _unitOfWork.OnlineOrder.GetFirstOrDefaultAsync(s => s.OrderNumber == invoice.InvoiceNumber);
-                if (onlineOrder == null)
+                if (onlineOrder != null)
                 {
-                    return new string[] { "error", "Online order not found." };
-                }
-                onlineOrder.OrderStatus = Status.ReadyToBeDelivered;
-                onlineOrder.Invoice = invoice;
+                    onlineOrder.OrderStatus = Status.ReadyToBeDelivered;
+                    onlineOrder.Invoice = invoice;
 
-                _unitOfWork.OnlineOrder.Update(onlineOrder);
+                    _unitOfWork.OnlineOrder.Update(onlineOrder);
+                }
 
                 await _unitOfWork.SaveAsync();
                 return new string[] { "success", "Invoice Created Successfully" };
@@ -237,11 +236,11 @@ namespace Application.Services.Implementation
             try
             {
                 var productVM = new InvoiceVM();
-                var freights = _unitOfWork.ShippingFreight.GetAll().ToList();
+                var freights = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
-                    Text = v.ShippingArea,
-                    Value = v.Price.ToString()
+                    Text = $"{v.Id} - {v.Name} ({v.ShippingFreight?.ShippingArea}) ({v.Price})",
+                    Value = v.Id.ToString()
                 }).ToList();
                 return productVM;
             }
@@ -327,6 +326,7 @@ namespace Application.Services.Implementation
             try
             {
                 var invoice = _unitOfWork.Invoice.Get(u => u.Id == id, "InvoiceItems,Customer");
+                var freights = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
                 if (invoice == null)
                 {
                     return new InvoiceVM();
@@ -351,11 +351,11 @@ namespace Application.Services.Implementation
                         priceInput = invoice.InvoiceItems?.Select(s => s.PriceSoldToCustomer.ToString()).ToList(),
                         quantityInput = invoice.InvoiceItems?.Select(s => s.Quantity.ToString()).ToList(),
                         CreatedDate = invoice.Create_Date?.ToString("yyyy-MM-dd"),
-                        ListOfAreas = _unitOfWork.ShippingFreight.GetAll().Select(v => new SelectListItem
+                        ListOfAreas = freights.Select(v => new SelectListItem
                         {
-                            Text = v.ShippingArea,
+                            Text = $"{v.Id} - {v.Name} ({v.ShippingFreight?.ShippingArea}) ({v.Price})",
                             Value = v.Price.ToString()
-                        }).ToList(),
+                        }).ToList()
 
                     };
                     invoiceVM.ListOfProductsVMs = _unitOfWork.Product

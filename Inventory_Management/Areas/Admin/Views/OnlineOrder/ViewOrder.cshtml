@@ -335,8 +335,17 @@
                  if(discountSwitch.checked || discountSwitch[0].checked){
                      discount = '';
                  }
-                 var selectedAreaId = $('#AreaId').find('option:selected');
-                 shipping = parseFloat(selectedAreaId[0].value);
+                  let selectedText = $("#AreaId option:selected").text();
+                    // e.g. "2 - al hadaba al wosta (mokattam) (15)"
+
+                    // Use regex to get the number inside the last ()
+                    let match = selectedText.match(/\((\d+)\)$/);
+                    let val = "";
+                    if (match) {
+                        val = match[1]; // "15"
+                        console.log(val);
+                    }
+                 shipping = parseFloat(val);
                 // var productTotal = quantity * price + shipping;
                 var productItemsTotal = 0;
                 if  (discount!=""){
@@ -461,7 +470,7 @@
                     updateTotalPrice();
                     }
           };
-                function SearchProduct() {
+         function SearchProduct() {
             var query = $('#inputSearch').val();
             var $url = "@Url.Action("SearchProduct", "Invoice")";
             var parameter = { data: query };
@@ -541,11 +550,21 @@
          }
          }
          function updateShippingPriceHtml($select){
+              let selectedText = $("#AreaId option:selected").text();
+                    // e.g. "2 - al hadaba al wosta (mokattam) (15)"
+
+                    // Use regex to get the number inside the last ()
+                    let match = selectedText.match(/\((\d+)\)$/);
+                    let val = "";
+                    if (match) {
+                        val = match[1]; // "15"
+                        console.log(val);
+                    }
                 var selectedOption = $select.find('option:selected');
-                var selectedText = selectedOption[0].text;
+                var selectedTextt = selectedOption[0].text;
                 var selectedValue = parseFloat(selectedOption.val());
-                $('#shipping').text('$' + selectedValue.toFixed(2));
-                $('#shipping').attr('data-value', selectedValue);
+                $('#shipping').text('$' + val);
+                $('#shipping').attr('data-value', val);
                 $('#shipping').attr('data-text', selectedText);
                 $('#shippingInput').val(selectedValue);
                 $('#shippingText').val(selectedText);

@@ -503,8 +503,8 @@ namespace Application.Services.Implementation
                 var freights = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
                 productVM.ListOfAreas = freights.Select(v => new SelectListItem
                 {
-                    Text = $"{v.Name} ({v.ShippingFreight?.ShippingArea}) ({v.Price})",
-                    Value = v.Price.ToString()
+                    Text = $"{v.Id} - {v.Name} ({v.ShippingFreight?.ShippingArea}) ({v.Price})",
+                    Value = v.Id.ToString()
                 }).ToList();
                 productVM.ListInvoiceItemVMs = onlineOrder.InvoiceItems?.Select(s => new InvoiceItemVM()
                 {
