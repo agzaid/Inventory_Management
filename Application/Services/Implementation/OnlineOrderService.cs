@@ -515,6 +515,7 @@ namespace Application.Services.Implementation
                     CustomerName = onlineOrder.Customer?.CustomerName,
                     MobileNumber = onlineOrder.Customer?.Phone,
                 }).ToList();
+                productVM.AreaId = onlineOrder.AreaId;
                 return productVM;
             }
             catch (Exception ex)

@@ -31,13 +31,13 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.ListOfProductsVMs.Count; i++)
+            @for (int i = 0; i < 20; i++)
             {
                 <tr>
                     <td>@(i + 1)</td>
-                    <td>@Model.ListOfProductsVMs[i].ProductName</td>
-                    <td style="text-align:right;">@Model.quantityInput[i]</td>
-                    <td style="text-align:right;">@Model.ListOfProductsVMs[i].SellingPrice</td>
+                    <td>@Model.ListOfProductsVMs[0].ProductName</td>
+                    <td style="text-align:right;">@Model.quantityInput[0]</td>
+                    <td style="text-align:right;">@Model.ListOfProductsVMs[0].SellingPrice</td>
                 </tr>
             }
         </tbody>
@@ -55,6 +55,14 @@
         <p>Thank you for your purchase 🙏</p>
     </div>
 </div>
+<div style="page-break-after: always;"></div>
+
+<div class="text-center" style="margin:15px 0;">
+    <button onclick="window.print()" 
+            style="padding:8px 16px; background:#3b71ca; color:white; border:none; border-radius:4px; cursor:pointer;">
+        🖨️ Print Receipt
+    </button>
+</div>
 
 <style>
     @@media print {
@@ -67,10 +75,10 @@
         }
 
         .receipt {
-            position: absolute;
-            left: 0;
-            top: 0;
-            margin: 0;
+            display: inline-block;
+            width: 80mm;
+            max-height: 100%;
+            overflow: hidden;
         }
         /* Remove navbar/sidebar for print */
         .navbar, .sidebar, footer {
