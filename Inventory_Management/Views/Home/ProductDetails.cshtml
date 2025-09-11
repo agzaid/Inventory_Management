@@ -2,130 +2,189 @@
 
 @section Styles {
     <style>
-        .icon-hover:hover {
-            border-color: #3b71ca !important;
-            background-color: white !important;
-            color: #3b71ca !important;
+        /* General */
+        .product-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
         }
 
+            .product-card:hover {
+                transform: translateY(-5px);
+            }
+
+        /* Main image */
+        .featured-img {
+            max-width: 100%;
+            height: 50vh;
+            border-radius: 16px;
+            object-fit: cover;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease;
+        }
+
+            .featured-img:hover {
+                transform: scale(1.02);
+            }
+
+        /* Thumbnails */
         .small-Img {
-            width: 60px; /* size of small images */
-            height: 60px;
+            width: 70px;
+            height: 70px;
             object-fit: cover;
             cursor: pointer;
+            border-radius: 12px;
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
-        .icon-hover:hover i {
-            color: #3b71ca !important;
+            .small-Img:hover {
+                transform: scale(1.1);
+                border-color: #3b71ca;
+            }
+
+        /* Price */
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #111;
+        }
+
+            .product-price del {
+                font-size: 1rem;
+                margin-left: 10px;
+                color: #e74c3c;
+            }
+
+        /* Quantity selector */
+        .quantity-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 180px;
+        }
+
+            .quantity-wrapper input {
+                border: none;
+                text-align: center;
+                width: 60px;
+                font-weight: 500;
+            }
+
+            .quantity-wrapper button {
+                background: #f9f9f9;
+                border: none;
+                padding: 10px 16px;
+                cursor: pointer;
+                font-size: 18px;
+                transition: background 0.2s ease;
+            }
+
+                .quantity-wrapper button:hover {
+                    background: #ececec;
+                }
+
+        /* Buttons */
+        .btn-modern {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+            .btn-modern:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, #3b71ca, #4f8ef7);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-danger-modern {
+            background: linear-gradient(135deg, #e74c3c, #ff7675);
+            border: none;
+            color: #fff;
         }
     </style>
 }
-<!-- content -->
 <section class="py-5">
     <div class="container">
-        <div class="row gx-5">
+        <div class="row gx-5 product-card">
             <aside class="col-lg-6">
-                <div class="border rounded-4 mb-3 d-flex justify-content-center">
-                    <a data-fslightbox="mygalley" class="rounded-4" data-type="image">
-                        <img style="max-width: auto; height: 50vh; margin: auto; width:100%;" id="featured-image" class="rounded-4 fit" src="@(Model.ListOfRetrievedImages?.Count > 0 ? Model.ListOfRetrievedImages[0] : "/images/placeholder.jpg")" />
-                    </a>
+                <!-- Main image -->
+                <div class="mb-3 d-flex justify-content-center">
+                    <img id="featured-image"
+                         class="featured-img"
+                         src="@(Model.ListOfRetrievedImages?.Count > 0 ? Model.ListOfRetrievedImages[0] : "/images/placeholder.jpg")"
+                         alt="@Model.ProductName" />
                 </div>
-                <div class="d-flex justify-content-center mb-3">
+
+                <!-- Thumbnails -->
+                <div class="d-flex justify-content-center gap-2">
                     @for (int i = 0; i < Model.ListOfRetrievedImages?.Count; i++)
                     {
-                        <a href="@Model.ListOfRetrievedImages[i]"
-                           data-fslightbox="mygalley"
-                           class="border mx-1 rounded-2"
-                           data-type="image">
-                            <img src="@Model.ListOfRetrievedImages[i]"
-                                 class="small-Img"
-                                 alt="Additional Image @i"
-                                 data-index="@i" />
-                        </a>
+                        <img src="@Model.ListOfRetrievedImages[i]"
+                             class="small-Img"
+                             alt="Image @i"
+                             data-index="@i" />
                     }
-
                 </div>
-                <!-- thumbs-wrap.// -->
-                <!-- gallery-wrap .end// -->
             </aside>
+
             <main class="col-lg-6">
-                <div class="ps-lg-3">
-                    <h4 class="title text-primary">
-                        @Model.ProductName
-                    </h4>
+                <div>
+                    <h2 class="text-primary fw-bold">@Model.ProductName</h2>
+
                     <div class="mb-3">
-                        <h4>
-                            $@Model.SellingPrice @if (Model.IsKilogram)
+                        <span class="product-price">
+                            $@Model.SellingPrice
+                            @if (Model.IsKilogram)
                             {
                                 <span>/ Kg</span>
                             }
-                            <br /><br /><del class="text-danger">$@Model.OtherShopsPrice</del>
-                        </h4>
+                        </span>
+                        <del>$@Model.OtherShopsPrice</del>
                     </div>
 
-                    <p>
-                        @Model.Description
-                    </p>
-
-                    <h6>@Model.DifferencePercentage % discount</h6>
+                    <p class="text-muted">@Model.Description</p>
+                    <h6 class="text-success">@Model.DifferencePercentage% discount</h6>
                     <hr />
 
-                    <div class="row mb-4">
-                        @*  <div class="col-md-4 col-6">
-                            <label class="mb-2">Size</label>
-                            <select class="form-select border border-secondary" style="height: 35px;">
-                                <option>Small</option>
-                                <option>Medium</option>
-                                <option>Large</option>
-                            </select>
-                        </div> *@
-                        <!-- col.// -->
-                        <div class="col-md-4 col-6 mb-3 product-quantity" data-product-id="@Model.Id" data-product-name="@Model.ProductName" data-product-price="@Model.SellingPrice">
-                            <label class="mb-2 d-block">Quantity</label>
-                            @if (!Model.IsKilogram)
-                            {
-                                
-                            <div class="input-group mb-3" style="width: 170px;">
-                                <button class="btn btn-white border border-secondary px-3 button-minus" type="button">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="text" class="form-control text-center border border-secondary quantity-input" value="1" />
-                                <button class="btn btn-white border border-secondary px-3 button-plus" type="button">
-                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                </button>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="input-group mb-3 product-quantity" data-product-id="@Model.Id" data-product-name="@Model.ProductName" data-product-price="@Model.SellingPrice" data-unit="kg" style="width: 170px;">
-                                    <button class="btn btn-white border border-secondary px-3 button-minus" type="button">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <input type="text" class="form-control text-center border border-secondary quantity-input" data-unit="kg" value="1" />
-                                    <button class="btn btn-white border border-secondary px-3 button-plus" type="button">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-
-                            }
+                    <!-- Quantity -->
+                    <div class="mb-4 product-quantity"
+                         data-product-id="@Model.Id"
+                         data-product-name="@Model.ProductName"
+                         data-product-price="@Model.SellingPrice">
+                        <label class="mb-2 fw-semibold">Quantity</label>
+                        <div class="quantity-wrapper">
+                            <button type="button" class="button-minus">−</button>
+                            <input type="text" class="quantity-input" value="1" />
+                            <button type="button" class="button-plus">+</button>
                         </div>
-
                     </div>
-                    @* <a class="btn btn-warning shadow-0"> Buy now </a> *@
-                    <button class="btn btn-danger remove-from-cart py-3" data-product-id="@Model.Id">
-                        <i class="fa fa-trash"></i> Remove from cart
-                    </button>
-                    <a class="btn btn-primary py-3 shadow-0" onclick="addToCart()"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
-                    @* <a class="btn btn-light border border-secondary py-2 icon-hover px-3"> <i class="me-1 fa fa-heart fa-lg"></i> Save </a> *@
 
-                    <input id="successMessageOnsubmission" hidden type="text" data-val-custom="@Html.Encode(Localizer["YourOrderIsSubmittedSuccessfully"])">
-                    <input id="ItemWasDeletedSuccessfully" hidden type="text" data-val-custom="@Html.Encode(Localizer["ItemWasDeletedSuccessfully"])">
+                    <!-- Buttons -->
+                    <button class="btn btn-danger-modern btn-modern remove-from-cart"
+                            data-product-id="@Model.Id">
+                        <i class="fa fa-trash"></i> Remove
+                    </button>
+                    <a class="btn btn-primary-modern btn-modern"
+                       onclick="addToCart()">
+                        <i class="fa fa-shopping-basket me-1"></i> Add to cart
+                    </a>
                 </div>
             </main>
         </div>
     </div>
 </section>
+
 <!-- content -->
 <!-- Footer -->
 @section Scripts {

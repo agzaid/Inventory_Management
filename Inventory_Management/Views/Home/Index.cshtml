@@ -23,6 +23,122 @@
         flex: 0 0 auto; /* prevent shrinking */
     }
 
+    #chat-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #25d366; /* WhatsApp green */
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        #chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+
+    /* Chat Box */
+    #chat-box {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 320px;
+        max-height: 420px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 10000;
+    }
+
+    .chat-header {
+        background: #28a745;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-body {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background: #f9f9f9;
+    }
+
+        .chat-body .msg {
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 75%;
+            font-size: 14px;
+        }
+
+            .chat-body .msg.bot {
+                background: #e6e6e6;
+                align-self: flex-start;
+            }
+
+            .chat-body .msg.user {
+                background: #28a745;
+                color: white;
+                align-self: flex-end;
+            }
+
+    .chat-footer {
+        display: flex;
+        border-top: 1px solid #ddd;
+    }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .chat-footer button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+
+    .chat-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #f1f1f1;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .chat-close-btn:hover {
+        background: #e74c3c;
+        color: #fff;
+        transform: rotate(90deg);
+    }
 </style>
 
 <partial name="_Hero">
@@ -65,6 +181,28 @@
         </button>
     </section>
 
+    <!-- Chat Button -->
+    <div id="chat-toggle" onclick="toggleChat()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
+
+    <!-- Chat Box -->
+    <div id="chat-box">
+        <div class="chat-header">
+            <span>Support Chat</span>
+            <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="msg bot">👋 Hello! How can we help you today?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
 @* <section id="banner" class="section-m1">
         <h4>Repair Services</h4>
@@ -251,34 +389,83 @@
         <script>
             //
             $(document).ready(function() {
-                 var pageNumber = 2;
-                 var pageSize = 20;
+                var pageNumber = 2;
+                var pageSize = 20;
+                var isLoading = false;
+                var hasMoreData = true; // flag to stop future calls once empty response received
 
-                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
-                 if(cart == [] || $("#cartNum").length==0){
-                     var cartt = $("#cartNum").length;
-                     $("#cartNum")[0].innerHTML= 0;
-                     $("#cartNum1")[0].innerHTML= 0;
-                      }else{
-                          $("#cartNum")[0].innerHTML= cart.length;
-                          $("#cartNum1")[0].innerHTML= cart.length;
-                      }
-                      $('.category-dropdown').on('click', function () {
-                          debugger;
-                            var categoryId = $(this).data('value');
-                            var categoryName = $(this).innerText;
-                            $('#productSpecified').text(categoryName);
-                            $('#loader').show();
-                            $.ajax({
-                                url: '/Home/GetProductsByCategory',
-                                type: 'GET',
-                                data: { categoryId: categoryId },
-                                success: function (data) {
-                                    $('#loader').hide();
-                                    $('#pro-container').html(data);
-                                }
-                            });
-                 });
+                // Initialize cart UI
+                var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                if (cart.length === 0 || $("#cartNum").length == 0) {
+                    $("#cartNum")[0].innerHTML = 0;
+                    $("#cartNum1")[0].innerHTML = 0;
+                } else {
+                    $("#cartNum")[0].innerHTML = cart.length;
+                    $("#cartNum1")[0].innerHTML = cart.length;
+                }
+
+                // Category filter
+                    $('.category-dropdown').on('click', function () {
+                var categoryId = $(this).data('value');
+                var categoryName = $(this).innerText;
+                $('#productSpecified').text(categoryName);
+                $('#loader').show();
+                $.ajax({
+                    url: '/Home/GetProductsByCategory',
+                    type: 'GET',
+                    data: { categoryId: categoryId },
+                    success: function (data) {
+                        $('#loader').hide();
+                        $('#pro-container').html(data);
+                        pageNumber = 2;
+                        hasMoreData = true; // reset when switching category
+                    }
+                });
+            });
+
+            // Infinite scroll
+            $(window).on('scroll', function () {
+                if (!hasMoreData || isLoading) return;
+
+                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                    loadMoreProducts();
+                }
+            });
+
+            function loadMoreProducts() {
+                debugger;
+                if (!hasMoreData) return; // hard stop safeguard
+                isLoading = true;
+
+                var $url = "@Url.Action("GetPaginatedProducts", "Home")";
+                var parameter = {
+                    pageNumber: pageNumber,
+                    pageSize: pageSize
+                };
+
+                $('#loader').show();
+                _Ajax.ReturnHTML($url, parameter, "GET", function () { },
+                    function (data) {
+                        $('#loader').hide();
+
+                        if (!data || data.trim() === "") {
+                            hasMoreData = false;      // stop any further attempts
+                            isLoading = false;
+                            return;
+                        }
+
+                        pageNumber++;
+                        $('#pro-container').append(data);
+                        isLoading = false;
+                    },
+                    function (xhr) {
+                        $('#loader').hide();
+                        isLoading = false;
+                        hasMoreData = false; // stop retrying on error
+                        _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                    });
+            }
+          
                       $('#exploreMore').on('click', function () {
                              var $url = "@Url.Action("GetPaginatedProducts", "Home")";
                              var parameter = {
@@ -299,4 +486,25 @@
                          });
             });
         </script>
+        <script>
+            function toggleChat() {
+                const chat = document.getElementById("chat-box");
+                chat.style.display = (chat.style.display === "flex") ? "none" : "flex";
+            }
+
+             function sendMessage() {
+                const input = document.getElementById("chat-input");
+                if (input.value.trim() === "") return;
+
+                const phoneNumber = "201063181497"; // your WhatsApp number (without +)
+                const message = encodeURIComponent(input.value);
+
+                // Redirect to WhatsApp
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+
+                // Clear input
+                input.value = "";
+            }
+        </script>
+
 }
