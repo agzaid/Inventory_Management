@@ -264,7 +264,6 @@
                  }
 
              function updateCartStorage(productId, productName, productPrice, quantity) {
-                 debugger;
                  let cart = JSON.parse(localStorage.getItem('cart')) || [];
                  const index = cart.findIndex(item => item.productId === productId);
 
@@ -288,7 +287,6 @@
              }
 
                function addToCart() {
-                   debugger;
                      const parent = $('.product-quantity'); // You can adjust this selector if multiple products
                      const productId = parent.data('product-id');
                      const productName = parent.data('product-name');
@@ -312,15 +310,14 @@
                      }
 
                      localStorage.setItem('cart', JSON.stringify(cart));
+
                      $('#cartNum').text(cart.length);
-                     debugger;
                      _TOASTR.Success(decoded);
 
                            basketNumber();
                  }
 
               function basketNumber(){
-                  debugger;
                       const productId = $('[data-product-id]').data('product-id');
                  if(isInCart(productId)){
                     var num = cartQuantity(productId);
@@ -329,7 +326,6 @@
            }
 
                function translatedMessages() {
-                   debugger;
                  var encoded = $('#successMessageOnsubmission').data('val-custom');
                  decoded = $('<textarea/>').html(encoded).text();
                  var encodedItemWasDeletedSuccessfully = $('#ItemWasDeletedSuccessfully').data('val-custom');
