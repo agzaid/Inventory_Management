@@ -26,6 +26,8 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IDistrictService, DistrictService>();
             services.AddScoped<IBrandService, BrandService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<Application.Common.Interfaces.IEmailSender, Infrastructure.EmailSender.SmtpEmailSender>();
+
             return services;
         }
         public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)

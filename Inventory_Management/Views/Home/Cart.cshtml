@@ -393,7 +393,7 @@
                  <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
                  </td>
                  <td class="text-danger">
-                <span class="itemPrice">$${parseFloat(data.quantity * data.productPrice).toFixed(2)}</span>
+                <span class="itemPrice">$${parseFloat(data.quantity * parseFloat(data.productPrice)).toFixed(2)}</span>
                  <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}" hidden>
                  </td>
              </tr>

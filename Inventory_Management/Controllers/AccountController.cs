@@ -1,5 +1,7 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
+using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,12 +9,14 @@ public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IEmailSender _emailSender;
 
     public AccountController(UserManager<ApplicationUser> userManager,
-                             SignInManager<ApplicationUser> signInManager)
+                             SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _emailSender = emailSender;
     }
 
     // GET: /Account/Register
@@ -118,4 +122,78 @@ public class AccountController : Controller
     }
 
     public IActionResult AccessDenied() => View();
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            ModelState.AddModelError("", "Please enter your email.");
+            return View();
+        }
+
+        var user = await _userManager.FindByEmailAsync(email); // assuming Identity
+        if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+        {
+            // Don’t reveal that user doesn’t exist
+            TempData["error"] = "email was not found";
+            return View();
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        // Build reset link
+        var resetLink = Url.Action(
+            "ResetPassword", "Account",
+            new { token, email = user.Email },
+            protocol: HttpContext.Request.Scheme);
+
+        // TODO: Send email (use SMTP, SendGrid, etc.)
+        // TODO: Send email (use SMTP, SendGrid, etc.)
+        await _emailSender.SendEmailAsync(user.Email, "Reset Password",
+            $"Click <a href='{resetLink}'>here</a> to reset your password.");
+
+        TempData["success"] = "An email was sent to your email";
+        return RedirectToAction("login");
+    }
+    [HttpGet]
+    public IActionResult ResetPassword(string token, string email)
+    {
+        if (token == null || email == null)
+            return RedirectToAction("Index", "Home");
+
+        return View(new ResetPasswordViewModel { Token = token, Email = email });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            TempData["error"]="email was not found";
+            return View();
+        }
+        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+        if (result.Succeeded)
+        {
+            TempData["success"] = "Password has been reset successfully";
+            return RedirectToAction("login");
+        }
+
+        TempData["error"] = "Something went wrong";
+
+        return View();
+    }
+
 }
