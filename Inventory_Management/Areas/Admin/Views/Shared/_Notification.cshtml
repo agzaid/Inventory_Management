@@ -1,31 +1,29 @@
 ﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-@if (@TempData["success"] != null)
+@if (TempData["success"] != null)
 {
     <script>
-        @* debugger; *@
-            toastr.options = {
+        toastr.options = {
             "closeButton": false,
-          "debug": false,
-              "newestOnTop": true,
-                        "progressBar": false,
-             "positionClass": "toast-top-right",
-                 "preventDuplicates": false,
-        "onclick": null,
-            "showDuration": "5000",
-         "hideDuration": "1000",
-             "timeOut": "1000",
-              "extendedTimeOut": "0",
-              "showDuration": "200",      // animation speed in
-            "hideDuration": "200"
-             "showEasing": "swing",
-                  "hideEasing": "linear",
-           "showMethod": "fadeIn",
-               "hideMethod": "fadeOut"
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "200",
+            "hideDuration": "200",
+            "timeOut": "1000",
+            "extendedTimeOut": "0",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
         };
         toastr.success('@TempData["success"]');
     </script>
 }
+
 @if (@TempData["error"] != null)
 {
     <script>

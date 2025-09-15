@@ -563,12 +563,12 @@ namespace Application.Services.Implementation
                         Description = product.Description ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
-                        SellingPrice = product.SellingPrice ?? decimal.Parse("0.00"),
-                        BuyingPrice = product.BuyingPrice ?? decimal.Parse("0.00"),
+                        SellingPrice = product.SellingPrice ?? 0m,
+                        BuyingPrice = product.BuyingPrice ?? 0m,
+                        OtherShopsPrice = product.OtherShopsPrice ?? 0m,
                         DifferencePercentage = product.DifferencePercentage?.ToString() ?? "",
                         MaximumDiscountPercentage = product.MaximumDiscountPercentage?.ToString() ?? "",
-                        OtherShopsPrice = product.OtherShopsPrice ?? decimal.Parse("0.00"),
-                        StockQuantity = product.StockQuantity ?? int.Parse("0"),
+                        StockQuantity = product.StockQuantity ?? 0,
                         CategoryId = product.CategoryId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
@@ -645,6 +645,40 @@ namespace Application.Services.Implementation
                 else
                     _logger.LogError(ex, ex.Message);
 
+                return Result<List<OnlineOrderVM>>.Failure(ex.InnerException.ToString(), "error");
+            }
+        }
+        public Result<List<OnlineOrderVM>> GetAllOrdersPending()
+        {
+            try
+            {
+                var orders = _unitOfWork.OnlineOrder.GetAll(s => s.IsDeleted == false && s.OrderStatus == Status.InProgress);
+                var orderVMs = orders.Select(s => new OnlineOrderVM()
+                {
+                    Id = s.Id,
+                    OrderNumber = s.OrderNumber,
+                    CustomerName = s.Customer?.CustomerName,
+                    OrderDate = s.OrderDate.ToString("yyyy-MM-dd:HH:mm:ss"),
+                    DeliverySlots = s.DeliverySlotsAsString != null ? string.Join(", ", s.DeliverySlotsAsString) : "",
+                    //OrderStatus = s.OrderStatus.ToString(),
+                    GrandTotalAmount = s.GrandTotalAmount,
+                    Status = s.OrderStatus,
+                    Address = s.Address,
+                    DetailedAddress = $"{s.StreetName}, {s.BuildingNumber}, {s.Floor}, {s.ApartmentNumber}, {s.LandMark}",
+                    Location = s.Location,
+                    PhoneNumber = s.Customer?.Phone,
+                    // Area = _unitOfWork.ShippingFreight.Get(d => d.Id == s.AreaId).ShippingArea,
+                }).ToList();
+                return Result<List<OnlineOrderVM>>.Success(orderVMs, "success");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError(ex, ex.InnerException.Message);
+                }
+                else
+                    _logger.LogError(ex, ex.Message);
                 return Result<List<OnlineOrderVM>>.Failure(ex.InnerException.ToString(), "error");
             }
         }

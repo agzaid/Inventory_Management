@@ -140,7 +140,7 @@ public class AccountController : Controller
         }
 
         var user = await _userManager.FindByEmailAsync(email); // assuming Identity
-        if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+        if (user == null)
         {
             // Don’t reveal that user doesn’t exist
             TempData["error"] = "email was not found";

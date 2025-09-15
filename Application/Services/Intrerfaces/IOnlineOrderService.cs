@@ -26,5 +26,6 @@ namespace Application.Services.Intrerfaces
         Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize);
         Task<Result<bool>> UpdateOrderStatus(string orderNum, string options);
         Task<List<SelectListItem>> DistrictSelectList();
+        Result<List<OnlineOrderVM>> GetAllOrdersPending();
     }
 }

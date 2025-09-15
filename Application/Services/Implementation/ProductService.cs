@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,9 +82,20 @@ namespace Application.Services.Implementation
                     PricePerGram = product.PricePerGram,
                     SellingPrice = product.SellingPrice,
                     BuyingPrice = product.BuyingPrice,
-                    DifferencePercentage = decimal.Parse(product.DifferencePercentage ?? "0.00"),
+                    DifferencePercentage = decimal.TryParse(product.DifferencePercentage,
+                                        NumberStyles.Any,
+                                        CultureInfo.InvariantCulture,
+                                        out var diff)
+                        ? diff
+                        : 0m,
+
+                    MaximumDiscountPercentage = decimal.TryParse(product.MaximumDiscountPercentage,
+                                             NumberStyles.Any,
+                                             CultureInfo.InvariantCulture,
+                                             out var maxDisc)
+                            ? maxDisc
+                            : 0m,
                     IsDeleted = false,
-                    MaximumDiscountPercentage = decimal.Parse(product.MaximumDiscountPercentage ?? "0.00"),
                     OtherShopsPrice = product.OtherShopsPrice,
                     StockQuantity = product.StockQuantity,
                     ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "2000-01-01"),
@@ -307,14 +319,14 @@ namespace Application.Services.Implementation
                         //Brand = product.Brand ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
-                        SellingPrice = product.SellingPrice ?? decimal.Parse("0.00"),
+                        SellingPrice = product.SellingPrice ?? 0m,
                         IsKilogram = product.IsKilogram,
-                        PricePerGram = product.PricePerGram ?? decimal.Parse("0.00"),
-                        BuyingPrice = product.BuyingPrice ?? decimal.Parse("0.00"),
+                        PricePerGram = product.PricePerGram ?? 0m,
+                        BuyingPrice = product.BuyingPrice ?? 0m,
                         DifferencePercentage = product.DifferencePercentage?.ToString() ?? "",
                         MaximumDiscountPercentage = product.MaximumDiscountPercentage?.ToString() ?? "",
-                        OtherShopsPrice = product.OtherShopsPrice ?? decimal.Parse("0.00"),
-                        StockQuantity = product.StockQuantity ?? int.Parse("0"),
+                        OtherShopsPrice = product.OtherShopsPrice ?? 0m,
+                        StockQuantity = product.StockQuantity ?? 0,
                         CategoryId = product.CategoryId.ToString() ?? "",
                         BrandId = product.BrandId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
@@ -390,8 +402,9 @@ namespace Application.Services.Implementation
                     oldProduct.PricePerGram = obj.PricePerGram;
                     oldProduct.SellingPrice = obj.SellingPrice;
                     oldProduct.BuyingPrice = obj.BuyingPrice;
-                    oldProduct.DifferencePercentage = decimal.Parse(obj.DifferencePercentage ?? "0.00");
-                    oldProduct.MaximumDiscountPercentage = decimal.Parse(obj.MaximumDiscountPercentage ?? "0.00");
+                    oldProduct.DifferencePercentage = decimal.TryParse(obj.DifferencePercentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var d) ? d : 0m;
+                    oldProduct.MaximumDiscountPercentage = decimal.TryParse(obj.MaximumDiscountPercentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var m) ? m : 0m;
+
                     oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
                     oldProduct.StockQuantity = obj.StockQuantity;
                     oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "2000-01-01");

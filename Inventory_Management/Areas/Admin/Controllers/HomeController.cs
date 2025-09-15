@@ -13,18 +13,22 @@ namespace Inventory_Management.Areas.Admin.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IInvoiceService _invoiceService;
+        private readonly IOnlineOrderService _onlineOrder;
 
-        public HomeController(ILogger<HomeController> logger, IInvoiceService invoiceService)
+        public HomeController(ILogger<HomeController> logger, IInvoiceService invoiceService,IOnlineOrderService onlineOrder)
         {
             _logger = logger;
             _invoiceService = invoiceService;
+            _onlineOrder = onlineOrder;
         }
 
         public IActionResult Index()
         {
+            var pendingOnlineOrders = _onlineOrder.GetAllOrdersPending();
             var invoices = _invoiceService.GetAllInvoices();
             var totalAmount = invoices.Sum(x => x.TotalAmount ?? 0);
             ViewBag.TotalAmount = totalAmount;
+            ViewBag.PendingOnlineOrders = pendingOnlineOrders.Data.Count;
             return View();
         }
 
