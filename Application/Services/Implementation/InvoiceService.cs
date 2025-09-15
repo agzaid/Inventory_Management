@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,7 +115,13 @@ namespace Application.Services.Implementation
                             Quantity = quantity,
                             PriceSoldToCustomer = decimal.Parse(invoiceVM.priceInput[i]),
                             ShippingPrice = invoiceVM.shippingInput,
-                            IndividualDiscount = double.Parse(invoiceVM.individualDiscount[i] ?? "0")
+                            IndividualDiscount = double.TryParse(invoiceVM.individualDiscount[i],
+                                     NumberStyles.Any,
+                                     CultureInfo.InvariantCulture,
+                                     out var discount2)
+                        ? discount2
+                        : 0d
+
                         });
                     }
                 }
@@ -135,7 +142,10 @@ namespace Application.Services.Implementation
                 invoice.CustomerId = customer?.Id;
                 invoice.CustomerName = invoiceVM.CustomerName;
                 invoice.OrderDate = DateTime.UtcNow;
-                invoice.AllDiscountInput = decimal.Parse(invoiceVM.allDiscountInput ?? "0.00");
+                invoice.AllDiscountInput = decimal.TryParse(invoiceVM.allDiscountInput,
+                                            NumberStyles.Any,
+                                            CultureInfo.InvariantCulture,
+                                            out var discount) ? discount : 0m;
                 invoice.GrandTotalAmount = invoiceVM.grandTotalInput;
                 invoice.ProductsOnlyAmount = invoiceVM.totalAmountInput == 0 ? 0 : (decimal)invoiceVM.totalAmountInput;
                 invoice.AllProductItems = string.Join(',', invoiceVM.productInput);
@@ -488,9 +498,20 @@ namespace Application.Services.Implementation
             oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
             oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
             oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
-            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
-            oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");
-            oldProduct.MaximumDiscountPercentage = decimal.Parse(obj?.MaximumDiscountPercentage?.Replace("%", "").Trim() ?? "0.00");
+            oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim(); oldProduct.DifferencePercentage = decimal.TryParse(
+                obj?.DifferencePercentage?.Replace("%", "").Trim(),
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out var diff
+            ) ? diff : 0m;
+
+            oldProduct.MaximumDiscountPercentage = decimal.TryParse(
+                obj?.MaximumDiscountPercentage?.Replace("%", "").Trim(),
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out var maxDisc
+            ) ? maxDisc : 0m;
+
             oldProduct.Modified_Date = DateTime.UtcNow;
             oldProduct.Images = listOfImages;
         }
