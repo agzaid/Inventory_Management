@@ -162,11 +162,24 @@ namespace Inventory_Management.Controllers
                 return RedirectToAction("Index", new { status = "error", message = "Failed to Create Feedback" });
             }
         }
-        public async Task<IActionResult> GetPaginatedProducts(int pageNumber = 1, int pageSize = 20)
+        //public async Task<IActionResult> GetPaginatedProducts(int pageNumber = 1, int pageSize = 20)
+        //{
+        //    var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize);
+        //    return PartialView("_ProductListPartial", product.Data.Items);
+        //}
+        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize)
         {
             var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize);
-            return PartialView("_ProductListPartial", product.Data.Items);
+
+
+            if (!product.Data.Items.Any())
+            {
+                return Content(""); // return empty string
+            }
+
+            return PartialView("_ProductListPartial", product);
         }
+
         public IActionResult Contact()
         {
             return View();

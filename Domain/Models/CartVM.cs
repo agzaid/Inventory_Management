@@ -7,8 +7,8 @@ namespace Domain.Models
     public class CartVM
     {
         public string? OrderNumber { get; set; }
-        public double? TotalPrice { get; set; }
-        public double? PriceBeforeShipping { get; set; }
+        public decimal? TotalPrice { get; set; }
+        public decimal? PriceBeforeShipping { get; set; }
         public string? ShippingAreaPrice { get; set; }
         public string? ShippingAreaName { get; set; }
 
@@ -43,7 +43,7 @@ namespace Domain.Models
     {
         public int? ProductId { get; set; }
         public string? ProductName { get; set; }
-        public string? ProductPrice { get; set; }
+        public decimal? ProductPrice { get; set; }
         public decimal Quantity { get; set; }
     }
 }

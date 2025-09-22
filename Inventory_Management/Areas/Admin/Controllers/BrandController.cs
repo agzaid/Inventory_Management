@@ -53,7 +53,7 @@ namespace Inventory_Management.Areas.admin.Controllers
             {
                 var result = await _brandService.CreateBrand(obj);
                 TempData["success"] = result.Message;
-                return RedirectToAction(nameof(Index), new { result.Data, message = result.Message });
+                return RedirectToAction(nameof(Index), new { status = result.Data, message = result.Message });
             }
             return View();
         }

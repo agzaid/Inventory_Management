@@ -8,7 +8,7 @@ namespace Domain.Models
         public string? OrderNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? OrderDate { get; set; }
-        public double? GrandTotalAmount { get; set; }
+        public decimal? GrandTotalAmount { get; set; }
         public string? DeliverySlots { get; set; }
         public string? Area { get; set; }
         public string? DetailedAddress { get; set; }

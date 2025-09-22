@@ -18,10 +18,10 @@ namespace Domain.Entities
             get { return productName; }
             set { productName = value?.ToLower(); }
         }
-        public double? IndividualDiscount { get; set; }
+        public decimal? IndividualDiscount { get; set; }
         public decimal? Quantity { get; set; }
         public decimal? PriceSoldToCustomer { get; set; }
-        public double? ShippingPrice { get; set; }
+        public decimal? ShippingPrice { get; set; }
 
         public decimal? StockQuantityFromProduct { get; set; }
         public decimal? DifferencePercentageFromProduct { get; set; }

@@ -16,6 +16,7 @@ namespace Infrastructure.Repo
         public ICategoryRepository Category { get; private set; }
         public IImageRepository Image { get; private set; }
         public IInvoiceRepository Invoice { get; private set; }
+        public IInvoiceItemRepository InvoiceItem { get; private set; }
         public IShippingFreightRepository ShippingFreight { get; private set; }
         public ICustomerRepository Customer { get; private set; }
         public IDeliverySlotRepository DeliverySlot { get; private set; }
@@ -37,6 +38,7 @@ namespace Infrastructure.Repo
             OnlineOrder = new OnlineOrderRepository(_db);
             Brand = new BrandRepository(_db);
             Feedback = new FeedbackRepository(_db);
+            InvoiceItem = new InvoiceItemsRepository(_db);
         }
         public async Task SaveAsync()
         {

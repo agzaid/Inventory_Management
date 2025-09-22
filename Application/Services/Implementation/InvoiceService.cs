@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Application.Services.Implementation
                     CustomerName = s.Customer?.CustomerName,
                     CustomerNameAr = s.Customer?.CustomerNameAr,
                     InvoiceNumber = s.InvoiceNumber,
-                    TotalAmount = (decimal)s.GrandTotalAmount,
+                    TotalAmount = s.GrandTotalAmount,
                     PhoneNumber = s.Customer?.Phone,
                     AreaId = areas?.FirstOrDefault(a => a.Id == s.AreaId)?.Id,
                     shippingText = areas?.FirstOrDefault(a => a.Id == s.AreaId)?.Name,
@@ -114,13 +115,13 @@ namespace Application.Services.Implementation
                             ProductName = product.ProductName,
                             Quantity = quantity,
                             PriceSoldToCustomer = decimal.Parse(invoiceVM.priceInput[i]),
-                            ShippingPrice = invoiceVM.shippingInput,
-                            IndividualDiscount = double.TryParse(invoiceVM.individualDiscount[i],
+                            ShippingPrice = (decimal)invoiceVM.shippingInput,
+                            IndividualDiscount = decimal.TryParse(invoiceVM.individualDiscount[i],
                                      NumberStyles.Any,
                                      CultureInfo.InvariantCulture,
                                      out var discount2)
                         ? discount2
-                        : 0d
+                        : 0m
 
                         });
                     }
@@ -146,11 +147,11 @@ namespace Application.Services.Implementation
                                             NumberStyles.Any,
                                             CultureInfo.InvariantCulture,
                                             out var discount) ? discount : 0m;
-                invoice.GrandTotalAmount = invoiceVM.grandTotalInput;
+                invoice.GrandTotalAmount = (decimal)invoiceVM.grandTotalInput;
                 invoice.ProductsOnlyAmount = invoiceVM.totalAmountInput == 0 ? 0 : (decimal)invoiceVM.totalAmountInput;
                 invoice.AllProductItems = string.Join(',', invoiceVM.productInput);
                 invoice.ShippingNotes = invoiceVM.ShippingNotes;
-                invoice.ShippingPrice = area?.Price ?? 0; // fixed
+                invoice.ShippingPrice = area?.Price ?? 0m; // fixed
 
                 await _unitOfWork.Invoice.AddAsync(invoice);
 
@@ -352,7 +353,7 @@ namespace Application.Services.Implementation
                         AllProductsForIndexViewing = invoice.AllProductItems,
                         allDiscountInput = invoice.AllDiscountInput.ToString(),
                         grandTotalInput = invoice.GrandTotalAmount,
-                        totalAmountInput = invoice.ProductsOnlyAmount == null ? 0.00 : (double)invoice.ProductsOnlyAmount,
+                        totalAmountInput = invoice.ProductsOnlyAmount == null ? 0m : (decimal)invoice.ProductsOnlyAmount,
                         TotalAmount = invoice.ProductsOnlyAmount == null ? 0 : (decimal)invoice.ProductsOnlyAmount,
                         shippingInput = invoice.ShippingPrice,
                         AreaId = invoice.AreaId ?? 1,
@@ -434,6 +435,31 @@ namespace Application.Services.Implementation
                 return false;
             }
         }
+
+        public async Task<List<MonthlyInventoryVM>> GetReportByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            var invoiceItems = await _unitOfWork.InvoiceItem.GetAllAsync(ii => ii.Invoice != null
+                          && ii.Invoice.OrderDate >= startDate
+                          && ii.Invoice.OrderDate < endDate, includeProperties: "Invoice,Product", tracked: false);
+
+            var report = invoiceItems
+                     .GroupBy(ii => ii.ProductId)
+                     .Select(g => new MonthlyInventoryVM
+                     {
+                         ProductId = g.Key ?? 0,
+                         ProductName = g.First().ProductName,
+                         TotalQuantitySold = g.Sum(ii => ii.Quantity ?? 0),
+                         TotalRevenue = g.Sum(ii => (ii.PriceSoldToCustomer ?? 0) * (ii.Quantity ?? 0)),
+                         TotalDiscount = g.Sum(ii => (decimal)(ii.IndividualDiscount ?? 0)),
+                         RemainingStock = g.First().Product?.StockQuantity ?? 0,
+                         StartDate = startDate,
+                         EndDate = endDate
+                     })
+                     .ToList();
+
+            return report;
+        }
+
 
 
         #region Update Product Private Methods

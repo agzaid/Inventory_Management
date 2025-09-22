@@ -52,7 +52,7 @@ namespace Inventory_Management.Models
         public string[]? SelectedSlots { get; set; }
         public List<ItemsVM> ItemsVMs { get; set; } = new();
         public List<DeliverySlotVM> DeliverySlotVMs { get; set; } = new();
-        public int? AreaId { get; set; } = new();
+        public int? AreaId { get; set; } 
         public List<SelectListItem> Areas { get; set; } = new();
 
     }
@@ -60,7 +60,7 @@ namespace Inventory_Management.Models
     {
         public int? ProductId { get; set; }
         public string? ProductName { get; set; }
-        public string? ProductPrice { get; set; }
+        public decimal? ProductPrice { get; set; }
         public decimal Quantity { get; set; }
     }
 }

@@ -341,7 +341,7 @@
                     // e.g. "2 - al hadaba al wosta (mokattam) (15)"
 
                     // Use regex to get the number inside the last ()
-                    let match = selectedText.match(/\((\d+)\)$/);
+                    let match = selectedText.match(_RegexFloat);
                     let val = "";
                     if (match) {
                         val = match[1]; // "15"
@@ -556,7 +556,7 @@
                     // e.g. "2 - al hadaba al wosta (mokattam) (15)"
 
                     // Use regex to get the number inside the last ()
-                    let match = selectedText.match(/\((\d+)\)$/);
+                    let match = selectedText.match(_RegexFloat);
                     let val = "";
                     if (match) {
                         val = match[1]; // "15"

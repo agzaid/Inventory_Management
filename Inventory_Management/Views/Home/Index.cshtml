@@ -465,25 +465,35 @@
                         _SWAL.AlertWithoutNotification("Something went wrong..!!");
                     });
             }
-          
-                      $('#exploreMore').on('click', function () {
-                             var $url = "@Url.Action("GetPaginatedProducts", "Home")";
-                             var parameter = {
-                                 pageNumber: pageNumber,
-                                 pageSize: pageSize
-                             };
-                             $('#loader').show();
-                             _Ajax.ReturnHTML($url, parameter, "GET", function () { },
-                                 function (data) {
-                                     $('#loader').hide();
-                                     pageNumber++;
-                                     $('#pro-container').append(data);
-                                 },
-                                 function (xhr) {
-                                     $('#loader').hide();
-                                     _SWAL.AlertWithoutNotification("Something went wrong..!!");
-                                 });
-                         });
+
+            $('#exploreMore').on('click', function () {
+                var $url = "@Url.Action("GetPaginatedProducts", "Home")";
+                var parameter = {
+                    pageNumber: pageNumber,
+                    pageSize: pageSize
+                };
+
+                $('#loader').show();
+
+                _Ajax.ReturnHTML($url, parameter, "GET", function () { },
+                    function (data) {
+                        $('#loader').hide();
+
+                        if (!data || data.trim() === "") {
+                            // No more products
+                            $('#exploreMore').prop("disabled", true).text("No More Products");
+                            return;
+                        }
+
+                        pageNumber++;
+                        $('#pro-container').append(data);
+                    },
+                    function (xhr) {
+                        $('#loader').hide();
+                        _SWAL.AlertWithoutNotification("Something went wrong..!!");
+                    });
+            });
+
             });
         </script>
         <script>

@@ -14,12 +14,12 @@ namespace Domain.Entities
         [MaxLength(2000)]
         public string? AllProductItems { get; set; }
         public decimal? ProductsOnlyAmount { get; set; }
-        public double? GrandTotalAmount { get; set; }
+        public decimal? GrandTotalAmount { get; set; }
         public decimal? AllDiscountInput { get; set; }
 
         [MaxLength(1000)]
         public string? ShippingNotes { get; set; }
-        public double? ShippingPrice { get; set; }
+        public decimal? ShippingPrice { get; set; }
         public string? CustomerName { get; set; } //added this to keep customer name at the time of invoice creation because customer name can be changed later in customer entity
 
         public int? AreaId { get; set; }

@@ -31,10 +31,10 @@ namespace Domain.Models
         public string? PhoneNumber { get; set; }
         public string? ShippingNotes { get; set; }
         public string? InvoiceNumber { get; set; }
-        public double? totalAmountInput { get; set; }
-        public double? shippingInput { get; set; }
+        public decimal? totalAmountInput { get; set; }
+        public decimal? shippingInput { get; set; }
         public string? shippingText { get; set; }
-        public double? grandTotalInput { get; set; }
+        public decimal? grandTotalInput { get; set; }
         public decimal? TotalAmount { get; set; }
         public int? AreaId { get; set; }
         public string? CreatedDate { get; set; }

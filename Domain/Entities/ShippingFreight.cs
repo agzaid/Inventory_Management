@@ -15,7 +15,7 @@ namespace Domain.Entities
         [MaxLength(300)]
         public string? ShippingAreaAr { get; set; }
         //public string? District { get; set; }
-        public double? Price { get; set; }
+        public decimal? Price { get; set; }
 
         public ICollection<District>? Districts { get; set; }
 

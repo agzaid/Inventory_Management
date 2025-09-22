@@ -372,9 +372,9 @@ namespace Application.Services.Implementation
 
                     ShippingFreight shipping = null;
                     IEnumerable<DeliverySlot> deliverySlot;
-                    double shippingPrice = 0;
+                    decimal shippingPrice = 0;
                     var grandTotalPrice = 0;
-                    if (!string.IsNullOrWhiteSpace(cart.ShippingAreaPrice) && double.TryParse(cart.ShippingAreaPrice, out var parsedShippingPrice))
+                    if (!string.IsNullOrWhiteSpace(cart.ShippingAreaPrice) && decimal.TryParse(cart.ShippingAreaPrice, out var parsedShippingPrice))
                     {
                         shippingPrice = parsedShippingPrice;
                         shipping = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.Price == parsedShippingPrice);
@@ -430,7 +430,7 @@ namespace Application.Services.Implementation
                         GrandTotalAmount = cart.TotalPrice,
                         AmountBeforeShipping = cart.PriceBeforeShipping,
                         Customer = customer,
-                        ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
+                        ShippingPrice = decimal.Parse(cart.ShippingAreaPrice ?? "0"),
                         Address = cart.CustomerAddress,
                         DeliverySlotsAsString = cart.SelectedSlots,
                         //  UserDeliverySlots = userDeliverySlot,
@@ -459,7 +459,7 @@ namespace Application.Services.Implementation
                                 ProductName = product.ProductName,
                                 PriceSoldToCustomer = product.SellingPrice,
                                 Quantity = item.Quantity,
-                                ShippingPrice = double.Parse(cart.ShippingAreaPrice ?? "0"),
+                                ShippingPrice = decimal.Parse(cart.ShippingAreaPrice ?? "0"),
                                 StockQuantityFromProduct = product.StockQuantity,
                                 DifferencePercentageFromProduct = product.DifferencePercentage,
                                 BuyingPriceFromProduct = product.BuyingPrice,

@@ -12,6 +12,7 @@ namespace Application.Common.Interfaces
         ICategoryRepository Category { get; }
         IImageRepository Image { get; }
         IInvoiceRepository Invoice { get; }
+        IInvoiceItemRepository InvoiceItem { get; }
         IShippingFreightRepository ShippingFreight { get; }
         ICustomerRepository Customer { get; }
         IDeliverySlotRepository DeliverySlot { get; }

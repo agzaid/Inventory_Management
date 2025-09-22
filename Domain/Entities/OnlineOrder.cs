@@ -22,12 +22,12 @@ namespace Domain.Entities
         public string? IndividualProductsPrices { get; set; }
         [MaxLength(100)]
         public string? IndividualProductsQuatities { get; set; }
-        public double? GrandTotalAmount { get; set; }
-        public double? AmountBeforeShipping{ get; set; }
+        public decimal? GrandTotalAmount { get; set; }
+        public decimal? AmountBeforeShipping{ get; set; }
         public decimal? AllDiscountInput { get; set; }
         [MaxLength(1000)]
         public string? Address { get; set; }
-        public double? ShippingPrice { get; set; }
+        public decimal? ShippingPrice { get; set; }
 
         [MaxLength(200)]
         public string? StreetName { get; set; }

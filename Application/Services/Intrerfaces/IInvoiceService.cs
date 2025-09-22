@@ -20,5 +20,6 @@ namespace Application.Services.Intrerfaces
         Task<bool> UpdateInvoice(ProductVM productVM);
         Task<bool> DeleteInvoice(int id);
         Task<bool> HardDeleteInvoice(int id);
+        Task<List<MonthlyInventoryVM>> GetReportByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
 }
