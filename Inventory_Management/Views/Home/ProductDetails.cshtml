@@ -144,31 +144,43 @@
 
                     <div class="mb-3">
                         <span class="product-price">
-                            $@Model.SellingPrice
-                            @if (Model.IsKilogram)
-                            {
-                                <span>/ Kg</span>
-                            }
+                            $@(Model.IsKilogram
+                                                        ? string.Format("{0:0.00}", (Model.SellingPrice ?? 0) * 0.25m)
+                                                        : string.Format("{0:0.00}", Model.SellingPrice ?? 0))
                         </span>
+                        @if (Model.IsKilogram)
+                        {
+                            <small class="text-muted">($@string.Format("{0:0.00}", Model.SellingPrice ?? 0) / Kg)</small>
+                        }
                         <del>$@Model.OtherShopsPrice</del>
                     </div>
+
 
                     <p class="text-muted">@Model.Description</p>
                     <h6 class="text-success">@Model.DifferencePercentage% discount</h6>
                     <hr />
 
                     <!-- Quantity -->
+                    <!-- Quantity -->
                     <div class="mb-4 product-quantity"
                          data-product-id="@Model.Id"
                          data-product-name="@Model.ProductName"
-                         data-product-price="@Model.SellingPrice">
+                         data-product-price="@Model.SellingPrice"
+                         data-unit="@(Model.IsKilogram ? "kg" : "piece")">
+
                         <label class="mb-2 fw-semibold">Quantity</label>
                         <div class="quantity-wrapper">
                             <button type="button" class="button-minus">−</button>
-                            <input type="text" class="quantity-input" value="1" />
+                            <input type="text"
+                                   class="quantity-input"
+                                   value="@(Model.IsKilogram ? "0.25" : "1")"
+                                   data-unit="@(Model.IsKilogram ? "kg" : "piece")" />
                             <button type="button" class="button-plus">+</button>
                         </div>
+
+                       
                     </div>
+
 
                     <!-- Buttons -->
                     <button class="btn btn-danger-modern btn-modern remove-from-cart"
@@ -204,19 +216,31 @@
           $('.small-Img').on('click', function () {
             $('#featured-image').attr('src', $(this).attr('src'));
         });
-        function getStepSize(unit) {
+                function getStepSize(unit) {
             return unit === 'kg' ? 0.25 : 1;
         }
-  // Just update input field values — no localStorage
+
+        function updateCalculatedPrice(parent) {
+            const input = parent.find('.quantity-input');
+            const price = parseFloat(parent.data('product-price')) || 0;
+            const quantity = parseFloat(input.val()) || 0;
+            const total = (price * quantity).toFixed(2);
+
+            parent.find('#calculated-price').text(`$${total}`);
+        }
+
+        // Plus button
         $('.button-plus').on('click', function () {
             const parent = $(this).closest('.product-quantity');
             const input = parent.find('.quantity-input');
-            const unit = parent.data('unit'); // "kg" or "piece"
+            const unit = parent.data('unit');
             const step = getStepSize(unit);
 
             let currentVal = parseFloat(input.val()) || 0;
-            let newVal = (currentVal + step).toFixed(2); // Keep decimals for kg
+            let newVal = (currentVal + step).toFixed(2);
             input.val(newVal);
+
+            updateCalculatedPrice(parent);
 
             const productId = parent.data('product-id');
             if (isInCart(productId)) {
@@ -226,6 +250,7 @@
             }
         });
 
+        // Minus button
         $('.button-minus').on('click', function () {
             const parent = $(this).closest('.product-quantity');
             const input = parent.find('.quantity-input');
@@ -235,6 +260,8 @@
             let currentVal = parseFloat(input.val()) || 0;
             let newVal = Math.max(currentVal - step, step).toFixed(2);
             input.val(newVal);
+
+            updateCalculatedPrice(parent);
 
             const productId = parent.data('product-id');
             if (isInCart(productId)) {

@@ -373,10 +373,10 @@
               var rowIndex = $('#cartTable tbody tr').length;
              var newRowHtml = `
                  <tr id="row-${rowIndex}">
-                 <td><a onclick="Delete(event)"><i class="ri-close-circle-line text-danger"></i></a></td>
+                 <td><a onclick="Delete(event)" style="cursor:pointer"><i class="ri-close-circle-line text-danger"></i></a></td>
                  <td>
                      <div class="d-flex align-items-center justify-content-center">
-                         <div class="font-weight-bold text-danger">${data.productName}</div>
+                         <div class="font-weight-bold text-danger"><h6>${data.productName}</h6></div>
                          <input class="font-weight-bold text-danger product-input" name="productInput[${rowIndex}]" id="productInput[${rowIndex}]" value="${data.productName}" hidden>
                      </div>
                  </td>
@@ -388,7 +388,7 @@
                  <input id="productInputId[${rowIndex}]" value="${data.productId}" data-id="${data.productId}" data-name="${data.productName}"
                  data-value="${data.productPrice}" hidden>
                  <button class="btn btn-white" type="button" id="button-plus-${rowIndex}" onclick="Add(event, ${rowIndex})"> + </button>
-                 <input type="number" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}">
+                 <input type="number" class="form-control stock-input p-1" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}">
                  <input type="text" class="form-control isKilogram" value="${data.isKilogram}" hidden>
                  <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
                  </td>
