@@ -86,7 +86,8 @@
     "TradeInOffer": "Trade-in Offer",
     "Currency": "EGP",
     "NoProductsFound": "No Products Found",
-    "TryExploring": "Try exploring other categories or check back later for new arrivals."
+    "TryExploring": "Try exploring other categories or check back later for new arrivals.",
+    "AddToCart": "Add to Cart"
   },
   "ar": {
     "Greeting": "كيف حالك",
@@ -173,6 +174,7 @@
     "ItemWasDeletedSuccessfully": "تم حذف العنصر بنجاح",
     "Currency": "EGP",
     "NoProductsFound": "لا يوجد منتجات اخرى",
-    "TryExploring": "حاول استكشاف فئات أخرى أو تحقق مرة أخرى لاحقًا لوصول منتجات جديدة."
+    "TryExploring": "حاول استكشاف فئات أخرى أو تحقق مرة أخرى لاحقًا لوصول منتجات جديدة.",
+    "AddToCart": "أضف إلى السلة"
   }
 }

@@ -42,7 +42,7 @@ namespace Domain.Entities
         public Brand? Brand { get; set; } // Navigation property
 
         public int? SupplierId { get; set; } // Foreign Key
-        public Supplier? Supplier { get; set; } // Navigation property
+        public Seller? Supplier { get; set; } // Navigation property
         //public ICollection<Inventory>? Inventory { get; set; } // Navigation property
 
         public ICollection<InvoiceItem>? InvoiceItems { get; set; } // Navigation property

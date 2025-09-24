@@ -559,7 +559,7 @@ namespace Application.Services.Implementation
                     var productVM = new ProductVM()
                     {
                         Id = product.Id,
-                        ProductName = product.ProductName ?? "",
+                        ProductName = product.DisplayProductName ?? "",
                         Description = product.Description ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",

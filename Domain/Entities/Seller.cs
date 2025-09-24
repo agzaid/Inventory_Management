@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Supplier : BaseEntity
+    public class Seller : BaseEntity
     {
 
         [MaxLength(500)]
