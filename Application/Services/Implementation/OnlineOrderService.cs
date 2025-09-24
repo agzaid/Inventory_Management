@@ -84,6 +84,7 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     CategoryName = s.CategoryName?.ToUpper(),
+                    CategoryNameAr = s.CategoryNameAr,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     Description = s.Description,
                 }).ToList();

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Domain.Models
 {
@@ -13,5 +14,14 @@ namespace Domain.Models
         public string? Description { get; set; }
         public string? FormToken { get; set; }
         public string? CreatedDate { get; set; }
+
+        public string? DisplayCategoryName
+        {
+            get
+            {
+                var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                return lang == "ar" ? CategoryNameAr : CategoryName;
+            }
+        }
     }
 }
