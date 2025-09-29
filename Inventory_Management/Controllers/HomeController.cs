@@ -31,7 +31,7 @@ namespace Inventory_Management.Controllers
             _feedbackService = feedbackService;
             _localizer = localizer;
         }
-
+        [RateLimit(100, 60)]
         public IActionResult Index(string? status, string? message)
         {
             //var stopwatch = Stopwatch.StartNew();
@@ -50,6 +50,7 @@ namespace Inventory_Management.Controllers
             //Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
             return View(portal);
         }
+        [RateLimit(100, 60)]
         public IActionResult Shop()
         {
             //var stopwatch = Stopwatch.StartNew();
@@ -70,6 +71,7 @@ namespace Inventory_Management.Controllers
             return View(products);
         }
         [HttpGet]
+        [RateLimit(100, 60)]
         public async Task<IActionResult> GetProductsByCategory(int? categoryId)
         {
             var products = await _onlineOrderService.GetProductsByCategory(categoryId);
@@ -81,6 +83,7 @@ namespace Inventory_Management.Controllers
             var products = await _onlineOrderService.GetProductsByName(name);
             return PartialView("_ProductListPartial", products.Data);
         }
+        [RateLimit(100, 60)]
         public IActionResult ProductDetails(int Id)
         {
             var products = _onlineOrderService.GetProductDetails(Id);
@@ -88,6 +91,7 @@ namespace Inventory_Management.Controllers
             return View(products);
         }
 
+        [RateLimit(10, 60)]
         public async Task<IActionResult> Cart()
         {
             var cartvm = new Inventory_Management.Models.CartVM()
@@ -100,6 +104,7 @@ namespace Inventory_Management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RateLimit(10, 60)]
         public IActionResult CheckoutDetails([FromBody] Inventory_Management.Models.CartVM data)
         {
             if (data == null)
@@ -141,6 +146,7 @@ namespace Inventory_Management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RateLimit(10, 60)]
         public async Task<IActionResult> Feedback(string name, string email, string subject, string phone, string message, List<IFormFile> ImagesFormFiles)
         {
             //if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(message) || string.IsNullOrEmpty(phone))

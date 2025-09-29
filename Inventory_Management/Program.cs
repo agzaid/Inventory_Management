@@ -109,7 +109,24 @@ else
 }
 
 // Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
-app.UseMiddleware<RateLimitingMiddleware>(20, TimeSpan.FromSeconds(10));
+app.UseMiddleware<RateLimitingMiddleware>();
+//app.UseWhen(
+//    ctx => ctx.Request.Path.StartsWithSegments("/cart"),
+//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(30, TimeSpan.FromMinutes(1))
+//);
+//app.UseWhen(
+//    ctx => ctx.Request.Path.Value?.Contains("Cart", StringComparison.OrdinalIgnoreCase) == true,
+//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromMinutes(1))
+//);      // ~1 request every 2 sec
+//app.UseWhen(
+//    ctx => ctx.Request.Path.Value?.Contains("CheckoutDetails", StringComparison.OrdinalIgnoreCase) == true,
+//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromMinutes(1))
+//);
+//// 10 per minute per IP
+//app.UseWhen(
+//    ctx => ctx.Request.Path.StartsWithSegments("/admin"),
+//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(300, TimeSpan.FromMinutes(1))
+//);
 
 
 
