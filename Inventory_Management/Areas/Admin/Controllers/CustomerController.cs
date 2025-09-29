@@ -1,6 +1,8 @@
 ﻿using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 
 //using Inventory_Management.Models;
@@ -10,6 +12,8 @@ using System.Threading.Tasks;
 namespace Inventory_Management.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+
     public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;

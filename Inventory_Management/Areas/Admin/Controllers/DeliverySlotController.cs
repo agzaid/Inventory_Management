@@ -1,10 +1,13 @@
 ﻿using Application.Services.Intrerfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+
     public class DeliverySlotController : Controller
     {
         private readonly IDeliverySlotService _deliverySlotService;

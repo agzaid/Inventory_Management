@@ -2,12 +2,15 @@
 using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Inventory_Management.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+
     public class InvoiceController : Controller
     {
         private readonly ICategoryService _categoryService;

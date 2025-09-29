@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
