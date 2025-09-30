@@ -389,6 +389,7 @@
         <script>
             //
             $(document).ready(function() {
+                var selectedCategoryId = null;
                 var pageNumber = 2;
                 var pageSize = 20;
                 var isLoading = false;
@@ -405,20 +406,21 @@
                 }
 
                 // Category filter
-                    $('.category-dropdown').on('click', function () {
-                var categoryId = $(this).data('value');
-                var categoryName = $(this).innerText;
+               $('.category-dropdown').on('click', function () {
+                selectedCategoryId = $(this).data('value') || null; // save it
+                var categoryName = $(this).text();
                 $('#productSpecified').text(categoryName);
+
                 $('#loader').show();
                 $.ajax({
                     url: '/Home/GetProductsByCategory',
                     type: 'GET',
-                    data: { categoryId: categoryId },
+                    data: { categoryId: selectedCategoryId },
                     success: function (data) {
                         $('#loader').hide();
                         $('#pro-container').html(data);
                         pageNumber = 2;
-                        hasMoreData = true; // reset when switching category
+                        hasMoreData = true;
                     }
                 });
             });
@@ -438,10 +440,11 @@
                 isLoading = true;
 
                 var $url = "@Url.Action("GetPaginatedProducts", "Home")";
-                var parameter = {
-                    pageNumber: pageNumber,
-                    pageSize: pageSize
-                };
+               var parameter = {
+                pageNumber: pageNumber,
+                pageSize: pageSize,
+                categoryId: selectedCategoryId // send current category
+                    };
 
                 $('#loader').show();
                 _Ajax.ReturnHTML($url, parameter, "GET", function () { },
@@ -470,7 +473,8 @@
                 var $url = "@Url.Action("GetPaginatedProducts", "Home")";
                 var parameter = {
                     pageNumber: pageNumber,
-                    pageSize: pageSize
+                    pageSize: pageSize,
+                    categoryId:selectedCategoryId
                 };
 
                 $('#loader').show();

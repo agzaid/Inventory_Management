@@ -235,11 +235,17 @@ namespace Application.Services.Implementation
                 return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
         }
-        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize)
+        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId)
         {
             try
             {
                 Expression<Func<Product, bool>> filter = s => s.IsDeleted == false;
+                // apply category filter if provided
+                if (categoryId.HasValue)
+                {
+                    int catId = categoryId.Value; // capture for closure
+                    filter = s => !s.IsDeleted && s.CategoryId == catId;
+                }
                 Expression<Func<Product, object>> includes = x => x.Images;
                 Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.ProductName);

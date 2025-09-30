@@ -280,6 +280,7 @@
         $(document).ready(function() {
             var pageNumber = 2;
             var pageSize = 20;
+            var selectedCategoryId = null;
 
              var cart = JSON.parse(localStorage.getItem('cart')) || [];
              if(cart == [] || $("#cartNum").length==0){
@@ -291,9 +292,10 @@
 
 
                   $('.category-dropdown').on('click', function () {
-                      var categoryId = $(this).data('value');
+                      selectedCategoryId = $(this).data('value') || null; // save it
+
                       var url = '@Url.Action("GetProductsByCategory", "Home")';
-                      Search(categoryId,url);
+                      Search(selectedCategoryId,url);
              });
 
                   $('#inputSearch').on('input', function () {
@@ -309,7 +311,9 @@
                              var $url = "@Url.Action("GetPaginatedProducts", "Home")";
                              var parameter = {
                                  pageNumber: pageNumber,
-                                 pageSize: pageSize
+                                 pageSize: pageSize,
+                                 categoryId: selectedCategoryId // send current category
+
                              };
                              $('#loader').show();
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },

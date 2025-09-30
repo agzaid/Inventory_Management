@@ -23,7 +23,7 @@ namespace Application.Services.Intrerfaces
         ProductVM GetProductById(int id);
         Result<List<OnlineOrderVM>> GetAllOrdersToBeInvoiced();
         Result<InvoiceVM> GetInvoiceForSpecificOnlineOrder(int id);
-        Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize);
+        Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId);
         Task<Result<bool>> UpdateOrderStatus(string orderNum, string options);
         Task<List<SelectListItem>> DistrictSelectList();
         Result<List<OnlineOrderVM>> GetAllOrdersPending();

@@ -7,6 +7,7 @@ using Infrastructure.Data;
 using Inventory_Management.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -23,53 +24,54 @@ namespace Inventory_Management.Controllers
         private readonly IOnlineOrderService _onlineOrderService;
         private readonly IFeedbackService _feedbackService;
         private readonly IStringLocalizer _localizer;
+        private readonly IMemoryCache _cache;
 
-        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IStringLocalizer localizer)
+        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IStringLocalizer localizer, IMemoryCache cache)
         {
             _logger = logger;
             _onlineOrderService = onlineOrderService;
             _feedbackService = feedbackService;
             _localizer = localizer;
+            _cache = cache;
         }
         [RateLimit(100, 60)]
         public IActionResult Index(string? status, string? message)
         {
-            //var stopwatch = Stopwatch.StartNew();
+            // try to get from cache
+            if (!_cache.TryGetValue("PortalProducts", out var portal))
+            {
+                portal = _onlineOrderService.GetAllProductsForPortal();
 
-            var portal = _onlineOrderService.GetAllProductsForPortal();
+                // set cache with expiration
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)) // hard expiry
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(1)); // reset if accessed
+
+                _cache.Set("PortalProducts", portal, cacheOptions);
+            }
+
             if (status == "success")
-            {
                 TempData["success"] = message;
-            }
             else
-            {
                 TempData["error"] = message;
-            }
-            //ViewData["Greeting"] = _localizer["Greeting"];
-            //stopwatch.Stop();
-            //Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
+
             return View(portal);
         }
         [RateLimit(100, 60)]
         public IActionResult Shop()
         {
-            //var stopwatch = Stopwatch.StartNew();
+            if (!_cache.TryGetValue("ShopProducts", out var products))
+            {
+                products = _onlineOrderService.GetAllProductsForPortal();
 
+                _cache.Set("ShopProducts", products,
+                    new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)));
+            }
 
-            var products = _onlineOrderService.GetAllProductsForPortal();
-            //if (status == "success")
-            //{
-            //    TempData["success"] = message;
-            //}
-            //else
-            //{
-            //    TempData["error"] = message;
-            //}
-
-            //stopwatch.Stop();
-            //Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
             return View(products);
         }
+
         [HttpGet]
         [RateLimit(100, 60)]
         public async Task<IActionResult> GetProductsByCategory(int? categoryId)
@@ -173,17 +175,49 @@ namespace Inventory_Management.Controllers
         //    var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize);
         //    return PartialView("_ProductListPartial", product.Data.Items);
         //}
-        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize)
+        //public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize, int? categoryId)
+        //{
+        //    var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize, categoryId);
+
+
+        //    if (!product.Data.Items.Any())
+        //    {
+        //        return Content(""); // return empty string
+        //    }
+
+        //    return PartialView("_ProductListPartial", product.Data.Items);
+        //}
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize, int? categoryId)
         {
-            var product = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize);
+            // Build unique cache key
+            var cacheKey = $"Products_Page_{pageNumber}_Size_{pageSize}_Cat_{categoryId ?? 0}";
 
-
-            if (!product.Data.Items.Any())
+            if (!_cache.TryGetValue(cacheKey, out PaginatedResult<ProductVM> product))
             {
-                return Content(""); // return empty string
+                var result = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize, categoryId);
+
+                // Extract the PaginatedResult<ProductVM> from the Result wrapper
+                product = result?.Data;
+
+                // Only cache if data exists
+                if (product?.Items?.Any() == true)
+                {
+                    _cache.Set(
+                        cacheKey,
+                        product,
+                        new MemoryCacheEntryOptions()
+                            .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)) // short cache to avoid stale
+                            .SetSlidingExpiration(TimeSpan.FromMinutes(1))
+                    );
+                }
             }
 
-            return PartialView("_ProductListPartial", product);
+            // If no products, return empty (do not cache empty results for too long)
+            if (product == null || !product.Items.Any())
+                return Content("");
+
+            return PartialView("_ProductListPartial", product.Items);
         }
 
         public IActionResult Contact()
