@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +18,15 @@ namespace Domain.Entities
         public string? Description { get; set; }
 
         public ICollection<Product>? Products { get; set; }
+
+
+        public string? DisplayCategoryName
+        {
+            get
+            {
+                var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                return lang == "ar" ? CategoryNameAr : CategoryName;
+            }
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace Application.Services.Implementation
                     ProductName = s.ProductName,
                     ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
-                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    CategoryName = s.Category?.DisplayCategoryName,
                     SellingPrice = s.SellingPrice,
                     IsKilogram = s.IsKilogram,
                     PricePerGram = s.PricePerGram,
