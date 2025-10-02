@@ -37,8 +37,10 @@ namespace Inventory_Management.Controllers
         [RateLimit(100, 60)]
         public IActionResult Index(string? status, string? message)
         {
+            var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            var cacheKey = $"PortalProducts_{culture}";
             // try to get from cache
-            if (!_cache.TryGetValue("PortalProducts", out var portal))
+            if (!_cache.TryGetValue(cacheKey, out var portal))
             {
                 portal = _onlineOrderService.GetAllProductsForPortal();
 
@@ -47,7 +49,7 @@ namespace Inventory_Management.Controllers
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)) // hard expiry
                     .SetSlidingExpiration(TimeSpan.FromMinutes(1)); // reset if accessed
 
-                _cache.Set("PortalProducts", portal, cacheOptions);
+                _cache.Set(cacheKey, portal, cacheOptions);
             }
 
             if (status == "success")
@@ -60,11 +62,13 @@ namespace Inventory_Management.Controllers
         [RateLimit(100, 60)]
         public IActionResult Shop()
         {
-            if (!_cache.TryGetValue("ShopProducts", out var products))
+            var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            var cacheKey = $"ShopProducts_{culture}";
+            if (!_cache.TryGetValue(cacheKey, out var products))
             {
                 products = _onlineOrderService.GetAllProductsForPortal();
 
-                _cache.Set("ShopProducts", products,
+                _cache.Set(cacheKey, products,
                     new MemoryCacheEntryOptions()
                         .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)));
             }

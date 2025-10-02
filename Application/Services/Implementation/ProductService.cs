@@ -48,6 +48,7 @@ namespace Application.Services.Implementation
                 product.ProductNameAr = product.ProductNameAr?.Trim();
                 product.Description = product.Description?.ToLower().Trim();
                 product.Brand = product.Brand?.ToLower().Trim();
+                product.Seller = product.Seller?.ToLower().Trim();
                 product.ProductTags = product.ProductTags?.ToLower().Trim();
                 product.Barcode = product.Barcode?.ToLower().Trim();
                 product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
@@ -101,6 +102,7 @@ namespace Application.Services.Implementation
                     ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "2000-01-01"),
                     CategoryId = int.Parse(product.CategoryId),
                     BrandId = int.Parse(product.BrandId),
+                    SellerId = int.Parse(product.SellerId),
                     StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
                     ProductTags = product.ProductTags ?? "",
                     Images = listOfImages
@@ -127,6 +129,7 @@ namespace Application.Services.Implementation
                 var productVM = new ProductVM();
                 var category = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
                 var brand = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false).ToList();
+                var seller = _unitOfWork.Seller.GetAll(s => s.IsDeleted == false).ToList();
                 productVM.ListOfCategory = category.Select(v => new SelectListItem
                 {
                     Text = v.CategoryName,
@@ -135,6 +138,11 @@ namespace Application.Services.Implementation
                 productVM.ListOfBrands = brand.Select(v => new SelectListItem
                 {
                     Text = v.BrandName,
+                    Value = v.Id.ToString()
+                }).ToList();
+                productVM.ListOfSellers = seller.Select(v => new SelectListItem
+                {
+                    Text = v.SellerName,
                     Value = v.Id.ToString()
                 }).ToList();
                 return productVM;
@@ -329,6 +337,7 @@ namespace Application.Services.Implementation
                         StockQuantity = product.StockQuantity ?? 0,
                         CategoryId = product.CategoryId.ToString() ?? "",
                         BrandId = product.BrandId.ToString() ?? "",
+                        SellerId = product.SellerId.ToString() ?? "",
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
                         ListOfRetrievedImages = product.Images?.Select(s => s.FilePath).ToList() ?? new List<string>(),
@@ -347,9 +356,15 @@ namespace Application.Services.Implementation
                     //}
                     var category = await _unitOfWork.Category.GetAllAsync(s => s.IsDeleted == false);
                     var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false);
+                    var sellers = await _unitOfWork.Seller.GetAllAsync(s => s.IsDeleted == false);
                     productVM.ListOfCategory = category.Select(v => new SelectListItem
                     {
                         Text = v.CategoryName,
+                        Value = v.Id.ToString()
+                    }).ToList();
+                    productVM.ListOfSellers = sellers.Select(v => new SelectListItem
+                    {
+                        Text = v.SellerName,
                         Value = v.Id.ToString()
                     }).ToList();
                     productVM.ListOfBrands = brands.Select(v => new SelectListItem

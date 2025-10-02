@@ -20,6 +20,7 @@ namespace Application.Common.Interfaces
         IOnlineOrderRepository OnlineOrder { get; }
         IBrandRepository Brand { get; }
         IFeedbackRepository Feedback { get; }
+        ISellerRepository Seller { get; }
         Task SaveAsync();
 
     }

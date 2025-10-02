@@ -27,6 +27,11 @@
                                                 <span asp-validation-for="ProductNameAr" class="text-danger"></span>
                                             </div> 
                                             <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <input class="form-control" asp-for="Description">
+                                                <span asp-validation-for="Description" class="text-danger"></span>
+                                            </div>
+                                            <div class="mb-3">
                                                 <label for="inputVendor" class="form-label">Brand</label>
                                                 <select class="form-select mb-2" aria-label="multiple select example"
                                                         asp-for="BrandId" asp-items="@(new SelectList(Model.ListOfBrands, "Value", "Text"))" data-placeholder=" Choose one thing">
@@ -34,9 +39,11 @@
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Description</label>
-                                                <input class="form-control" asp-for="Description">
-                                                <span asp-validation-for="Description" class="text-danger"></span>
+                                                <label for="inputVendor" class="form-label">Seller</label>
+                                                <select class="form-select mb-2" aria-label="multiple select example"
+                                                        asp-for="SellerId" asp-items="@(new SelectList(Model.ListOfSellers, "Value", "Text"))" data-placeholder=" Choose one thing">
+                                                    <option disabled></option>
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Barcode</label>

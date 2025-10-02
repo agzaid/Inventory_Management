@@ -165,6 +165,7 @@
                     <div class="mb-4 product-quantity"
                          data-product-id="@Model.Id"
                          data-product-name="@Model.ProductName"
+                         data-product-display="@Model.DisplayProductName"
                          data-product-price="@Model.SellingPrice"
                          data-unit="@(Model.IsKilogram ? "kg" : "piece")">
 
@@ -317,6 +318,7 @@
                      const parent = $('.product-quantity'); // You can adjust this selector if multiple products
                      const productId = parent.data('product-id');
                      const productName = parent.data('product-name');
+                     const productDisplayName= parent.data('product-display');
                      const productPrice = parent.data('product-price');
                      const quantity = parseFloat(parent.find('.quantity-input').val()) || 1;
                            const unit = $(".quantity-input").data('unit');
@@ -329,6 +331,7 @@
                      } else {
                          cart.push({
                              productId,
+                             productDisplayName,
                              productName,
                              productPrice,
                              quantity,

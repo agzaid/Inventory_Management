@@ -41,8 +41,8 @@ namespace Domain.Entities
         public int? BrandId { get; set; } // Foreign Key
         public Brand? Brand { get; set; } // Navigation property
 
-        public int? SupplierId { get; set; } // Foreign Key
-        public Seller? Supplier { get; set; } // Navigation property
+        public int? SellerId { get; set; } // Foreign Key
+        public Seller? Seller { get; set; } // Navigation property
         //public ICollection<Inventory>? Inventory { get; set; } // Navigation property
 
         public ICollection<InvoiceItem>? InvoiceItems { get; set; } // Navigation property

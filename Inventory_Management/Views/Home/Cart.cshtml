@@ -280,95 +280,99 @@
         }
 
 
-               function translatedMessages() {
-                   var encoded = $('#successMessageOnsubmission').data('val-custom');
-                   decoded = $('<textarea/>').html(encoded).text();
-                   var encodedOurTeamWillContactYouSoon = $('#OurTeamWillContactYouSoon').data('val-custom');
-                   decodedOurTeamWillContactYouSoon = $('<textarea/>').html(encodedOurTeamWillContactYouSoon).text();
-               };
-            function submitCart(){
-                 const token = $('input[name="__RequestVerificationToken"]').val();
+        function translatedMessages() {
+            var encoded = $('#successMessageOnsubmission').data('val-custom');
+            decoded = $('<textarea/>').html(encoded).text();
+            var encodedOurTeamWillContactYouSoon = $('#OurTeamWillContactYouSoon').data('val-custom');
+            decodedOurTeamWillContactYouSoon = $('<textarea/>').html(encodedOurTeamWillContactYouSoon).text();
+        };
+        function submitCart() {
+            const token = $('input[name="__RequestVerificationToken"]').val();
 
-                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
-                 var subTotal = 0;
-                 cart.forEach(function(item){
-                     subTotal += item.quantity * item.productPrice;
-                 });
+            // Normalization helper
+            function normalizeNumber(val) {
+                if (!val) return 0;
+                return parseFloat(val.toString().replace("٫", ".").replace(",", "."));
+            }
 
-                  let selectedText = $("#AreaId option:selected").text();
-                    // e.g. "2 - al hadaba al wosta (mokattam) (15)"
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var subTotal = 0;
+            cart.forEach(function (item) {
+                subTotal += normalizeNumber(item.quantity) * normalizeNumber(item.productPrice);
+            });
 
-                    // Use regex to get the number inside the last ()
-                    let match = selectedText.match(_RegexFloat);
-                    let val="";
-                    if (match) {
-                        val = match[1]; // "15"
-                        console.log(val);
-                    }
+            // Extract area price
+            let selectedText = $("#AreaId option:selected").text();
+            let match = selectedText.match(_RegexFloat);
+            let val = match ? normalizeNumber(match[1]) : 0;
 
-                 var Area = val;
-                 var allTotal = subTotal + parseFloat(Area);
+            var Area = val;
+            var allTotal = subTotal + Area;
 
-                 var selectedSlots = selectedSlotsValue;
-                 var customerName = $("#CustomerName").val();
-                 var customerAddress = $("#CustomerAddress").val();
-                 var customerPhone = $("#CustomerPhone").val();
-                 var optionalCustomerPhone = $("#OptionalCustomerPhone").val();
-                 var StreetName = $("#StreetName").val();
-                 var BuildingNumber = $("#BuildingNumber").val();
-                 var Floor = $("#Floor").val();
-                 var ApartmentNumber = $("#ApartmentNumber").val();
-                 var LandMark = $("#LandMark").val();
-                 var locationInput = $("#locationInput").val();
-                 var OrderNumber = $("#OrderNumber").val();
+            // Collect form values
+            var selectedSlots = selectedSlotsValue;
+            var customerName = $("#CustomerName").val();
+            var customerAddress = $("#CustomerAddress").val();
+            var customerPhone = $("#CustomerPhone").val();
+            var optionalCustomerPhone = $("#OptionalCustomerPhone").val();
+            var StreetName = $("#StreetName").val();
+            var BuildingNumber = $("#BuildingNumber").val();
+            var Floor = $("#Floor").val();
+            var ApartmentNumber = $("#ApartmentNumber").val();
+            var LandMark = $("#LandMark").val();
+            var locationInput = $("#locationInput").val();
+            var OrderNumber = $("#OrderNumber").val();
 
-                 var $url = "@Url.Action("CheckoutDetails", "Home")";
-                 var parameter =
-                 {
-                     OrderNumber: OrderNumber,
-                     TotalPrice: allTotal,
-                     PriceBeforeShipping : subTotal,
-                     ShippingAreaPrice: Area,
-                     CustomerName: customerName,
-                     CustomerAddress: customerAddress,
-                     CustomerPhone: customerPhone,
-                     OptionalCustomerPhone: optionalCustomerPhone,
-                     StreetName: StreetName,
-                     BuildingNumber: BuildingNumber,
-                     Floor: Floor,
-                     ApartmentNumber: ApartmentNumber,
-                     LandMark: LandMark,
-                     locationInput: locationInput,
-                     SelectedSlots : selectedSlots,
-                     ItemsVMs:cart
-                 };
-                 if(customerName!="" && customerAddress!="" && customerPhone!=""){
-                    _Ajax.GETWithParameters($url, parameter, "POST",token, function () { },
-                     function (data) {
-                         if (data.isSuccess == true) {
-                         _TOASTR.Success(decoded);
-                         _TOASTR.Success(decodedOurTeamWillContactYouSoon);
-                         localStorage.removeItem('cart');
-                         // var cart = JSON.parse(localStorage.getItem('cart')) || [];
-                         //     if(cart == []){
-                         //         $("#cartNum").innerHTML= 0;
-                         //         $("#cartNum1").innerHTML= 0;
-                         //     }else{
-                         //            $("#cartNum").innerHTML = cart.length;
-                         //            $("#cartNum1").innerHTML = cart.length;
-                         // }
-                         setTimeout(function () {
-                                 window.location.href = '/';
-                             }, 2000);
-                         }else {
-                             _TOASTR.Error(data.message);
-                         }
-                     },
-                     function (xhr) {
-                         _TOASTR.Error("Something went wrong..!!");
-                     });
-                 }
-         };
+            var $url = "@Url.Action("CheckoutDetails", "Home")";
+
+            // Build payload
+            var parameter = {
+                OrderNumber: OrderNumber,
+                TotalPrice: allTotal,
+                PriceBeforeShipping: subTotal,
+                ShippingAreaPrice: Area,
+                CustomerName: customerName,
+                CustomerAddress: customerAddress,
+                CustomerPhone: customerPhone,
+                OptionalCustomerPhone: optionalCustomerPhone,
+                StreetName: StreetName,
+                BuildingNumber: BuildingNumber,
+                Floor: Floor,
+                ApartmentNumber: ApartmentNumber,
+                LandMark: LandMark,
+                locationInput: locationInput,
+                SelectedSlots: selectedSlots,
+                ItemsVMs: cart.map(c => ({
+                    productId: c.productId,
+                    productName: c.productName,
+                    productDisplayName: c.productDisplayName,
+                    productPrice: normalizeNumber(c.productPrice),
+                    quantity: normalizeNumber(c.quantity),
+                    isKilogram: c.isKilogram
+                }))
+            };
+
+            if (customerName !== "" && customerAddress !== "" && customerPhone !== "") {
+                _Ajax.GETWithParameters($url, parameter, "POST", token, function () { },
+                    function (data) {
+                        if (data.isSuccess === true) {
+                            _TOASTR.Success(decoded);
+                            _TOASTR.Success(decodedOurTeamWillContactYouSoon);
+                            localStorage.removeItem('cart');
+
+                            setTimeout(function () {
+                                window.location.href = '/';
+                            }, 2000);
+                        } else {
+                            _TOASTR.Error(data.message);
+                        }
+                    },
+                    function (xhr) {
+                        _TOASTR.Error("Something went wrong..!!");
+                    });
+            }
+        }
+
          function AddNewRow(data){
               var rowIndex = $('#cartTable tbody tr').length;
              var newRowHtml = `
@@ -376,7 +380,7 @@
                  <td><a onclick="Delete(event)" style="cursor:pointer"><i class="ri-close-circle-line text-danger"></i></a></td>
                  <td>
                      <div class="d-flex align-items-center justify-content-center">
-                         <div class="font-weight-bold text-danger"><h6>${data.productName}</h6></div>
+                         <div class="font-weight-bold text-danger"><h6>${data.productDisplayName}</h6></div>
                          <input class="font-weight-bold text-danger product-input" name="productInput[${rowIndex}]" id="productInput[${rowIndex}]" value="${data.productName}" hidden>
                      </div>
                  </td>
@@ -551,6 +555,10 @@
                     });
                     console.log(selectedSlotsValue);
               }
+      function normalizeNumber(val) {
+            if (!val) return 0;
+            return parseFloat(val.toString().replace("٫", ".").replace(",", "."));
+        }
 
             // $('.price-input').each(function() {
             //      debugger;

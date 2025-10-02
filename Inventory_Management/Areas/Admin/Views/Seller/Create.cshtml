@@ -1,0 +1,88 @@
+﻿@model Domain.Models.SellerVM
+
+
+<div class="page-wrapper">
+    <div class="page-content">
+        <div class="row">
+            <div class="col">
+                <div class="card radius-10">
+                    <div class="card-body p-4">
+                        <h5 class="card-title">Add New Seller</h5>
+                        <hr />
+                        <div class="form-body mt-4">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="border border-3 p-4 rounded">
+                                        <form  asp-action="Create" asp-controller="Seller" enctype="multipart/form-data">
+                                            <div class="form-body mt-4">
+                                                @* <div class="row">
+                                                    <div class="col-lg-8">
+                                                        <div class="border border-3 p-4 rounded"> *@
+                                                <div class="col-12">
+                                                    <label class="form-label">Seller Name</label>
+                                                    <input class="form-control" asp-for="SellerName">
+                                                    <span asp-validation-for="SellerName" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label">Seller Name Arabic</label>
+                                                    <input class="form-control" asp-for="SellerNameAr">
+                                                    <span asp-validation-for="SellerNameAr" class="text-danger"></span>
+
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label">Description</label>
+                                                    <input class="form-control" asp-for="Description">
+                                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label">Address</label>
+                                                    <input class="form-control" asp-for="Address">
+                                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label">Phone Number</label>
+                                                    <input class="form-control" asp-for="PhoneNumber">
+                                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="inputProductDescription" class="form-label">Seller Images</label>
+                                                    <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
+                                                </div>
+
+                                                <div class="d-flex pt-2">
+                                                    <div class="form-group mx-1">
+                                                        <button type="submit" class="btn btn-inverse-success">Save</button>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div><!--end row-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial">
+
+    <script>
+        $(document).ready(function () {
+            $('#ImagesFormFiles').imageuploadify();
+
+            $('#SellingPrice, #OtherShopsPrice').on('input', function() {
+                calculateDiscountPercentage();
+            });
+           
+        })
+
+    </script>
+@* 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@

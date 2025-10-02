@@ -24,6 +24,7 @@ namespace Infrastructure.Repo
         public IOnlineOrderRepository OnlineOrder { get; private set; }
         public IBrandRepository Brand { get; private set; }
         public IFeedbackRepository Feedback { get; private set; }
+        public ISellerRepository Seller { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -39,6 +40,7 @@ namespace Infrastructure.Repo
             Brand = new BrandRepository(_db);
             Feedback = new FeedbackRepository(_db);
             InvoiceItem = new InvoiceItemsRepository(_db);
+            Seller = new SellerRepository(_db);
         }
         public async Task SaveAsync()
         {

@@ -9,7 +9,7 @@ namespace Domain.Models
         public string? OrderNumber { get; set; }
         public decimal? TotalPrice { get; set; }
         public decimal? PriceBeforeShipping { get; set; }
-        public string? ShippingAreaPrice { get; set; }
+        public decimal? ShippingAreaPrice { get; set; }
         public string? ShippingAreaName { get; set; }
 
         [Required(ErrorMessage = "Username is required.")]
@@ -43,7 +43,8 @@ namespace Domain.Models
     {
         public int? ProductId { get; set; }
         public string? ProductName { get; set; }
+        public string? ProductDisplayName { get; set; }
         public decimal? ProductPrice { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal? Quantity { get; set; }
     }
 }

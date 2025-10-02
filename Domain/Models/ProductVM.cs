@@ -31,6 +31,7 @@ namespace Domain.Models
         public string? Description { get; set; }
         //[Required(ErrorMessage = "Brand is required.")]
         public string? Brand { get; set; }
+        public string? Seller { get; set; }
         public string? Barcode { get; set; }
         public List<IFormFile>? ImagesFormFiles { get; set; }
         [Required(ErrorMessage = "Selling Price is required.")]
@@ -57,12 +58,14 @@ namespace Domain.Models
         public string? StatusId{ get; set; }
         public string? CategoryId{ get; set; }
         public string? BrandId{ get; set; }
+        public string? SellerId{ get; set; }
         public string? CategoryName{ get; set; }
         public List<string>? OldImagesBytes { get; set; } = new List<string>();
         public List<string>? ListOfRetrievedImages { get; set; } = new List<string>();
         public List<SelectListItem>? ListOfStatus { get; set; }
         public List<SelectListItem>? ListOfCategory { get; set; }
         public List<SelectListItem>? ListOfBrands { get; set; }
+        public List<SelectListItem>? ListOfSellers { get; set; }
 
         public string? DisplayProductName
         {

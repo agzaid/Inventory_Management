@@ -65,7 +65,9 @@ namespace Application.Services.Implementation
                 var prvm = products.Select(s => new ProductVM()
                 {
                     Id = s.Id,
-                    ProductName = s.DisplayProductName,
+                    //DisplayProductName = s.DisplayProductName,
+                    ProductName = s.ProductName,
+                    ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
@@ -381,10 +383,10 @@ namespace Application.Services.Implementation
                     IEnumerable<DeliverySlot> deliverySlot;
                     decimal shippingPrice = 0;
                     var grandTotalPrice = 0;
-                    if (!string.IsNullOrWhiteSpace(cart.ShippingAreaPrice) && decimal.TryParse(cart.ShippingAreaPrice, out var parsedShippingPrice))
+                    if (cart.ShippingAreaPrice.HasValue)
                     {
-                        shippingPrice = parsedShippingPrice;
-                        shipping = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.Price == parsedShippingPrice);
+                        shippingPrice = cart.ShippingAreaPrice.Value;
+                        shipping = await _unitOfWork.ShippingFreight.GetFirstOrDefaultAsync(s => s.Price == shippingPrice);
                     }
                     var customer = await _unitOfWork.Customer.GetFirstOrDefaultAsync(s => s.Phone == cart.CustomerPhone);
                     if (customer == null)
@@ -437,7 +439,7 @@ namespace Application.Services.Implementation
                         GrandTotalAmount = cart.TotalPrice,
                         AmountBeforeShipping = cart.PriceBeforeShipping,
                         Customer = customer,
-                        ShippingPrice = decimal.Parse(cart.ShippingAreaPrice ?? "0"),
+                        ShippingPrice = cart.ShippingAreaPrice,
                         Address = cart.CustomerAddress,
                         DeliverySlotsAsString = cart.SelectedSlots,
                         //  UserDeliverySlots = userDeliverySlot,
@@ -466,7 +468,7 @@ namespace Application.Services.Implementation
                                 ProductName = product.ProductName,
                                 PriceSoldToCustomer = product.SellingPrice,
                                 Quantity = item.Quantity,
-                                ShippingPrice = decimal.Parse(cart.ShippingAreaPrice ?? "0"),
+                                ShippingPrice = cart.ShippingAreaPrice,
                                 StockQuantityFromProduct = product.StockQuantity,
                                 DifferencePercentageFromProduct = product.DifferencePercentage,
                                 BuyingPriceFromProduct = product.BuyingPrice,
@@ -566,7 +568,8 @@ namespace Application.Services.Implementation
                     var productVM = new ProductVM()
                     {
                         Id = product.Id,
-                        ProductName = product.DisplayProductName ?? "",
+                        ProductName = product.ProductName ?? "",
+                        ProductNameAr = product.ProductNameAr ?? "",
                         Description = product.Description ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
