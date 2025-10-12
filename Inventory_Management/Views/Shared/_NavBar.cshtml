@@ -85,11 +85,11 @@
             debugger;
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == []){
-                     $("#cartNum").innerHTML= 0;
-                     $("#cartNum1").innerHTML= 0;
+                     $("#cartNum,#cartNum1").innerHTML= 0;
+                     // $("#cartNum1").innerHTML= 0;
                  }else{
-                        $("#cartNum").innerHTML = cart.length;
-                        $("#cartNum1").innerHTML = cart.length;
+                        $("#cartNum,#cartNum1").innerHTML = cart.length;
+                        // $("#cartNum1").innerHTML = cart.length;
              }
         });
     </script>

@@ -14,5 +14,6 @@ namespace Domain.Models
     {
         public List<ProductVM>? ProductVMs{ get; set; }
         public List<CategoryVM>? CategoryVMs{ get; set; }
+        //public List<BrandVM>? BrandsVMs{ get; set; }
     }
 }

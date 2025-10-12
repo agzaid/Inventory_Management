@@ -2,9 +2,13 @@
 using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Application.Services.Implementation
 {
@@ -42,6 +46,21 @@ namespace Application.Services.Implementation
                 throw;  // Rethrow the exception after logging it
             }
         }
+        public async Task<CategoryVM> CreateViewForCategory()
+        {
+            var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false);
+            var brandsList = brands.Select(b => new SelectListItem
+            {
+                Value = b.Id.ToString(),
+                Text = b.BrandName
+            }).ToList();
+
+            var model = new CategoryVM
+            {
+                AvailableBrands = brandsList
+            };
+            return model;
+        }
 
         public async Task<string> CreateCategory(CategoryVM obj)
         {
@@ -51,7 +70,7 @@ namespace Application.Services.Implementation
                 obj.Description = obj.Description?.ToLower();
 
                 var lookForName = await _unitOfWork.Category.GetFirstOrDefaultAsync(
-                    s => s.CategoryName == obj.CategoryName
+                    s => s.CategoryName == obj.CategoryName, "BrandsCategories"
                 );
 
                 if (lookForName == null)
@@ -63,6 +82,32 @@ namespace Application.Services.Implementation
                         Modified_Date = DateTime.UtcNow,
                         Description = obj.Description
                     };
+                    if (obj.SelectedBrandIds != null && obj.SelectedBrandIds.Any())
+                    {
+                        category.BrandsCategories = obj.SelectedBrandIds.Select(brandId => new BrandsCategories
+                        {
+                            BrandId = brandId
+                        }).ToList();
+                    }
+                    if (obj.SelectedBrandIds != null && obj.SelectedBrandIds.Any())
+                    {
+                        // Get any existing relations (though the category is new, this is defensive)
+                        var existingRelations = await _unitOfWork.BrandsCategories
+                            .GetAllAsync(x => obj.SelectedBrandIds.Contains(x.BrandId ?? 0) && x.CategoryId == category.Id);
+
+                        var existingBrandIds = existingRelations.Select(x => x.BrandId).ToHashSet();
+
+                        var newRelations = obj.SelectedBrandIds
+                            .Where(brandId => !existingBrandIds.Contains(brandId))
+                            .Select(brandId => new BrandsCategories
+                            {
+                                BrandId = brandId,
+                                Create_Date = DateTime.UtcNow
+                            })
+                            .ToList();
+
+                        category.BrandsCategories = newRelations;
+                    }
 
                     await _unitOfWork.Category.AddAsync(category);
                     await _unitOfWork.SaveAsync();
@@ -88,7 +133,13 @@ namespace Application.Services.Implementation
         {
             try
             {
-                var category = await _unitOfWork.Category.GetAsync(u => u.Id == id);
+                var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false);
+                var brandsList = brands.Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.BrandName
+                }).ToList();
+                var category = await _unitOfWork.Category.GetAsync(u => u.Id == id, "BrandsCategories");
                 if (category != null)
                 {
                     var categoryVM = new CategoryVM()
@@ -96,7 +147,11 @@ namespace Application.Services.Implementation
                         CategoryName = category.CategoryName,
                         CategoryNameAr = category.CategoryNameAr,
                         Description = category.Description,
-                        CreatedDate = category.Create_Date?.ToString("yyyy-MM-dd")
+                        CreatedDate = category.Create_Date?.ToString("yyyy-MM-dd"),
+                        AvailableBrands = brandsList,
+                        SelectedBrandIds = category.BrandsCategories?
+                            .Select(bc => bc.BrandId ?? 0) // Use null-coalescing operator to handle nullable int
+                            .ToList()
                     };
                     return categoryVM;
                 }
@@ -122,7 +177,13 @@ namespace Application.Services.Implementation
                 // Normalize data
                 obj.CategoryName = obj.CategoryName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
-
+                if (obj.SelectedBrandIds != null && obj.SelectedBrandIds.Any())
+                {
+                    oldCategory.BrandsCategories = obj.SelectedBrandIds.Select(brandId => new BrandsCategories
+                    {
+                        BrandId = brandId
+                    }).ToList();
+                }
                 // Update fields
                 oldCategory.CategoryNameAr = obj.CategoryNameAr;
                 oldCategory.Description = obj.Description;

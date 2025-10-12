@@ -3,6 +3,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
 {
@@ -42,9 +43,9 @@ namespace Inventory_Management.Areas.admin.Controllers
                 throw;
             }
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            return View( await _brandService.GetBrandForCreateViewAsync());
         }
 
         [HttpPost]

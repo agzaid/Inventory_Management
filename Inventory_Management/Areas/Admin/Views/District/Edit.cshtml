@@ -18,24 +18,24 @@
                                                     <div class="col-lg-8">
                                                         <div class="border border-3 p-4 rounded"> *@
                                                 <div class="col-12">
-                                                    <label class="form-label">Name</label>
+                                                    <label class="form-label fw-semibold">Name</label>
                                                     <input class="form-control" asp-for="Name">
                                                     <span asp-validation-for="Name" class="text-danger"></span>
 
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Name Arabic</label>
+                                                    <label class="form-label fw-semibold">Name Arabic</label>
                                                     <input class="form-control" asp-for="NameAr">
                                                     <span asp-validation-for="NameAr" class="text-danger"></span>
 
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Price</label>
+                                                    <label class="form-label fw-semibold">Price</label>
                                                     <input class="form-control" asp-for="Price">
                                                     <span asp-validation-for="Price" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label for="inputProductType" class="form-label">Area Under</label>
+                                                    <label for="inputProductType" class="form-label fw-semibold">Area Under</label>
                                                     <select class="form-select mb-2" aria-label="multiple select example"
                                                             asp-for="AreaId" asp-items="@(new SelectList(Model.Areas, "Value", "Text"))" data-placeholder=" Choose Area...">
                                                         <option disabled>Please Select Area...</option>

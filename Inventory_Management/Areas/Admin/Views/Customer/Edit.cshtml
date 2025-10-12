@@ -18,37 +18,37 @@
                                                     <div class="col-lg-8">
                                                         <div class="border border-3 p-4 rounded"> *@
                                                 <div class="col-12">
-                                                    <label class="form-label">Name</label>
+                                                    <label class="form-label fw-semibold">Name</label>
                                                     <input class="form-control" asp-for="CustomerName">
                                                     <span asp-validation-for="CustomerName" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Name Arabic</label>
+                                                    <label class="form-label fw-semibold">Name Arabic</label>
                                                     <input class="form-control" asp-for="CustomerNameAr">
                                                     <span asp-validation-for="CustomerNameAr" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Phone Number</label>
+                                                    <label class="form-label fw-semibold">Phone Number</label>
                                                     <input class="form-control" asp-for="Phone">
                                                     <span asp-validation-for="Phone" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label for="inputProductType" class="form-label">Area</label>
+                                                    <label for="inputProductType" class="form-label fw-semibold">Area</label>
                                                     <select class="form-select mb-2" aria-label="multiple select example"
                                                             asp-for="AreaId" asp-items="@(new SelectList(Model.ListOfAreas, "Value", "Text"))" data-placeholder=" Choose Area...">
                                                         <option disabled>Please Select Area...</option>
                                                     </select>
-                                                    @* <label class="form-label">Area</label>
+                                                    @* <label class="form-label fw-semibold">Area</label>
                                                     <input class="form-control" asp-for="Area">
                                                     <span asp-validation-for="Area" class="text-danger"></span> *@
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Address</label>
+                                                    <label class="form-label fw-semibold">Address</label>
                                                     <input class="form-control" asp-for="Address">
                                                     <span asp-validation-for="Address" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Email</label>
+                                                    <label class="form-label fw-semibold">Email</label>
                                                     <input class="form-control" asp-for="Email">
                                                     <span asp-validation-for="Email" class="text-danger"></span>
                                                 </div>

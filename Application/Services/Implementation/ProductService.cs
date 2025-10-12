@@ -416,6 +416,7 @@ namespace Application.Services.Implementation
                     oldProduct.IsKilogram = obj.IsKilogram;
                     oldProduct.PricePerGram = obj.PricePerGram;
                     oldProduct.SellingPrice = obj.SellingPrice;
+                    oldProduct.SellerId = int.Parse(obj.SellerId);
                     oldProduct.BuyingPrice = obj.BuyingPrice;
                     oldProduct.DifferencePercentage = decimal.TryParse(obj.DifferencePercentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var d) ? d : 0m;
                     oldProduct.MaximumDiscountPercentage = decimal.TryParse(obj.MaximumDiscountPercentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var m) ? m : 0m;

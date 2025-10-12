@@ -7,12 +7,12 @@
             <div class="col">
                 <form method="get" asp-action="MonthlyInventoryReport" asp-controller="Report" class="row mb-4">
                     <div class="col-md-3">
-                        <label for="startDate" class="form-label">Start Date</label>
+                        <label for="startDate" class="form-label fw-semibold">Start Date</label>
                         <input type="date" id="startDate" name="startDate" class="form-control"
                                value="@Model.StartDate.ToString("yyyy-MM-dd")" />
                     </div>
                     <div class="col-md-3">
-                        <label for="endDate" class="form-label">End Date</label>
+                        <label for="endDate" class="form-label fw-semibold">End Date</label>
                         <input type="date" id="endDate" name="endDate" class="form-control"
                                value="@Model.EndDate.ToString("yyyy-MM-dd")" />
                     </div>

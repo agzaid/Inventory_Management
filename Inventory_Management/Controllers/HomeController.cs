@@ -21,29 +21,31 @@ namespace Inventory_Management.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IBrandService _brandService;
         private readonly IOnlineOrderService _onlineOrderService;
         private readonly IFeedbackService _feedbackService;
         private readonly IStringLocalizer _localizer;
         private readonly IMemoryCache _cache;
 
-        public HomeController(ILogger<HomeController> logger, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IStringLocalizer localizer, IMemoryCache cache)
+        public HomeController(ILogger<HomeController> logger,IBrandService brandService ,IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IStringLocalizer localizer, IMemoryCache cache)
         {
             _logger = logger;
+            _brandService = brandService;
             _onlineOrderService = onlineOrderService;
             _feedbackService = feedbackService;
             _localizer = localizer;
             _cache = cache;
         }
         [RateLimit(100, 60)]
-        public IActionResult Index(string? status, string? message)
+        public async Task<IActionResult> Index(string? status, string? message)
         {
             var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             var cacheKey = $"PortalProducts_{culture}";
             // try to get from cache
             if (!_cache.TryGetValue(cacheKey, out var portal))
             {
-                portal = _onlineOrderService.GetAllProductsForPortal();
-
+                portal = await _onlineOrderService.GetAllProductsForPortal();
+                 
                 // set cache with expiration
                 var cacheOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)) // hard expiry
@@ -80,6 +82,22 @@ namespace Inventory_Management.Controllers
         [RateLimit(100, 60)]
         public async Task<IActionResult> GetProductsByCategory(int? categoryId)
         {
+            var products = await _onlineOrderService.GetProductsByCategory(categoryId);
+            return PartialView("_ProductListPartial", products.Data);
+        }
+        [HttpGet]
+        [RateLimit(100, 60)]
+        public async Task<IActionResult> GetProductsByCategoryAndBrand(int categoryId, int brandId)
+        {
+            var products = await _onlineOrderService.GetProductsByCategoryAndBrand(categoryId, brandId);
+            return PartialView("_ProductListPartial", products.Data);
+        }
+
+        [HttpGet]
+        [RateLimit(100, 60)]
+        public async Task<IActionResult> GetBrandsByCategory(int? categoryId)
+        {
+            var brands =  await _brandService.GetBrandsByCategory(categoryId);
             var products = await _onlineOrderService.GetProductsByCategory(categoryId);
             return PartialView("_ProductListPartial", products.Data);
         }
@@ -192,14 +210,14 @@ namespace Inventory_Management.Controllers
         //    return PartialView("_ProductListPartial", product.Data.Items);
         //}
         [HttpGet]
-        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize, int? categoryId)
+        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize, int? categoryId,int? brandId)
         {
             // Build unique cache key
-            var cacheKey = $"Products_Page_{pageNumber}_Size_{pageSize}_Cat_{categoryId ?? 0}";
+            var cacheKey = $"Products_Page_{pageNumber}_Size_{pageSize}_Cat_{categoryId ?? 0}_Brand_{brandId ?? 0}";
 
             if (!_cache.TryGetValue(cacheKey, out PaginatedResult<ProductVM> product))
             {
-                var result = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize, categoryId);
+                var result = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize, categoryId,brandId);
 
                 // Extract the PaginatedResult<ProductVM> from the Result wrapper
                 product = result?.Data;

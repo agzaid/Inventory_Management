@@ -6,7 +6,9 @@ using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Drawing.Drawing2D;
 using System.Linq.Expressions;
+using System.Web.Mvc;
 
 namespace Application.Services.Implementation
 {
@@ -105,7 +107,7 @@ namespace Application.Services.Implementation
 
                 // check if brand exists
                 var existingBrand = await _unitOfWork.Brand
-                    .GetFirstOrDefaultAsync(s => s.BrandName.ToLower() == obj.BrandName);
+                    .GetFirstOrDefaultAsync(s => s.BrandName.ToLower() == obj.BrandName,"BrandsCategories");
 
                 if (existingBrand != null)
                 {
@@ -131,6 +133,7 @@ namespace Application.Services.Implementation
                     Create_Date = DateTime.Now
                 }).ToList();
 
+
                 // create brand entity
                 var brand = new Brand
                 {
@@ -140,6 +143,26 @@ namespace Application.Services.Implementation
                     Modified_Date = DateTime.Now,
                     Images = listOfImages
                 };
+                if (obj.CategoryIds != null && obj.CategoryIds.Any())
+                {
+                    // get all existing brand-category relations (if any)
+                    var existingRelations = await _unitOfWork.BrandsCategories
+                        .GetAllAsync(x => obj.CategoryIds.Contains(x.CategoryId) && x.BrandId == brand.Id);
+
+                    var existingCategoryIds = existingRelations.Select(x => x.CategoryId).ToHashSet();
+
+                    var newRelations = obj.CategoryIds
+                        .Where(catId => !existingCategoryIds.Contains(catId))
+                        .Select(catId => new BrandsCategories
+                        {
+                            BrandId = brand.Id,
+                            CategoryId = catId,
+                            Create_Date = DateTime.Now
+                        })
+                        .ToList();
+
+                    brand.BrandsCategories = newRelations;
+                }
 
                 await _unitOfWork.Brand.AddAsync(brand);
                 await _unitOfWork.SaveAsync();
@@ -153,12 +176,78 @@ namespace Application.Services.Implementation
             }
         }
 
+        public async Task<BrandVM> GetBrandForCreateViewAsync()
+        {
+            try
+            {
+                var categories = await _unitOfWork.Category.GetAllAsync(s => s.IsDeleted == false);
+                var categoriesList = categories.Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.CategoryName
+                }).ToList();
+                var brand = new BrandVM()
+                {
+                    CategoryList = categories.Select(s => new SelectListItem
+                    {
+                        Text = s.CategoryName,
+                        Value = s.Id.ToString()
+                    }).ToList(),
+                };
 
+                //_logger.LogInformation("GetAllShippingFrieght method completed. {allShippingFrieghtCount} allShippingFrieght retrieved.", allShippingFrieght.ToList().Count);
+
+                return brand;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving categories.");
+                throw;  // Rethrow the exception after logging it
+            }
+        }
         public BrandVM GetBrandById(int id)
         {
             try
             {
-                var Brand = _unitOfWork.Brand.Get(u => u.Id == id, "Images");
+                var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false);
+                var categoryList = categories.Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.CategoryName
+                }).ToList();
+                var Brand = _unitOfWork.Brand.Get(u => u.Id == id, "Images, BrandsCategories");
+                if (Brand != null)
+                {
+                    var BrandVM = new BrandVM()
+                    {
+                        BrandName = Brand.BrandName,
+                        BrandNameAr = Brand.BrandNameAr,
+                        Description = Brand.Description,
+                        //CategoryId = Brand.CategoryId,
+                        CreatedDate = Brand.Create_Date?.ToString("yyyy-MM-dd"),
+                        ListOfRetrievedImages = Brand.Images?.Select(s => s.FilePath).ToList(),
+                        CategoryList = categoryList,
+                        // Fix for CS0029 and CS8601
+                        CategoryIds = Brand.BrandsCategories?
+                            .Select(bc => bc.CategoryId.HasValue ? bc.CategoryId.Value : (int?)null)
+                            .ToList() ?? new List<int?>(),
+                    };
+
+                    return BrandVM;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving Brand with Id: {Id}", id);
+                throw;  // Rethrow the exception after logging it
+            }
+            return new BrandVM();
+        }
+        public async Task<BrandVM> GetBrandsByCategory(int? id)
+        {
+            try
+            {
+                var Brand = await _unitOfWork.Brand.GetAsync(u => true, "Images");
                 if (Brand != null)
                 {
                     var BrandVM = new BrandVM()
@@ -188,7 +277,7 @@ namespace Application.Services.Implementation
                 // Load old brand with its images (tracked)
                 var oldBrand = await _unitOfWork.Brand.GetFirstOrDefaultAsync(
                     s => s.Id == obj.Id,
-                    "Images",
+                    "Images,BrandsCategories",
                     true);
 
                 if (oldBrand != null)
@@ -198,6 +287,7 @@ namespace Application.Services.Implementation
                     oldBrand.BrandNameAr = obj.BrandNameAr;
                     oldBrand.Description = obj.Description?.ToLower();
                     oldBrand.Modified_Date = DateTime.UtcNow;
+                    //oldBrand.CategoryId = obj.CategoryId;
 
                     // 1. Remove unwanted old images
                     var imagesToBeRemoved = oldBrand.Images
@@ -225,6 +315,26 @@ namespace Application.Services.Implementation
                         {
                             oldBrand.Images.Add(img);
                         }
+                    }
+                    if (obj.CategoryIds != null && obj.CategoryIds.Any())
+                    {
+                        // get all existing brand-category relations (if any)
+                        var existingRelations = await _unitOfWork.BrandsCategories
+                            .GetAllAsync(x => obj.CategoryIds.Contains(x.CategoryId) && x.BrandId == oldBrand.Id);
+
+                        var existingCategoryIds = existingRelations.Select(x => x.CategoryId).ToHashSet();
+
+                        var newRelations = obj.CategoryIds
+                            .Where(catId => !existingCategoryIds.Contains(catId))
+                            .Select(catId => new BrandsCategories
+                            {
+                                BrandId = oldBrand.Id,
+                                CategoryId = catId,
+                                Create_Date = DateTime.Now
+                            })
+                            .ToList();
+
+                        oldBrand.BrandsCategories = newRelations;
                     }
 
                     // 3. Save changes
@@ -272,7 +382,7 @@ namespace Application.Services.Implementation
                 Func<IQueryable<Brand>, IOrderedQueryable<Brand>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.BrandName);
 
-                var Brands = await _unitOfWork.Brand.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter,x=>x.Images);
+                var Brands = await _unitOfWork.Brand.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter, x => x.Images);
                 var showBrands = Brands.Items.Select(s => new BrandVM()
                 {
                     Id = s.Id,

@@ -35,9 +35,9 @@ namespace Inventory_Management.Areas.admin.Controllers
                 throw;
             }
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            return View(await _categoryService.CreateViewForCategory());
         }
 
         [HttpPost]
@@ -50,7 +50,15 @@ namespace Inventory_Management.Areas.admin.Controllers
                 TempData["success"] = result;
                 return RedirectToAction(nameof(Index));
             }
-            return View();
+            else
+            {
+                var categoryWithBrands = await _categoryService.CreateViewForCategory();
+                categoryWithBrands.CategoryName = obj.CategoryName;
+                categoryWithBrands.CategoryNameAr = obj.CategoryNameAr;
+                categoryWithBrands.Description = obj.Description;
+
+                return View(categoryWithBrands);
+            }
         }
 
         public async Task<IActionResult> Edit(int id)

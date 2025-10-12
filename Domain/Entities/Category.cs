@@ -18,6 +18,7 @@ namespace Domain.Entities
         public string? Description { get; set; }
 
         public ICollection<Product>? Products { get; set; }
+        public ICollection<BrandsCategories>? BrandsCategories { get; set; }
 
 
         public string? DisplayCategoryName

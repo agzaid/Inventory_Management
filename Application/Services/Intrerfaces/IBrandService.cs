@@ -16,5 +16,7 @@ namespace Application.Services.Intrerfaces
         Task<bool> DeleteBrand(int id);
         Task<PaginatedResult<BrandVM>> GetBrandPaginated(int pageNumber, int pageSide);
         Task<Result<string>> CreateBrand(BrandVM obj);
+        Task<BrandVM> GetBrandForCreateViewAsync();
+        Task<BrandVM> GetBrandsByCategory(int? id);
     }
 }

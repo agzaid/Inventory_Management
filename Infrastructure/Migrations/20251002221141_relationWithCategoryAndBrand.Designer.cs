@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251002221141_relationWithCategoryAndBrand")]
+    partial class relationWithCategoryAndBrand
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,6 +106,9 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Create_Date")
                         .HasColumnType("datetime2");
 
@@ -118,39 +124,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand");
-                });
-
-            modelBuilder.Entity("Domain.Entities.BrandsCategories", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BrandId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Create_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("Modified_Date")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BrandId");
-
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BrandsCategories");
+                    b.ToTable("Brand");
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -1071,17 +1047,11 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.BrandsCategories", b =>
+            modelBuilder.Entity("Domain.Entities.Brand", b =>
                 {
-                    b.HasOne("Domain.Entities.Brand", "Brand")
-                        .WithMany("BrandsCategories")
-                        .HasForeignKey("BrandId");
-
                     b.HasOne("Domain.Entities.Category", "Category")
-                        .WithMany("BrandsCategories")
+                        .WithMany("Brands")
                         .HasForeignKey("CategoryId");
-
-                    b.Navigation("Brand");
 
                     b.Navigation("Category");
                 });
@@ -1286,8 +1256,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Brand", b =>
                 {
-                    b.Navigation("BrandsCategories");
-
                     b.Navigation("Images");
 
                     b.Navigation("Products");
@@ -1295,7 +1263,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
                 {
-                    b.Navigation("BrandsCategories");
+                    b.Navigation("Brands");
 
                     b.Navigation("Products");
                 });

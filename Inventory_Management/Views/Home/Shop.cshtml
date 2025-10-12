@@ -285,9 +285,9 @@
              var cart = JSON.parse(localStorage.getItem('cart')) || [];
              if(cart == [] || $("#cartNum").length==0){
                  var cartt = $("#cartNum").length;
-                 $("#cartNum")[0].innerHTML= 0;
+                 $("#cartNum,#cartNum1")[0].innerHTML= 0;
              }else{
-                 $("#cartNum")[0].innerHTML= cart.length;
+                 $("#cartNum,#cartNum1")[0].innerHTML= cart.length;
              }
 
 

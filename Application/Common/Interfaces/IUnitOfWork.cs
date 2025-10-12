@@ -21,6 +21,7 @@ namespace Application.Common.Interfaces
         IBrandRepository Brand { get; }
         IFeedbackRepository Feedback { get; }
         ISellerRepository Seller { get; }
+        IBrandsCategoriesRepository BrandsCategories { get; }
         Task SaveAsync();
 
     }

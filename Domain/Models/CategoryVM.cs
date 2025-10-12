@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Web.Mvc;
 
 namespace Domain.Models
 {
@@ -15,6 +16,9 @@ namespace Domain.Models
         public string? FormToken { get; set; }
         public string? CreatedDate { get; set; }
 
+        public List<int>? SelectedBrandIds { get; set; }
+        public List<SelectListItem>? AvailableBrands { get; set; }
+        public List<BrandVM>? BrandVMs { get; set; }
         public string? DisplayCategoryName
         {
             get

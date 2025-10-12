@@ -17,41 +17,41 @@
                                     <div class="col-lg-8">
                                         <div class="border border-3 p-4 rounded">
                                             <div class="mb-3">
-                                                <label class="form-label">Product Title</label>
+                                                <label class="form-label fw-semibold">Product Title</label>
                                                 <input class="form-control" asp-for="ProductName">
                                                 <span asp-validation-for="ProductName" class="text-danger"></span>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Product Title Arabic</label>
+                                                <label class="form-label fw-semibold">Product Title Arabic</label>
                                                 <input class="form-control" asp-for="ProductNameAr">
                                                 <span asp-validation-for="ProductNameAr" class="text-danger"></span>
                                             </div> 
                                             <div class="mb-3">
-                                                <label class="form-label">Description</label>
+                                                <label class="form-label fw-semibold">Description</label>
                                                 <input class="form-control" asp-for="Description">
                                                 <span asp-validation-for="Description" class="text-danger"></span>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="inputVendor" class="form-label">Brand</label>
+                                                <label for="inputVendor" class="form-label fw-semibold">Brand</label>
                                                 <select class="form-select mb-2" aria-label="multiple select example"
                                                         asp-for="BrandId" asp-items="@(new SelectList(Model.ListOfBrands, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                     <option disabled></option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="inputVendor" class="form-label">Seller</label>
+                                                <label for="inputVendor" class="form-label fw-semibold">Seller</label>
                                                 <select class="form-select mb-2" aria-label="multiple select example"
                                                         asp-for="SellerId" asp-items="@(new SelectList(Model.ListOfSellers, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                     <option disabled></option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Barcode</label>
+                                                <label class="form-label fw-semibold">Barcode</label>
                                                 <input class="form-control" asp-for="Barcode">
                                                 <span asp-validation-for="Barcode" class="text-danger"></span>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="inputProductDescription" class="form-label">Product Images</label>
+                                                <label for="inputProductDescription" class="form-label fw-semibold">Product Images</label>
                                                 <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
                                             </div>
                                             <div class="mb-3 d-flex" style="height:auto">
@@ -79,7 +79,7 @@
                                         <div class="border border-3 p-4 rounded">
                                             <div class="row g-3">
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Is Kilogram?</label>
+                                                    <label class="form-label fw-semibold">Is Kilogram?</label>
                                                     <select class="form-select" asp-for="IsKilogram">
                                                         <option disabled value="">-- Select --</option>
                                                         <option value="true">Yes</option>
@@ -89,63 +89,63 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Selling Price</label>
+                                                    <label class="form-label fw-semibold">Selling Price</label>
                                                     <input class="form-control" asp-for="SellingPrice">
                                                     <span asp-validation-for="SellingPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Othr.shp.Price</label>
+                                                    <label class="form-label fw-semibold">Othr.shp.Price</label>
                                                     <input class="form-control" asp-for="OtherShopsPrice">
                                                     <span asp-validation-for="OtherShopsPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6" id="pricePerGramContainer" style="display: none;">
-                                                    <label class="form-label">Price Per Gram</label>
+                                                    <label class="form-label fw-semibold">Price Per Gram</label>
                                                     <input class="form-control" asp-for="PricePerGram" id="PricePerGram" />
                                                     <span asp-validation-for="PricePerGram" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label for="inputCostPerPrice" class="form-label">Difference Percentage</label>
+                                                    <label for="inputCostPerPrice" class="form-label fw-semibold">Difference Percentage</label>
                                                     <input class="form-control" asp-for="DifferencePercentage">
                                                     <span asp-validation-for="DifferencePercentage" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="inputStarPoints" class="form-label">Buying Price</label>
+                                                    <label for="inputStarPoints" class="form-label fw-semibold">Buying Price</label>
                                                     <input class="form-control" asp-for="BuyingPrice">
                                                     <span asp-validation-for="BuyingPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="inputStarPoints" class="form-label">Max. Discount Percentage</label>
+                                                    <label for="inputStarPoints" class="form-label fw-semibold">Max. Discount Percentage</label>
                                                     @*  decimal discountPercentage = ((originalPrice - finalPrice) / originalPrice) * 100;  *@
                                                     <input class="form-control" asp-for="MaximumDiscountPercentage">
                                                     <span asp-validation-for="MaximumDiscountPercentage" class="text-danger"></span>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <label for="inputStarPoints" class="form-label">Stock Qauntity</label>
+                                                    <label for="inputStarPoints" class="form-label fw-semibold">Stock Qauntity</label>
                                                     <input class="form-control" asp-for="StockQuantity">
                                                     <span asp-validation-for="StockQuantity" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="inputStarPoints" class="form-label">Expiry Date</label>
+                                                    <label for="inputStarPoints" class="form-label fw-semibold">Expiry Date</label>
                                                     <input class="form-control" asp-for="ExpiryDate" type="date">
                                                     <span asp-validation-for="ExpiryDate" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label for="inputProductType" class="form-label">Product Status</label>
+                                                    <label for="inputProductType" class="form-label fw-semibold">Product Status</label>
                                                     <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
                                                             asp-for="StatusId" asp-items="@(new SelectList(Model?.ListOfStatus, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                         <option disabled></option>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label for="inputVendor" class="form-label">Category</label>
+                                                    <label for="inputVendor" class="form-label fw-semibold">Category</label>
                                                     <select class="form-select mb-2" id="pDiagnosis" aria-label="multiple select example"
                                                             asp-for="CategoryId" asp-items="@(new SelectList(Model?.ListOfCategory, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                         <option disabled></option>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label for="inputProductTags" class="form-label">Product Tags</label>
+                                                    <label for="inputProductTags" class="form-label fw-semibold">Product Tags</label>
                                                     <input type="text" class="form-control" asp-for=ProductTags placeholder="Enter Product Tags">
                                                 </div>
                                                 <div class="col-12">

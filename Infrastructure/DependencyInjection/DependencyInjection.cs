@@ -27,6 +27,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IBrandService, BrandService>();
             services.AddScoped<ISellerService, SellerService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IBrandsCategoriesService, BrandsCategoriesService>();
             services.AddScoped<Application.Common.Interfaces.IEmailSender, Infrastructure.EmailSender.SmtpEmailSender>();
 
             return services;

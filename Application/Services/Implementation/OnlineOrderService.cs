@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Application.Services.Implementation
@@ -23,7 +24,7 @@ namespace Application.Services.Implementation
             _logger = logger;
         }
 
-        public PortalVM GetAllProductsForPortal()
+        public async Task<PortalVM> GetAllProductsForPortal()
         {
             var retrievedImages = new List<string>();
             var image64 = new List<string>();
@@ -31,9 +32,9 @@ namespace Application.Services.Implementation
             var portalVM = new PortalVM();
             try
             {
-                var brands = _unitOfWork.Brand.GetAll(s => s.IsDeleted == false, "Images").ToList();
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.ProductName).Take(20);
-                var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
+                var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false, "Images");
+                var products =  _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.ProductName).Take(20);
+                var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false, "BrandsCategories,BrandsCategories.Brand").ToList();
                 //foreach (var item in products)
                 //{
                 //    retrievedImages.Clear();
@@ -89,6 +90,15 @@ namespace Application.Services.Implementation
                     CategoryNameAr = s.CategoryNameAr,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                     Description = s.Description,
+                    BrandVMs = s.BrandsCategories?.Select(bc => new BrandVM
+                    {
+                        Id = (int)bc.BrandId,
+                        BrandName = bc.Brand?.BrandName,
+                        BrandNameAr = bc.Brand?.BrandNameAr,
+                        Description = bc.Brand?.Description,
+                        CreatedDate = bc.Brand?.Create_Date?.ToString("yyyy-MM-dd"),
+                        ListOfRetrievedImages = bc.Brand?.Images?.Select(a => a.FilePath).ToList(),
+                    }).ToList(),
                 }).ToList();
 
                 _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", productVMs.Count);
@@ -116,35 +126,12 @@ namespace Application.Services.Implementation
 
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images");
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                //foreach (var item in products)
-                //{
-                //    retrievedImages.Clear();
-                //    if (item.Images?.Count() > 0)
-                //    {
-                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                //        retrievedImages.AddRange(image64);
-                //    }
-                //    var productVM = new ProductVM()
-                //    {
-                //        Id = item.Id,
-                //        ProductName = item.ProductName?.ToUpper(),
-                //        Description = item.Description,
-                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                //        SellingPrice = item.SellingPrice,
-                //        OtherShopsPrice = item.OtherShopsPrice,
-                //        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
-                //        StockQuantity = item.StockQuantity,
-                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                //        Barcode = item.Barcode,
-                //        ListOfRetrievedImages = image64,
-                //    };
-                //    productVMs.Add(productVM);
-                //}
+
                 var productsVMS = products.Select(s => new ProductVM()
                 {
                     Id = s.Id,
                     ProductName = s.ProductName?.ToUpper(),
+                    ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
@@ -168,6 +155,41 @@ namespace Application.Services.Implementation
                 {
                     _logger.LogError(ex, ex.Message);
                 }
+                return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
+            }
+        }
+        public Task<Result<List<ProductVM>>> GetProductsByCategoryAndBrand(int? categoryId, int? brandId)
+        {
+            try
+            {
+                var products = _unitOfWork.Product.GetAll(
+                    s => s.IsDeleted == false
+                         && (categoryId == null || s.CategoryId == categoryId)
+                         && (brandId == null || s.BrandId == brandId),
+                    "Category,Images,Brand");
+
+                var productsVMS = products.Select(s => new ProductVM()
+                {
+                    Id = s.Id,
+                    ProductName = s.ProductName?.ToUpper(),
+                    ProductNameAr = s.ProductNameAr,
+                    Description = s.Description,
+                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    SellingPrice = s.SellingPrice,
+                    OtherShopsPrice = s.OtherShopsPrice,
+                    DifferencePercentage = Math.Ceiling(s.DifferencePercentage ?? 0).ToString("0.00"),
+                    StockQuantity = s.StockQuantity,
+                    ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
+                    CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
+                    Barcode = s.Barcode,
+                    ListOfRetrievedImages = s.Images?.Select(a => a.FilePath).ToList(),
+                }).ToList();
+
+                return Task.FromResult(Result<List<ProductVM>>.Success(productsVMS, "success"));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.InnerException?.Message ?? ex.Message);
                 return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
         }
@@ -237,7 +259,7 @@ namespace Application.Services.Implementation
                 return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
         }
-        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId)
+        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId,int? brandId)
         {
             try
             {
@@ -247,6 +269,15 @@ namespace Application.Services.Implementation
                 {
                     int catId = categoryId.Value; // capture for closure
                     filter = s => !s.IsDeleted && s.CategoryId == catId;
+                }
+                // Add brand filter if provided (combine with category if both exist)
+                if (brandId.HasValue)
+                {
+                    int brId = brandId.Value;
+                    if (categoryId.HasValue)
+                        filter = s => !s.IsDeleted && s.CategoryId == categoryId && s.BrandId == brId;
+                    else
+                        filter = s => !s.IsDeleted && s.BrandId == brId;
                 }
                 Expression<Func<Product, object>> includes = x => x.Images;
                 Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy;
@@ -583,7 +614,7 @@ namespace Application.Services.Implementation
                         StatusId = product.StatusId?.ToString() ?? "",
                         ProductTags = product.ProductTags ?? "",
                         IsKilogram = product.IsKilogram,
-                        ListOfRetrievedImages = product.Images?.Select(s=>s.FilePath)?.ToList(),
+                        ListOfRetrievedImages = product.Images?.Select(s => s.FilePath)?.ToList(),
                         //Images = result.Select(s => new Image()
                         //{
                         //    FilePath = s,
@@ -628,7 +659,7 @@ namespace Application.Services.Implementation
             try
             {
                 var orders = _unitOfWork.OnlineOrder.GetAll(s => s.IsDeleted == false, "Customer,InvoiceItems");
-                var orderVMs = orders.Select(s => new OnlineOrderVM()
+                var orderVMs = orders.OrderByDescending(s => s.OrderDate).Select(s => new OnlineOrderVM()
                 {
                     Id = s.Id,
                     OrderNumber = s.OrderNumber,

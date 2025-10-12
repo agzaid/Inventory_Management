@@ -26,6 +26,8 @@ namespace Infrastructure.Data
         public DbSet<DeliverySlot> DeliverySlot { get; set; }
         public DbSet<UserDeliverySlot> UserDeliverySlot { get; set; }
         public DbSet<Brand> Brand { get; set; }
+        public DbSet<BrandsCategories> BrandsCategories { get; set; }
+        //public DbSet<BrandsCategories> BrandsCategories { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
 
 
@@ -83,6 +85,12 @@ namespace Infrastructure.Data
             //    .HasOne(uds => uds.DeliverySlot)
             //    .WithMany(ds => ds.UserDeliverySlots)
             //    .HasForeignKey(uds => uds.SlotId);
+
+            //modelBuilder.Entity<Brand>()
+            //        .HasMany(p => p.Categories)
+            //        .WithMany(c => c.Brands)
+            //        .UsingEntity(j => j.ToTable("BrandsCategories"));
+
         }
     }
 }

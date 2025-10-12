@@ -18,14 +18,15 @@ namespace Application.Services.Intrerfaces
         InvoiceVM CreateInvoiceForViewing(string orderNum);
         Task<Result<string>> CreateOrder(CartVM cart);
         //Task<Result<string>> CreateFeedback(FeedbackVM feedback);
-        PortalVM GetAllProductsForPortal();
+        Task<PortalVM> GetAllProductsForPortal();
         ProductVM GetProductDetails(int id);
         ProductVM GetProductById(int id);
         Result<List<OnlineOrderVM>> GetAllOrdersToBeInvoiced();
         Result<InvoiceVM> GetInvoiceForSpecificOnlineOrder(int id);
-        Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId);
+        Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId,int? brandId);
         Task<Result<bool>> UpdateOrderStatus(string orderNum, string options);
         Task<List<SelectListItem>> DistrictSelectList();
         Result<List<OnlineOrderVM>> GetAllOrdersPending();
+        Task<Result<List<ProductVM>>> GetProductsByCategoryAndBrand(int? categoryId, int? brandId);
     }
 }

@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <div class="mb-3">
-                                <label for="statusFilter" class="form-label">Filter by Status</label>
+                                <label for="statusFilter" class="form-label fw-semibold">Filter by Status</label>
                                 <select id="statusFilter" class="form-select" style="width: 200px;">
                                     <option value="">All</option>
                                     <option value="InProgress">In Progress</option>
@@ -117,6 +117,7 @@
     <script>
         $(document).ready(function() {
             var table = $('#example2').DataTable( {
+                order: [[3, 'desc']], // 3 = index of your "Order Date" column
                 lengthChange: false,
                 buttons: [ 'copy', 'excel', 'pdf', 'print']
             } );

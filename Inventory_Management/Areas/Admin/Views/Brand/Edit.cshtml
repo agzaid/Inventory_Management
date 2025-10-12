@@ -18,24 +18,33 @@
                                                     <div class="col-lg-8">
                                                         <div class="border border-3 p-4 rounded"> *@
                                                 <div class="col-12">
-                                                    <label class="form-label">Brand Name</label>
+                                                    <label class="form-label fw-semibold">Brand Name</label>
                                                     <input class="form-control" asp-for="BrandName">
                                                     <span asp-validation-for="BrandName" class="text-danger"></span>
 
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Brand Name Arabic</label>
+                                                    <label class="form-label fw-semibold">Brand Name Arabic</label>
                                                     <input class="form-control" asp-for="BrandNameAr">
                                                     <span asp-validation-for="BrandNameAr" class="text-danger"></span>
 
                                                 </div>
                                                 <div class="col-12">
-                                                    <label class="form-label">Description</label>
+                                                    <label class="form-label fw-semibold">Description</label>
                                                     <input class="form-control" asp-for="Description">
                                                     <span asp-validation-for="Description" class="text-danger"></span>
                                                 </div>
+                                                <div class="col-12">
+                                                    <label class="form-label fw-semibold fw-semibold fw-semibold">Select Categories</label>
+                                                    <select id="categorySelect"
+                                                            asp-for="CategoryIds"
+                                                            asp-items="@(new SelectList(Model.CategoryList, "Value", "Text"))"
+                                                            multiple="multiple"
+                                                            class="form-select">
+                                                    </select>
+                                                </div>
                                                 <div class="mb-3">
-                                                    <label for="inputProductDescription" class="form-label">Brand Images</label>
+                                                    <label for="inputProductDescription" class="form-label fw-semibold">Brand Images</label>
                                                     <input id="ImagesFormFiles" accept="image/*" name="ImagesFormFiles" type="file" multiple>
                                                 </div>
                                                 <div class="mb-3 d-flex" style="height:auto">
@@ -82,6 +91,11 @@
         $(document).ready(function () {
             $('#ImagesFormFiles').imageuploadify();
 
+             $('#categorySelect').select2({
+                placeholder: "Select one or more categories",
+                allowClear: true,
+                width: '100%'
+            });
             $('#SellingPrice, #OtherShopsPrice').on('input', function() {
                 calculateDiscountPercentage();
             });

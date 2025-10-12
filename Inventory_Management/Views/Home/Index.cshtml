@@ -139,6 +139,74 @@
         color: #fff;
         transform: rotate(90deg);
     }
+
+    .category-scroll {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 0;
+        gap: 10px;
+        scrollbar-width: thin;
+    }
+
+    .category-box {
+        flex: 0 0 auto;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 10px 18px;
+        transition: all 0.2s ease;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+        .category-box:hover, .category-box.active {
+            background: #f8f9fa;
+            border-color: #007bff;
+            color: #007bff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+    .brand-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        min-height: 100px;
+    }
+
+    .brand-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .brand-card:hover {
+            background: #e8f1ff;
+            border-color: #007bff;
+            color: #007bff;
+            transform: scale(1.05);
+        }
+
+    .placeholder-text {
+        color: #999;
+        font-size: 0.95rem;
+        margin: 0 auto;
+    }
+
+    .brand-card.active {
+        background: #007bff;
+        color: white;
+        border-color: #0056b3;
+        transform: scale(1.05);
+    }
+
 </style>
 
 <partial name="_Hero">
@@ -151,17 +219,23 @@
             @*   <h2>@Localizer["Greeting"]</h2>
             <h3>@Localizer["Welcome"]</h3> *@
         </div>
-        <div class="category-scroll">
-            @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
+        <!-- CATEGORY SCROLL -->
+        <div class="category-scroll mb-3">
+            @foreach (var category in Model.CategoryVMs)
             {
-                <div class="category-dropdown mx-1 fe-box"
-                     data-value="@Model.CategoryVMs[i].Id"
+                <div class="category-box mx-1 fe-box"
+                     data-category-id="@category.Id"
                      style="cursor:pointer;">
-                    @* <img src="img/features/f1.png" alt="@Model.CategoryVMs[i].CategoryName"> *@
-                    <h6>@Model.CategoryVMs[i].DisplayCategoryName</h6>
+                    <h6>@category.DisplayCategoryName</h6>
                 </div>
             }
         </div>
+
+        <!-- BRAND DISPLAY AREA -->
+        <div id="brand-container" class="brand-container">
+            <p class="placeholder-text">Select a category to view its brands</p>
+        </div>
+
 
     </section>
     <section id="product1" class="section-p1">
@@ -390,6 +464,7 @@
             //
             $(document).ready(function() {
                 var selectedCategoryId = null;
+                var selectedBrandId = null;
                 var pageNumber = 2;
                 var pageSize = 20;
                 var isLoading = false;
@@ -423,6 +498,79 @@
                         hasMoreData = true;
                     }
                 });
+                // $.ajax({
+                //     url: '/Home/GetBrandsByCategory',
+                //     type: 'GET',
+                //     data: { categoryId: selectedCategoryId },
+                //     success: function (data) {
+                //         debugger;
+                //         $('#loader').hide();
+                //         $('#pro-container').html(data);
+                //         pageNumber = 2;
+                //         hasMoreData = true;
+                //     }
+                // });
+            });
+              const categoryData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryVMs));
+
+                $('.category-scroll').on('click', '.category-box', function () {
+                    const categoryId = $(this).data('category-id');
+                    const $this = $(this);
+
+                    // Highlight selected category
+                    $('.category-box').removeClass('active');
+                    $this.addClass('active');
+
+                    // Get the brands
+                    const category = categoryData.find(c => c.Id === categoryId);
+                    const brands = category?.BrandVMs || [];
+
+                    const $brandContainer = $('#brand-container');
+                    $brandContainer.empty();
+
+                    if (brands.length > 0) {
+                        brands.forEach(b => {
+                            $brandContainer.append(`
+                                <div class="brand-card" data-brand-id="${b.Id}">
+                                    ${b.DisplayBrandName}
+                                </div>
+                            `);
+                        });
+                    } else {
+                        $brandContainer.html('<p class="placeholder-text">No brands in this category</p>');
+                    }
+                });
+
+                            // Handle brand clicks
+            $('#brand-container').on('click', '.brand-card', function () {
+                const brandId = $(this).data('brand-id');
+                selectedBrandId = brandId;
+                const $brand = $(this);
+
+                // Highlight the selected brand
+                $('.brand-card').removeClass('active');
+                $brand.addClass('active');
+
+                // Find the currently active category
+                const categoryId = $('.category-box.active').data('category-id');
+                if (!categoryId) return;
+
+                $('#loader').show();
+
+                $.ajax({
+                    url: '/Home/GetProductsByCategoryAndBrand',
+                    type: 'GET',
+                    data: { categoryId, brandId },
+                    success: function (data) {
+                        $('#loader').hide();
+                        $('#pro-container').html(data);
+                    },
+                    error: function () {
+                        $('#loader').hide();
+                        _SWAL.alertWithoutNotification('Something went wrong while fetching products!');
+                        // alert('Something went wrong while fetching products!');
+                    }
+                });
             });
 
             // Infinite scroll
@@ -443,7 +591,8 @@
                var parameter = {
                 pageNumber: pageNumber,
                 pageSize: pageSize,
-                categoryId: selectedCategoryId // send current category
+                categoryId: selectedCategoryId, // send current category
+                brandId: selectedBrandId
                     };
 
                 $('#loader').show();
@@ -474,7 +623,8 @@
                 var parameter = {
                     pageNumber: pageNumber,
                     pageSize: pageSize,
-                    categoryId:selectedCategoryId
+                    categoryId:selectedCategoryId,
+                    brandId: selectedBrandId
                 };
 
                 $('#loader').show();
@@ -520,5 +670,13 @@
                 input.value = "";
             }
         </script>
+        <script>
+            $(document).ready(function () {
+                debugger;
+          
+            });
+
+        </script>
+
 
 }
