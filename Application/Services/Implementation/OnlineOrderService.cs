@@ -519,7 +519,6 @@ namespace Application.Services.Implementation
                     await _unitOfWork.SaveAsync();
                 }
                 return Result<string>.Success("success", "Online Order Created Successfully");
-
             }
             catch (Exception ex)
             {

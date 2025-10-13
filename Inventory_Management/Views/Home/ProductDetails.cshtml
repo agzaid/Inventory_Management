@@ -144,13 +144,13 @@
 
                     <div class="mb-3">
                         <span class="product-price">
-                            $@(Model.IsKilogram ? string.Format("{0:0.00}", (Model.SellingPrice ?? 0) * 0.25m): string.Format("{0:0.00}", Model.SellingPrice ?? 0))
+                            @Localizer["Currency"] @(Model.IsKilogram ? string.Format("{0:0.00}", (Model.SellingPrice ?? 0) * 0.25m) : string.Format("{0:0.00}", Model.SellingPrice ?? 0))
                         </span>
                         @if (Model.IsKilogram)
                         {
-                            <small class="text-muted">($@string.Format("{0:0.00}", Model.SellingPrice ?? 0) / Kg)</small>
+                            <small class="text-muted">(@Localizer["Currency"] @string.Format("{0:0.00}", Model.SellingPrice ?? 0) / Kg)</small>
                         }
-                        <del>$@Model.OtherShopsPrice</del>
+                        <del>@Localizer["Currency"] @Model.OtherShopsPrice</del>
                     </div>
 
 

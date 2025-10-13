@@ -84,7 +84,7 @@
                 <table>
                     <tr>
                         <td>@Localizer["CartSubtotal"]</td>
-                        <td>$<span id="cartSubTotal">0.0</span></td>
+                        <td>@Localizer["Currency"] <span id="cartSubTotal">0.0</span></td>
                     </tr>
                     <tr>
                         <td>@Localizer["ShippingArea"]</td>
@@ -99,7 +99,7 @@
                     </tr>
                     <tr>
                         <td><strong>@Localizer["Total"]</strong></td>
-                        <td><strong>$ <span id="total">0.0</span></strong></td>
+                        <td><strong>@Localizer["Currency"] <span id="total">0.0</span></strong></td>
                     </tr>
                 </table>
             </div>
@@ -350,7 +350,7 @@
                      </div>
                  </td>
                  <td>
-                     $${data.productPrice}
+                     @Localizer["Currency"] ${data.productPrice}
                      <input type="text" class="form-control price-input" id="priceInput[${rowIndex}]" name="priceInput[${rowIndex}]" value="${data.productPrice}" hidden>
                  </td>
                  <td class="text-danger d-flex justify-content-center">
@@ -362,7 +362,7 @@
                  <button class="btn btn-white" type="button" id="button-minus-${rowIndex}" onclick="Decrement(event, ${rowIndex})"> − </button>
                  </td>
                  <td class="text-danger">
-                <span class="itemPrice">$${parseFloat(data.quantity * parseFloat(data.productPrice)).toFixed(2)}</span>
+                <span class="itemPrice">@Localizer["Currency"] ${parseFloat(data.quantity * parseFloat(data.productPrice)).toFixed(2)}</span>
                  <input type="text" class="form-control stock-input" id="stockInput[${rowIndex}]" name="stockInput[${rowIndex}]" value="${data.quantity}" hidden>
                  </td>
              </tr>

@@ -1,3 +1,4 @@
+﻿using Application.Common.Interfaces;
 using Application.Services.Implementation;
 using Application.Services.Intrerfaces;
 using Domain.Entities;
@@ -24,15 +25,17 @@ namespace Inventory_Management.Controllers
         private readonly IBrandService _brandService;
         private readonly IOnlineOrderService _onlineOrderService;
         private readonly IFeedbackService _feedbackService;
+        private readonly IEmailSender _emailSender;
         private readonly IStringLocalizer _localizer;
         private readonly IMemoryCache _cache;
 
-        public HomeController(ILogger<HomeController> logger,IBrandService brandService ,IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IStringLocalizer localizer, IMemoryCache cache)
+        public HomeController(ILogger<HomeController> logger, IBrandService brandService, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IEmailSender emailSender,IStringLocalizer localizer, IMemoryCache cache)
         {
             _logger = logger;
             _brandService = brandService;
             _onlineOrderService = onlineOrderService;
             _feedbackService = feedbackService;
+            _emailSender = emailSender;
             _localizer = localizer;
             _cache = cache;
         }
@@ -45,7 +48,7 @@ namespace Inventory_Management.Controllers
             if (!_cache.TryGetValue(cacheKey, out var portal))
             {
                 portal = await _onlineOrderService.GetAllProductsForPortal();
-                 
+
                 // set cache with expiration
                 var cacheOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(2)) // hard expiry
@@ -97,7 +100,7 @@ namespace Inventory_Management.Controllers
         [RateLimit(100, 60)]
         public async Task<IActionResult> GetBrandsByCategory(int? categoryId)
         {
-            var brands =  await _brandService.GetBrandsByCategory(categoryId);
+            var brands = await _brandService.GetBrandsByCategory(categoryId);
             var products = await _onlineOrderService.GetProductsByCategory(categoryId);
             return PartialView("_ProductListPartial", products.Data);
         }
@@ -129,7 +132,7 @@ namespace Inventory_Management.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RateLimit(10, 60)]
-        public IActionResult CheckoutDetails([FromBody] Inventory_Management.Models.CartVM data)
+        public async Task<IActionResult> CheckoutDetails([FromBody] Inventory_Management.Models.CartVM data)
         {
             if (data == null)
             {
@@ -159,10 +162,19 @@ namespace Inventory_Management.Controllers
                     Quantity = i.Quantity
                 }).ToList(),
             };
-            var cart = _onlineOrderService.CreateOrder(mappedData);
+            var cart = await _onlineOrderService.CreateOrder(mappedData);
             if (cart != null)
             {
-                return Json(cart.Result);
+                //send an email
+                var emailBody = _emailSender.HtmlTemplateForOnlineOrder(mappedData.OrderNumber, mappedData.CustomerName, mappedData.CustomerAddress, mappedData.CustomerPhone);
+
+                await _emailSender.SendEmailAsync(
+                    "ahmedzaidtp34@gmail.com",
+                    "🛒 New Online Order Placed",
+                    emailBody
+                );
+
+                return Json(cart);
             }
             else
                 return View(cart);
@@ -210,14 +222,14 @@ namespace Inventory_Management.Controllers
         //    return PartialView("_ProductListPartial", product.Data.Items);
         //}
         [HttpGet]
-        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize, int? categoryId,int? brandId)
+        public async Task<IActionResult> GetPaginatedProducts(int pageNumber, int pageSize, int? categoryId, int? brandId)
         {
             // Build unique cache key
             var cacheKey = $"Products_Page_{pageNumber}_Size_{pageSize}_Cat_{categoryId ?? 0}_Brand_{brandId ?? 0}";
 
             if (!_cache.TryGetValue(cacheKey, out PaginatedResult<ProductVM> product))
             {
-                var result = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize, categoryId,brandId);
+                var result = await _onlineOrderService.GetProductsPaginated(pageNumber, pageSize, categoryId, brandId);
 
                 // Extract the PaginatedResult<ProductVM> from the Result wrapper
                 product = result?.Data;
