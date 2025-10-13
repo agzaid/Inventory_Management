@@ -43,6 +43,36 @@
             border-color: #28a745;
             box-shadow: 0 4px 10px rgba(40, 167, 69, 0.25);
         }
+
+    .brand-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .brand-box {
+        flex: 0 0 auto;
+        background-color: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+        .brand-box:hover {
+            background-color: #28a745;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .brand-box.active {
+            background-color: #28a745;
+            color: white;
+        }
 </style>
 <div class="container mt-3">
     <div class="row d-flex justify-content-center">
@@ -62,16 +92,22 @@
 <h5 class="mt-5 text-center">@Localizer["WelcomeToOurShop"]</h5>
 
 <section id="feature" class="section-p1">
+    <!-- Category Scroll -->
     <div class="category-scroll">
-        <div class="category-dropdown fe-box active" style="cursor:pointer;">
+        <div class="category-pill active" data-category-id="all">
             <h6>@Localizer["AllProducts"]</h6>
         </div>
-        @for (int i = 0; i < Model.CategoryVMs?.Count; i++)
+        @foreach (var category in Model.CategoryVMs)
         {
-            <div class="category-dropdown fe-box" data-value="@Model.CategoryVMs[i].Id" style="cursor:pointer;">
-                <h6>@Model.CategoryVMs[i].DisplayCategoryName</h6>
+            <div class="category-pill" data-category-id="@category.Id">
+                <h6>@category.DisplayCategoryName</h6>
             </div>
         }
+    </div>
+
+    <!-- Brand Container (dynamic) -->
+    <div id="brand-container" class="brand-container mt-3">
+        <p class="placeholder-text text-muted">@Localizer["SelectCategoryToViewBrands"]</p>
     </div>
 </section>
 
@@ -327,6 +363,69 @@
                                      _SWAL.AlertWithoutNotification("Something went wrong..!!");
                                  });
                          });
+
+          $('.category-pill').on('click', function () {
+                  $('.category-pill').removeClass('active');
+                  $(this).addClass('active');
+
+                  var categoryId = $(this).data('category-id');
+                  selectedCategoryId = categoryId === "all" ? null : categoryId;
+
+                  // Load products
+                  var url = '@Url.Action("GetProductsByCategory", "Home")';
+                  Search(selectedCategoryId, url);
+
+                  // Show brands for this category
+                  $('#brand-container').empty();
+
+                  if (categoryId === "all") {
+                      $('#brand-container').html('<p class="text-muted">@Localizer["SelectCategoryToViewBrands"]</p>');
+                      return;
+                  }
+
+                  var category = @Html.Raw(Json.Serialize(Model.CategoryVMs));
+                  var selected = category.find(c => c.id === categoryId);
+
+                  if (selected && selected.brandVMs && selected.brandVMs.length > 0) {
+                      selected.brandVMs.forEach(function (brand) {
+                          $('#brand-container').append(`
+                              <div class="brand-box" data-brand-id="${brand.id}">
+                                  ${brand.displayBrandName}
+                              </div>
+                          `);
+                      });
+                  } else {
+                      $('#brand-container').html('<p class="text-muted">@Localizer["NoBrandsFoundForCategory"]</p>');
+                  }
+        });
+                // Brand click → filter products
+        $(document).on('click', '.brand-box', function () {
+            $('.brand-box').removeClass('active');
+            $(this).addClass('active');
+
+            var brandId = $(this).data('brand-id');
+            var url = '@Url.Action("GetProductsByBrand", "Home")';
+            var parameter = { brandId: brandId };
+
+            $('#loader').show();
+            _Ajax.ReturnHTML(url, parameter, "GET", function () { },
+                function (data) {
+                    $('#loader').hide();
+                    $('#pro-container').html(data);
+                },
+                function () {
+                    $('#loader').hide();
+                    _SWAL.AlertWithoutNotification("@Localizer["SomethingWentWrong"]");
+                });
+        });
+
+
+
+
+
+
+
+
              });
              function Search(inputSearch, url){
                  debugger;

@@ -62,13 +62,13 @@ namespace Inventory_Management.Controllers
             return View(portal);
         }
         [RateLimit(100, 60)]
-        public IActionResult Shop()
+        public async Task<IActionResult> Shop()
         {
             var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             var cacheKey = $"ShopProducts_{culture}";
             if (!_cache.TryGetValue(cacheKey, out var products))
             {
-                products = _onlineOrderService.GetAllProductsForPortal();
+                products = await _onlineOrderService.GetAllProductsForPortal();
 
                 _cache.Set(cacheKey, products,
                     new MemoryCacheEntryOptions()

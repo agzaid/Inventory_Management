@@ -213,7 +213,7 @@
     <!--end Hero -->
     <!--start feature -->
 @* <partial name="_Feature"> *@
-    <section id="feature" class="section-p1">
+    <section id="feature" class="">
         <div class="category-dropdown mx-1 fe-box" style="cursor:pointer;">
             <h6> @Localizer["AllProducts"] </h6>
             @*   <h2>@Localizer["Greeting"]</h2>
@@ -233,7 +233,7 @@
 
         <!-- BRAND DISPLAY AREA -->
         <div id="brand-container" class="brand-container">
-            <p class="placeholder-text">Select a category to view its brands</p>
+            @* <p class="placeholder-text">Select a category to view its brands</p> *@
         </div>
 
 
@@ -513,33 +513,56 @@
             });
               const categoryData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryVMs));
 
-                $('.category-scroll').on('click', '.category-box', function () {
-                    const categoryId = $(this).data('category-id');
-                    const $this = $(this);
+            $('.category-scroll').on('click', '.category-box', function () {
+    const categoryId = $(this).data('category-id');
+    const $this = $(this);
 
-                    // Highlight selected category
-                    $('.category-box').removeClass('active');
-                    $this.addClass('active');
+    // Highlight selected category
+    $('.category-box').removeClass('active');
+    $this.addClass('active');
 
-                    // Get the brands
-                    const category = categoryData.find(c => c.Id === categoryId);
-                    const brands = category?.BrandVMs || [];
+    // 🟩 Reset pagination when category changes
+    pageNumber = 2;
+    hasMoreData = true;
+    selectedCategoryId = categoryId;
+    selectedBrandId = null; // reset brand too when changing category
+    $('#pro-container').html(''); // clear products
 
-                    const $brandContainer = $('#brand-container');
-                    $brandContainer.empty();
+    // Get the brands
+    const category = categoryData.find(c => c.Id === categoryId);
+    const brands = category?.BrandVMs || [];
 
-                    if (brands.length > 0) {
-                        brands.forEach(b => {
-                            $brandContainer.append(`
-                                <div class="brand-card" data-brand-id="${b.Id}">
-                                    ${b.DisplayBrandName}
-                                </div>
-                            `);
-                        });
-                    } else {
-                        $brandContainer.html('<p class="placeholder-text">No brands in this category</p>');
-                    }
-                });
+    const $brandContainer = $('#brand-container');
+    $brandContainer.empty();
+
+    if (brands.length > 0) {
+        brands.forEach(b => {
+            $brandContainer.append(`
+                <div class="brand-card" data-brand-id="${b.Id}">
+                    ${b.DisplayBrandName}
+                </div>
+            `);
+        });
+    } else {
+        // $brandContainer.html('<p class="placeholder-text">No brands in this category</p>');
+    }
+
+    // 🟢 Add this block to fetch products by category
+    $('#loader').show();
+    $.ajax({
+        url: '/Home/GetProductsByCategory',
+        type: 'GET',
+        data: { categoryId: selectedCategoryId },
+        success: function (data) {
+            $('#loader').hide();
+            $('#pro-container').html(data);
+        },
+        error: function () {
+            $('#loader').hide();
+            _SWAL.alertWithoutNotification('Error loading products');
+        }
+    });
+});
 
                             // Handle brand clicks
             $('#brand-container').on('click', '.brand-card', function () {
@@ -550,7 +573,10 @@
                 // Highlight the selected brand
                 $('.brand-card').removeClass('active');
                 $brand.addClass('active');
-
+                  // 🟩 Reset pagination when brand changes
+                 pageNumber = 2;
+                 hasMoreData = true;
+                 $('#pro-container').html(''); // clear products
                 // Find the currently active category
                 const categoryId = $('.category-box.active').data('category-id');
                 if (!categoryId) return;
@@ -669,13 +695,6 @@
                 // Clear input
                 input.value = "";
             }
-        </script>
-        <script>
-            $(document).ready(function () {
-                debugger;
-          
-            });
-
         </script>
 
 

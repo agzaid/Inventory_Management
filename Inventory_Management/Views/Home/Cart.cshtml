@@ -29,51 +29,16 @@
                 opacity: 0.5;
             }
 
-        media (max-width: 768px) {
-            #cart table, #cart-add table
-
-        {
-            width: 100%;
-            font-size: 14px;
+        .product-name h6 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 175px; /* Adjust to fit roughly 12 chars */
+            display: inline-block;
+            vertical-align: middle;
         }
 
-        #cart table thead {
-            display: none; /* Hide table headers on mobile */
-        }
-
-        #cart table tr {
-            display: block;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #fff;
-        }
-
-        #cart table td {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px;
-        }
-
-        .d-flex {
-            flex-direction: column;
-        }
-
-        #subtotal {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .time-slot {
-            font-size: 14px;
-            padding: 8px 12px;
-        }
-
-        input, select, textarea, button {
-            font-size: 14px;
-        }
-
-        }
+        
     </style>
 }
 
@@ -380,7 +345,7 @@
                  <td><a onclick="Delete(event)" style="cursor:pointer"><i class="ri-close-circle-line text-danger"></i></a></td>
                  <td>
                      <div class="d-flex align-items-center justify-content-center">
-                         <div class="font-weight-bold text-danger"><h6>${data.productDisplayName}</h6></div>
+                         <div class="font-weight-bold text-danger product-name"><h6>${data.productDisplayName}</h6></div>
                          <input class="font-weight-bold text-danger product-input" name="productInput[${rowIndex}]" id="productInput[${rowIndex}]" value="${data.productName}" hidden>
                      </div>
                  </td>
