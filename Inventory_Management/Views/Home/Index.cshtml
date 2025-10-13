@@ -513,7 +513,7 @@
             });
               const categoryData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryVMs));
 
-            $('.category-scroll').on('click', '.category-box', function () {
+  $('.category-scroll').on('click', '.category-box', function () {
     const categoryId = $(this).data('category-id');
     const $this = $(this);
 

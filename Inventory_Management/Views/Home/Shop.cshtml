@@ -314,9 +314,10 @@
     <script>
         //
         $(document).ready(function() {
-            var pageNumber = 2;
-            var pageSize = 20;
-            var selectedCategoryId = null;
+                var selectedCategoryId = null;
+                var selectedBrandId = null;
+                var pageNumber = 2;
+                var pageSize = 20;
 
              var cart = JSON.parse(localStorage.getItem('cart')) || [];
              if(cart == [] || $("#cartNum").length==0){
@@ -331,7 +332,13 @@
                       selectedCategoryId = $(this).data('value') || null; // save it
 
                       var url = '@Url.Action("GetProductsByCategory", "Home")';
-                      Search(selectedCategoryId,url);
+                              // 🟩 Reset pagination when category changes
+                                pageNumber = 2;
+                                hasMoreData = true;
+                                selectedCategoryId = categoryId;
+                                selectedBrandId = null; // reset brand too when changing category
+                                $('#pro-container').html('');
+                             Search(selectedCategoryId,url);
              });
 
                   $('#inputSearch').on('input', function () {
@@ -348,8 +355,8 @@
                              var parameter = {
                                  pageNumber: pageNumber,
                                  pageSize: pageSize,
-                                 categoryId: selectedCategoryId // send current category
-
+                                 categoryId: selectedCategoryId, // send current category
+                                 brandId: selectedBrandId // send current brand
                              };
                              $('#loader').show();
                              _Ajax.ReturnHTML($url, parameter, "GET", function () { },
@@ -371,8 +378,14 @@
                   var categoryId = $(this).data('category-id');
                   selectedCategoryId = categoryId === "all" ? null : categoryId;
 
+                          // 🟩 Reset pagination when category changes
+                            pageNumber = 2;
+                            hasMoreData = true;
+                            selectedCategoryId = categoryId;
+                            selectedBrandId = null; // reset brand too when changing category
+                            $('#pro-container').html('');
                   // Load products
-                  var url = '@Url.Action("GetProductsByCategory", "Home")';
+                         var url = '@Url.Action("GetProductsByCategory", "Home")';
                   Search(selectedCategoryId, url);
 
                   // Show brands for this category
@@ -404,8 +417,9 @@
             $(this).addClass('active');
 
             var brandId = $(this).data('brand-id');
-            var url = '@Url.Action("GetProductsByBrand", "Home")';
-            var parameter = { brandId: brandId };
+            selectedBrandId = brandId;
+            var url = '@Url.Action("GetProductsByCategoryAndBrand", "Home")';
+            var parameter = { brandId: selectedBrandId,categoryId:selectedCategoryId };
 
             $('#loader').show();
             _Ajax.ReturnHTML(url, parameter, "GET", function () { },
