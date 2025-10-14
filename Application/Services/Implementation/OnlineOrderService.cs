@@ -289,8 +289,9 @@ namespace Application.Services.Implementation
                 {
                     Id = s.Id,
                     ProductName = s.ProductName?.ToUpper(),
+                    ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
-                    CategoryName = s.Category?.CategoryName?.ToUpper(),
+                    CategoryName = s.Category?.DisplayCategoryName,
                     SellingPrice = s.SellingPrice,
                     OtherShopsPrice = s.OtherShopsPrice,
                     DifferencePercentage = Math.Ceiling(s.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
