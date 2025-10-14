@@ -37,6 +37,8 @@
                                                         asp-for="BrandId" asp-items="@(new SelectList(Model.ListOfBrands, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                     <option disabled></option>
                                                 </select>
+                                                <span asp-validation-for="BrandId" class="text-danger"></span>
+
                                             </div>
                                             <div class="mb-3">
                                                 <label for="inputVendor" class="form-label fw-semibold">Seller</label>
@@ -44,6 +46,8 @@
                                                         asp-for="SellerId" asp-items="@(new SelectList(Model.ListOfSellers, "Value", "Text"))" data-placeholder=" Choose one thing">
                                                     <option disabled></option>
                                                 </select>
+                                                <span asp-validation-for="SellerId" class="text-danger"></span>
+
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label fw-semibold">Barcode</label>

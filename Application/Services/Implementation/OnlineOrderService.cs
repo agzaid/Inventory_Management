@@ -279,7 +279,8 @@ namespace Application.Services.Implementation
                     else
                         filter = s => !s.IsDeleted && s.BrandId == brId;
                 }
-                Expression<Func<Product, object>> includes = x => x.Images;
+                //Expression<Func<Product, object>> includes = x => x.Images;
+                Expression<Func<Product, object>>[] includes = { x => x.Images, x => x.Category };
                 Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy;
                 orderBy = s => s.OrderByDescending(s => s.ProductName);
 
@@ -288,7 +289,7 @@ namespace Application.Services.Implementation
                 var showProducts = products.Items.Select(s => new ProductVM()
                 {
                     Id = s.Id,
-                    ProductName = s.ProductName?.ToUpper(),
+                    ProductName = s.ProductName,
                     ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
                     CategoryName = s.Category?.DisplayCategoryName,
