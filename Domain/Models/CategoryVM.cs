@@ -13,6 +13,8 @@ namespace Domain.Models
         [Required(ErrorMessage = "Name is required.")]
         public string? CategoryNameAr { get; set; }
         public string? Description { get; set; }
+        public string? Slug { get; set; }
+
         public string? FormToken { get; set; }
         public string? CreatedDate { get; set; }
 

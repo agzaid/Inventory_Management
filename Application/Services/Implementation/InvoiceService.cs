@@ -522,7 +522,7 @@ namespace Application.Services.Implementation
             oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
             oldProduct.StockQuantity = obj.StockQuantity;
             oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
-            oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
+            oldProduct.CategoryId = string.IsNullOrEmpty(obj.CategoryId) ? null : int.Parse(obj.CategoryId);
             oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
             oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim(); oldProduct.DifferencePercentage = decimal.TryParse(
                 obj?.DifferencePercentage?.Replace("%", "").Trim(),

@@ -81,14 +81,18 @@
                 <div class="pro mx-1">
                     <img class="img-fluid"
                          src="@(product?.ListOfRetrievedImages != null && product.ListOfRetrievedImages.Count > 0
-                                                                      ? product.ListOfRetrievedImages[0]
-                                                                      : Url.Content("~/images/default-product.png"))"
+                                                                                                                        ? product.ListOfRetrievedImages[0]
+                                                                                                                        : Url.Content("~/images/default-product.png"))"
                  alt="">
 
                     <!-- Discount badge -->
-                    <span class="discount-badge">
-                        @(product?.DifferencePercentage ?? 0) % @Localizer["Discount"]
-                    </span>
+            @if (decimal.TryParse(product?.DifferencePercentage, out decimal diff) && diff != 0)
+                    {
+                        <span class="discount-badge">
+                            @($"{diff:0.#}% {Localizer["Discount"]}")
+                        </span>
+                    }
+
 
                     <div class="des">
                         <span>@(product?.CategoryName ?? "No Category")</span>
@@ -115,7 +119,7 @@
             </a>
         </div>
 
-        }
+    }
 }
 else
 {

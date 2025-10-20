@@ -18,6 +18,8 @@ namespace Domain.Entities
 
         [MaxLength(1000)]
         public string? Description { get; set; }
+        [MaxLength(100)]
+        public string? Slug { get; set; }
         public bool IsKilogram { get; set; } = false;
         public decimal? PricePerGram { get; set; }
 

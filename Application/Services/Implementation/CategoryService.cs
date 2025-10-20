@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.Utility;
 using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Models;
@@ -33,6 +34,7 @@ namespace Application.Services.Implementation
                     Id = s.Id,
                     Description = s.Description,
                     CategoryName = s.CategoryName,
+                    Slug = s.Slug,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                 }).ToList();
 
@@ -79,6 +81,7 @@ namespace Application.Services.Implementation
                     {
                         CategoryName = obj.CategoryName,
                         CategoryNameAr = obj.CategoryNameAr,
+                        Slug = SlugGenerator.GenerateSlug(obj.CategoryName ?? string.Empty),
                         Modified_Date = DateTime.UtcNow,
                         Description = obj.Description
                     };
@@ -146,6 +149,7 @@ namespace Application.Services.Implementation
                     {
                         CategoryName = category.CategoryName,
                         CategoryNameAr = category.CategoryNameAr,
+                        Slug = category.Slug,
                         Description = category.Description,
                         CreatedDate = category.Create_Date?.ToString("yyyy-MM-dd"),
                         AvailableBrands = brandsList,
@@ -169,7 +173,7 @@ namespace Application.Services.Implementation
             try
             {
                 var oldCategory = await _unitOfWork.Category
-                    .GetFirstOrDefaultAsync(s => s.Id == obj.Id, null, true);
+                    .GetFirstOrDefaultAsync(s => s.Id == obj.Id, includeProperties: "BrandsCategories", tracked: true);
 
                 if (oldCategory == null)
                     return false;
@@ -177,15 +181,35 @@ namespace Application.Services.Implementation
                 // Normalize data
                 obj.CategoryName = obj.CategoryName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
-                if (obj.SelectedBrandIds != null && obj.SelectedBrandIds.Any())
-                {
-                    oldCategory.BrandsCategories = obj.SelectedBrandIds.Select(brandId => new BrandsCategories
-                    {
-                        BrandId = brandId
-                    }).ToList();
-                }
+
+                // Existing BrandIds in DB
+                var existingBrandIds = oldCategory.BrandsCategories
+                    .Select(bc => bc.BrandId)
+                    .ToList();
+
+                // New BrandIds from the form
+                var newBrandIds = obj.SelectedBrandIds ?? new List<int>();
+
+                // Find brands to remove (exist in DB but not in new list)
+                var brandsToRemove = oldCategory.BrandsCategories
+                    .Where(bc => !newBrandIds.Contains(bc.BrandId ?? 0))
+                    .ToList();
+
+                foreach (var item in brandsToRemove)
+                    oldCategory.BrandsCategories.Remove(item);
+
+                // Find brands to add (exist in new list but not in DB)
+                var brandsToAdd = newBrandIds
+                    .Where(id => !existingBrandIds.Contains(id))
+                    .Select(id => new BrandsCategories { BrandId = id })
+                    .ToList();
+
+                foreach (var item in brandsToAdd)
+                    oldCategory.BrandsCategories.Add(item);
+
                 // Update fields
                 oldCategory.CategoryNameAr = obj.CategoryNameAr;
+                oldCategory.Slug = SlugGenerator.GenerateSlug(obj.CategoryName ?? string.Empty);
                 oldCategory.Description = obj.Description;
                 oldCategory.CategoryName = obj.CategoryName;
                 oldCategory.Modified_Date = DateTime.UtcNow;
@@ -245,6 +269,7 @@ namespace Application.Services.Implementation
                     Description = s.Description,
                     CategoryNameAr = s.CategoryNameAr,
                     CategoryName = s.CategoryName,
+                    Slug = s.Slug,
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
                 }).ToList();
                 var paginatedResult = new PaginatedResult<CategoryVM>

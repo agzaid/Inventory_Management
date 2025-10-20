@@ -14,6 +14,9 @@ namespace Domain.Entities
         public string? CategoryName { get; set; }
         [MaxLength(100)]
         public string? CategoryNameAr { get; set; }
+        [MaxLength(100)]
+        public string? Slug { get; set; }
+
         [MaxLength(800)]
         public string? Description { get; set; }
 

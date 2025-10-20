@@ -106,5 +106,12 @@ namespace Inventory_Management.Areas.admin.Controllers
                 TempData["error"] = result;
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateSlugs()
+        {
+            var count = await _productService.UpdateAllSlugsAsync();
+            return Ok($"{count} product slugs updated successfully.");
+        }
     }
 }

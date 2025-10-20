@@ -20,5 +20,6 @@ namespace Application.Services.Intrerfaces
         Task<ProductVM> GetProductById(int id);
         Task<ProductVM> GetProductDetails(int id);
         Task<Result<string>> CreateProduct(ProductVM product);
+        Task<int> UpdateAllSlugsAsync();
     }
 }

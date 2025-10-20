@@ -51,6 +51,7 @@ namespace Application.Services.Implementation
                 product.Seller = product.Seller?.ToLower().Trim();
                 product.ProductTags = product.ProductTags?.ToLower().Trim();
                 product.Barcode = product.Barcode?.ToLower().Trim();
+                product.Slug = SlugGenerator.GenerateSlug(product.ProductName ?? "product");
                 product.DifferencePercentage = product?.DifferencePercentage?.Replace("%", "").Trim();
                 product.MaximumDiscountPercentage = product?.MaximumDiscountPercentage?.Replace("%", "").Trim();
 
@@ -78,6 +79,7 @@ namespace Application.Services.Implementation
                     ProductNameAr = product.ProductNameAr,
                     Description = product.Description,
                     Barcode = product.Barcode,
+                    Slug = product.Slug,
                     Create_Date = DateTime.Now,
                     IsKilogram = product.IsKilogram,
                     PricePerGram = product.PricePerGram,
@@ -100,9 +102,11 @@ namespace Application.Services.Implementation
                     OtherShopsPrice = product.OtherShopsPrice,
                     StockQuantity = product.StockQuantity,
                     ProductExpiryDate = DateOnly.Parse(product.ExpiryDate ?? "2000-01-01"),
-                    CategoryId = int.Parse(product.CategoryId),
-                    BrandId = int.Parse(product.BrandId),
-                    SellerId = int.Parse(product.SellerId),
+                    CategoryId = string.IsNullOrEmpty(product.CategoryId) ? null : int.Parse(product.CategoryId),
+                    //oldProduct.BrandId = string.IsNullOrEmpty(obj.BrandId) ? null : int.Parse(obj.BrandId);
+
+                    BrandId = string.IsNullOrEmpty(product.BrandId) ? null : int.Parse(product.BrandId),
+                    SellerId = string.IsNullOrEmpty(product.SellerId) ? null : int.Parse(product.SellerId),
                     StatusId = (int?)(Status)Enum.Parse(typeof(Status), product.StatusId ?? ""),
                     ProductTags = product.ProductTags ?? "",
                     Images = listOfImages
@@ -232,6 +236,7 @@ namespace Application.Services.Implementation
                     ProductNameAr = s.ProductNameAr?.ToUpper(),
                     //Brand = s.Brand?.ToUpper(),
                     Description = s.Description,
+                    Slug = s.Slug,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
                     StockQuantity = s.StockQuantity,
@@ -291,6 +296,7 @@ namespace Application.Services.Implementation
                     ProductName = item.ProductName?.ToUpper(),
                     ProductNameAr = item.ProductNameAr,
                     Description = item.Description,
+                    Slug = item.Slug,
                     //Brand = item.Brand,
                     CategoryName = item.Category?.CategoryName?.ToUpper(),
                     SellingPrice = item.SellingPrice,
@@ -324,6 +330,7 @@ namespace Application.Services.Implementation
                         ProductName = product.ProductName ?? "",
                         ProductNameAr = product.ProductNameAr ?? "",
                         Description = product.Description ?? "",
+                        Slug = product.Slug ?? "",
                         //Brand = product.Brand ?? "",
                         Barcode = product.Barcode ?? "",
                         ExpiryDate = product.ProductExpiryDate?.ToString("yyyy-MM-dd") ?? "",
@@ -412,11 +419,12 @@ namespace Application.Services.Implementation
                     oldProduct.ProductNameAr = obj.ProductNameAr?.Trim();
                     oldProduct.Description = obj.Description?.ToLower().Trim();
                     oldProduct.Barcode = obj.Barcode?.ToLower().Trim();
+                    oldProduct.Slug = SlugGenerator.GenerateSlug(obj.ProductName);
                     oldProduct.Modified_Date = DateTime.UtcNow;
                     oldProduct.IsKilogram = obj.IsKilogram;
                     oldProduct.PricePerGram = obj.PricePerGram;
                     oldProduct.SellingPrice = obj.SellingPrice;
-                    oldProduct.SellerId = int.Parse(obj.SellerId);
+                    oldProduct.SellerId = string.IsNullOrEmpty(obj.SellerId) ? null : int.Parse(obj.SellerId);
                     oldProduct.BuyingPrice = obj.BuyingPrice;
                     oldProduct.DifferencePercentage = decimal.TryParse(obj.DifferencePercentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var d) ? d : 0m;
                     oldProduct.MaximumDiscountPercentage = decimal.TryParse(obj.MaximumDiscountPercentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var m) ? m : 0m;
@@ -424,8 +432,8 @@ namespace Application.Services.Implementation
                     oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
                     oldProduct.StockQuantity = obj.StockQuantity;
                     oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "2000-01-01");
-                    oldProduct.CategoryId = int.Parse(obj.CategoryId);
-                    oldProduct.BrandId = int.Parse(obj.BrandId);
+                    oldProduct.CategoryId = string.IsNullOrEmpty(obj.CategoryId) ? null : int.Parse(obj.CategoryId);
+                    oldProduct.BrandId = string.IsNullOrEmpty(obj.BrandId) ? null : int.Parse(obj.BrandId);
                     oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
                     oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
 
@@ -470,6 +478,25 @@ namespace Application.Services.Implementation
                 _logger.LogError(ex, "An error occurred while updating Product with Id: {Id}", obj.Id);
                 return false;
             }
+        }
+        public async Task<int> UpdateAllSlugsAsync()
+        {
+            var products = await _unitOfWork.Category.GetAllAsync();
+
+            foreach (var product in products)
+            {
+                var newSlug = SlugGenerator.GenerateSlug(product.CategoryName);
+
+                if (product.Slug != newSlug)
+                {
+                    product.Slug = newSlug;
+                    _unitOfWork.Category.Update(product);
+                }
+            }
+
+            await _unitOfWork.SaveAsync();
+
+            return products.Count();
         }
 
 
@@ -536,8 +563,8 @@ namespace Application.Services.Implementation
             oldProduct.OtherShopsPrice = obj.OtherShopsPrice;
             oldProduct.StockQuantity = obj.StockQuantity;
             oldProduct.ProductExpiryDate = DateOnly.Parse(obj.ExpiryDate ?? "1-1-2000");
-            oldProduct.CategoryId = int.Parse(obj.CategoryId ?? "0");
-            oldProduct.BrandId = int.Parse(obj.BrandId ?? "0");
+            oldProduct.CategoryId = string.IsNullOrEmpty(obj.CategoryId) ? null : int.Parse(obj.CategoryId);
+            oldProduct.BrandId = string.IsNullOrEmpty(obj.BrandId) ? null : int.Parse(obj.BrandId);
             oldProduct.StatusId = (int?)(Status)Enum.Parse(typeof(Status), obj.StatusId ?? "");
             oldProduct.ProductTags = obj.ProductTags?.ToLower().Trim();
             oldProduct.DifferencePercentage = decimal.Parse(obj?.DifferencePercentage?.Replace("%", "").Trim() ?? "0.00");

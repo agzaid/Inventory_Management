@@ -135,7 +135,14 @@ app.UseRequestLocalization(locOptions.Value);
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        const int durationInSeconds = 60 * 60 * 24 * 30; // 30 days
+        ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=" + durationInSeconds;
+    }
+});
 
 //app.UseRequestLocalization();
 

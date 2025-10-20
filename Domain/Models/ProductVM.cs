@@ -29,6 +29,8 @@ namespace Domain.Models
         public string? ProductNameAr { get; set; }
         [Required(ErrorMessage = "Description is required.")]
         public string? Description { get; set; }
+        public string Slug { get; set; }
+
         public string? Brand { get; set; }
         public string? Seller { get; set; }
         public string? Barcode { get; set; }
@@ -57,10 +59,10 @@ namespace Domain.Models
         public string? StatusId{ get; set; }
         public string? CategoryId{ get; set; }
 
-        [Required(ErrorMessage = "Brand is required.")]
+        //[Required(ErrorMessage = "Brand is required.")]
         public string? BrandId{ get; set; }
 
-        [Required(ErrorMessage = "Seller is required.")]
+        //[Required(ErrorMessage = "Seller is required.")]
         public string? SellerId{ get; set; }
         public string? CategoryName{ get; set; }
         public List<string>? OldImagesBytes { get; set; } = new List<string>();
