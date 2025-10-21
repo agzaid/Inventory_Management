@@ -107,15 +107,14 @@
                 <h3>@Localizer["DeliveryInformation"]</h3>
                 <table>
                     <tr>
-                        <td><strong>@Localizer["YourName"]</strong></td>
+                        <td><strong>@Localizer["YourName"] <span class="text-danger">*</span></strong></td>
                         <td>
                             <input class="form-control" asp-for="CustomerName" type="text" placeholder="@Localizer["YourName"]">
                             <span asp-validation-for="CustomerName" class="text-danger"></span>
-
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>@Localizer["ContactNumber"]</strong></td>
+                        <td><strong>@Localizer["ContactNumber"] <span class="text-danger">*</span></strong></td>
                         <td>
                             <input class="form-control" asp-for="CustomerPhone" type="text" placeholder="@Localizer["ContactNumber"]">
                             <span asp-validation-for="CustomerPhone" class="text-danger"></span>
@@ -131,7 +130,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>@Localizer["Address"]</strong></td>
+                        <td><strong>@Localizer["Address"] <span class="text-danger">*</span></strong></td>
                         <td>
                             <textarea cols="3" value="" class="form-control" asp-for="CustomerAddress" type="text" placeholder="@Localizer["Address"]"></textarea>
                             <span asp-validation-for="CustomerAddress" class="text-danger"></span>
