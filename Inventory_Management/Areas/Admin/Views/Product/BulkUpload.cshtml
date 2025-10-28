@@ -1,0 +1,81 @@
+﻿@model Domain.Models.BrandVM
+
+@{
+    ViewData["Title"] = "Bulk Upload Products";
+}
+
+<div class="page-wrapper">
+    <div class="page-content">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card radius-10 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">📦 Bulk Upload Products</h5>
+                        <hr />
+
+                        <p class="text-muted mb-4">
+                            Upload an Excel file (<code>.xlsx</code>) containing your product list.
+                            The file should follow the predefined format.
+                        </p>
+
+                        <form asp-action="BulkUpload" asp-controller="Product" enctype="multipart/form-data" method="post">
+                            <div class="form-group mb-3">
+                                <label for="file" class="form-label fw-bold">Select Excel File</label>
+                                <input type="file" name="file" id="file" class="form-control" accept=".xls,.xlsx" required />
+                                <small class="text-muted">Only .xls or .xlsx files are supported.</small>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between mt-4">
+                                <a href="~/templates/ProductTemplate.xlsx" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-download me-1"></i> Download Template
+                                </a>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload me-1"></i> Upload
+                                </button>
+                            </div>
+                        </form>
+
+                        <hr class="my-4" />
+
+                        <div class="alert alert-info mt-3">
+                            <strong>Tip:</strong> Ensure your Excel file columns match the template fields:
+                            <ul class="mb-0">
+                                <li>Product Name</li>
+                                <li>Category</li>
+                                <li>Brand</li>
+                                <li>Price</li>
+                                <li>Stock Quantity</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial">
+
+    <script>
+        $(document).ready(function () {
+            $('#ImagesFormFiles').imageuploadify();
+
+            $('#SellingPrice, #OtherShopsPrice').on('input', function() {
+                calculateDiscountPercentage();
+            });
+            $('#categorySelect').select2({
+                placeholder: "Select one or more brands",
+                allowClear: true,
+                width: '100%'
+            });
+        })
+
+    </script>
+
+@* 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@

@@ -21,5 +21,6 @@ namespace Application.Services.Intrerfaces
         Task<ProductVM> GetProductDetails(int id);
         Task<Result<string>> CreateProduct(ProductVM product);
         Task<int> UpdateAllSlugsAsync();
+        Task<int> BulkUpdateProductsAsync(IEnumerable<Product> productVMs);
     }
 }

@@ -30,6 +30,10 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IBrandsCategoriesService, BrandsCategoriesService>();
             services.AddScoped<Application.Common.Interfaces.IEmailSender, Infrastructure.EmailSender.SmtpEmailSender>();
 
+            services.AddTransient<ExcelImporter.ExcelImporterService>();
+            services.AddTransient<ExcelImporter.ExcelImporterXML>();
+
+
             return services;
         }
         public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)

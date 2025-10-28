@@ -498,6 +498,59 @@ namespace Application.Services.Implementation
 
             return products.Count();
         }
+        public async Task<int> BulkUpdateProductsAsync(IEnumerable<Product> productVMs)
+        {
+            try
+            {
+                var ids = productVMs.Select(p => p.Id).ToList();
+
+                var existingProducts = await _unitOfWork.Product
+                    .GetAllAsync(p => ids.Contains(p.Id), tracked: true);
+
+                // Map for quick lookup
+                var productDict = existingProducts.ToDictionary(p => p.Id, p => p);
+
+                int updatedCount = 0;
+
+                foreach (var vm in productVMs)
+                {
+                    if (productDict.TryGetValue(vm.Id, out var product))
+                    {
+                        if (!string.IsNullOrWhiteSpace(vm.DisplayProductName) &&
+                                 string.Equals(vm.DisplayProductName.Trim(), product.ProductName?.Trim(),
+                           StringComparison.OrdinalIgnoreCase))
+                        {
+                            // --- Update fields safely ---
+                            product.ProductName = vm.ProductName?.Trim().ToLower();
+                            product.Description = vm.Description?.Trim().ToLower();
+                            product.SellingPrice = vm.SellingPrice;
+                            product.StockQuantity = (int)vm.StockQuantity;
+                            // product.ProductExpiryDate = DateOnly.FromDateTime(vm.ExpiryDate);
+                            product.Modified_Date = DateTime.UtcNow;
+
+                            updatedCount++;
+                        }
+                        else
+                        {
+                            // Optional: log mismatch for reporting
+                            _logger.LogWarning("Name mismatch for ID: {Id} | Expected: {Expected} | Got: {Got}",
+                                vm.Id, product.ProductName, vm.DisplayProductName);
+                            Console.WriteLine($"Name mismatch for ID: {vm.Id} | Expected: {product.ProductName} | Got: {vm.DisplayProductName}");
+                            return 0;
+                        }
+                    }
+                }
+
+                await _unitOfWork.SaveAsync();
+
+                return updatedCount;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Bulk update failed");
+                return 0;
+            }
+        }
 
 
         #region Update Product Private Methods

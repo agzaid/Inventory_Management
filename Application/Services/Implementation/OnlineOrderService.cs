@@ -33,35 +33,8 @@ namespace Application.Services.Implementation
             try
             {
                 var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false, "Images");
-                var products =  _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.ProductName).Take(20);
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.ProductName).Take(20);
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false, "BrandsCategories,BrandsCategories.Brand").ToList();
-                //foreach (var item in products)
-                //{
-                //    retrievedImages.Clear();
-                //    if (item.Images?.Count() > 0)
-                //    {
-                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                //        retrievedImages.AddRange(image64);
-                //    }
-                //    var productVM = new ProductVM()
-                //    {
-                //        Id = item.Id,
-                //        ProductName = item.DisplayProductName,
-                //        Description = item.Description,
-                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                //        SellingPrice = item.SellingPrice,
-                //        IsKilogram = item.IsKilogram,
-                //        PricePerGram = item.PricePerGram,
-                //        OtherShopsPrice = item.OtherShopsPrice,
-                //        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
-                //        StockQuantity = item.StockQuantity,
-                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                //        Barcode = item.Barcode,
-                //        ListOfRetrievedImages = image64,
-                //    };
-                //    productVMs.Add(productVM);
-                //}
 
                 var prvm = products.Select(s => new ProductVM()
                 {
@@ -92,7 +65,7 @@ namespace Application.Services.Implementation
                     Description = s.Description,
                     BrandVMs = s.BrandsCategories?.Select(bc => new BrandVM
                     {
-                        Id = (int)bc.BrandId,
+                        Id = (int)(bc.BrandId ?? 0),
                         BrandName = bc.Brand?.BrandName,
                         BrandNameAr = bc.Brand?.BrandNameAr,
                         Description = bc.Brand?.Description,
@@ -259,7 +232,7 @@ namespace Application.Services.Implementation
                 return Task.FromResult(Result<List<ProductVM>>.Failure("Failed", "error"));
             }
         }
-        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId,int? brandId)
+        public async Task<Result<PaginatedResult<ProductVM>>> GetProductsPaginated(int pageNumber, int pageSize, int? categoryId, int? brandId)
         {
             try
             {

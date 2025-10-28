@@ -4,8 +4,10 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
 using Infrastructure.Data;
+using Infrastructure.ExcelImporter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace Inventory_Management.Areas.admin.Controllers
@@ -16,11 +18,15 @@ namespace Inventory_Management.Areas.admin.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly ExcelImporterService _excelImporter;
+        private readonly ExcelImporterXML _importerXML;
 
-        public ProductController(IProductService productService, ICategoryService categoryService)
+        public ProductController(IProductService productService, ICategoryService categoryService, ExcelImporterService excelImporter, ExcelImporterXML importerXML)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _excelImporter = excelImporter;
+            _importerXML = importerXML;
         }
         [HttpGet]
         public async Task<IActionResult> Index(string? status, string? message)
@@ -112,6 +118,48 @@ namespace Inventory_Management.Areas.admin.Controllers
         {
             var count = await _productService.UpdateAllSlugsAsync();
             return Ok($"{count} product slugs updated successfully.");
+        }
+
+        [HttpGet]
+        public  IActionResult BulkUpload()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> BulkUpload(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Please upload a valid file.");
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            stream.Position = 0;
+
+            var products = _excelImporter.ReadProducts(stream);
+            var result = await _productService.BulkUpdateProductsAsync(products);
+            if (result > 0)
+            {
+                TempData["success"] = $"Products updated successfully{result}";
+            }
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Please upload a valid file.");
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            stream.Position = 0;
+
+            var productss = _importerXML.ReadProducts(stream);
+            var products = _excelImporter.ReadProducts(stream);
+            //_productService.UpdateProduct
+            //_context.Products.AddRange(products);
+            //await _context.SaveChangesAsync();
+
+            return Ok($"Uploaded {products.Count} products successfully");
         }
     }
 }

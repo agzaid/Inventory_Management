@@ -316,30 +316,39 @@ namespace Application.Services.Implementation
                             oldBrand.Images.Add(img);
                         }
                     }
-                    if (obj.CategoryIds != null && obj.CategoryIds.Any())
+                    // --- 4. Update brand-category relations ---
+                    var newCategoryIds = obj.CategoryIds;
+                    var existingBrandCategories = oldBrand.BrandsCategories.ToList();
+
+                    // Categories to remove
+                    var categoriesToRemove = existingBrandCategories
+                        .Where(bc => !newCategoryIds.Contains(bc.CategoryId))
+                        .ToList();
+
+                    //if (categoriesToRemove.Any())
+                    //    _unitOfWork.BrandsCategories.RemoveRange(categoriesToRemove);
+                    foreach (var item in categoriesToRemove)
                     {
-                        // get all existing brand-category relations (if any)
-                        var existingRelations = await _unitOfWork.BrandsCategories
-                            .GetAllAsync(x => obj.CategoryIds.Contains(x.CategoryId) && x.BrandId == oldBrand.Id);
-
-                        var existingCategoryIds = existingRelations.Select(x => x.CategoryId).ToHashSet();
-
-                        var newRelations = obj.CategoryIds
-                            .Where(catId => !existingCategoryIds.Contains(catId))
-                            .Select(catId => new BrandsCategories
-                            {
-                                BrandId = oldBrand.Id,
-                                CategoryId = catId,
-                                Create_Date = DateTime.Now
-                            })
-                            .ToList();
-
-                        oldBrand.BrandsCategories = newRelations;
+                        await _unitOfWork.BrandsCategories.RemoveAsync(item);
                     }
+                    // Categories to add
+                    var existingCategoryIds = existingBrandCategories.Select(bc => bc.CategoryId).ToHashSet();
+                    var categoriesToAdd = newCategoryIds
+                        .Where(catId => !existingCategoryIds.Contains(catId))
+                        .Select(catId => new BrandsCategories
+                        {
+                            BrandId = oldBrand.Id,
+                            CategoryId = catId,
+                            Create_Date = DateTime.UtcNow
+                        }).ToList();
 
-                    // 3. Save changes
+                    foreach (var bc in categoriesToAdd)
+                        oldBrand.BrandsCategories.Add(bc);
+
+                    // --- 5. Save all changes ---
                     _unitOfWork.Brand.Update(oldBrand);
                     await _unitOfWork.SaveAsync();
+
                     return true;
                 }
 

@@ -173,41 +173,48 @@ namespace Application.Services.Implementation
             try
             {
                 var oldCategory = await _unitOfWork.Category
-                    .GetFirstOrDefaultAsync(s => s.Id == obj.Id, includeProperties: "BrandsCategories", tracked: true);
+                    .GetFirstOrDefaultAsync(
+                        s => s.Id == obj.Id,
+                        includeProperties: "BrandsCategories",
+                        tracked: true
+                    );
 
                 if (oldCategory == null)
                     return false;
 
-                // Normalize data
                 obj.CategoryName = obj.CategoryName?.ToLower();
                 obj.Description = obj.Description?.ToLower();
 
-                // Existing BrandIds in DB
                 var existingBrandIds = oldCategory.BrandsCategories
                     .Select(bc => bc.BrandId)
                     .ToList();
 
-                // New BrandIds from the form
                 var newBrandIds = obj.SelectedBrandIds ?? new List<int>();
 
-                // Find brands to remove (exist in DB but not in new list)
+                // Remove unused relations
                 var brandsToRemove = oldCategory.BrandsCategories
                     .Where(bc => !newBrandIds.Contains(bc.BrandId ?? 0))
                     .ToList();
 
-                foreach (var item in brandsToRemove)
-                    oldCategory.BrandsCategories.Remove(item);
+                if (brandsToRemove.Any())
+                {
+                    // Optional: use cascade or explicit delete
+                    foreach (var item in brandsToRemove)
+                    {
+                        _unitOfWork.BrandsCategories.Remove(item);
+                    }
+                }
 
-                // Find brands to add (exist in new list but not in DB)
+                // Add new ones
                 var brandsToAdd = newBrandIds
                     .Where(id => !existingBrandIds.Contains(id))
-                    .Select(id => new BrandsCategories { BrandId = id })
+                    .Select(id => new BrandsCategories { BrandId = id, CategoryId = obj.Id })
                     .ToList();
 
                 foreach (var item in brandsToAdd)
                     oldCategory.BrandsCategories.Add(item);
 
-                // Update fields
+                // Update main fields
                 oldCategory.CategoryNameAr = obj.CategoryNameAr;
                 oldCategory.Slug = SlugGenerator.GenerateSlug(obj.CategoryName ?? string.Empty);
                 oldCategory.Description = obj.Description;
