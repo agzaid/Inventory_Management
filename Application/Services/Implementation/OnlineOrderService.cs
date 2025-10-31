@@ -33,7 +33,7 @@ namespace Application.Services.Implementation
             try
             {
                 var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false, "Images");
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.ProductName).Take(20);
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.Create_Date).Take(20);
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false, "BrandsCategories,BrandsCategories.Brand").ToList();
 
                 var prvm = products.Select(s => new ProductVM()
@@ -97,7 +97,7 @@ namespace Application.Services.Implementation
                 var image64 = new List<string>();
                 var productVMs = new List<ProductVM>();
 
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images");
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images").OrderByDescending(a => a.Create_Date).Take(20);
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
 
                 var productsVMS = products.Select(s => new ProductVM()
@@ -139,7 +139,7 @@ namespace Application.Services.Implementation
                     s => s.IsDeleted == false
                          && (categoryId == null || s.CategoryId == categoryId)
                          && (brandId == null || s.BrandId == brandId),
-                    "Category,Images,Brand");
+                    "Category,Images,Brand").OrderByDescending(a => a.Create_Date).Take(20);
 
                 var productsVMS = products.Select(s => new ProductVM()
                 {
@@ -262,7 +262,7 @@ namespace Application.Services.Implementation
                 var showProducts = products.Items.Select(s => new ProductVM()
                 {
                     Id = s.Id,
-                    ProductName = s.ProductName,
+                    ProductName = s.ProductName.ToUpper(),
                     ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
                     CategoryName = s.Category?.DisplayCategoryName,
