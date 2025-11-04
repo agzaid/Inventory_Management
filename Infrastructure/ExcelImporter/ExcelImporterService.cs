@@ -30,17 +30,21 @@ namespace Infrastructure.ExcelImporter
                     var productName = worksheet.Cells[row, 2].Text?.Trim();
                     if (string.IsNullOrWhiteSpace(productName))
                         continue; // Required field
+                    var productNameAr = worksheet.Cells[row, 3].Text?.Trim();
+                    if (string.IsNullOrWhiteSpace(productName))
+                        continue; // Required field
 
-                    decimal.TryParse(worksheet.Cells[row, 5].Text, out decimal price);
-                    decimal.TryParse(worksheet.Cells[row, 6].Text, out decimal qty);
-                    DateTime.TryParse(worksheet.Cells[row, 7].Text, out DateTime expDate);
-                    DateTime.TryParse(worksheet.Cells[row, 8].Text, out DateTime createdDate);
+                    decimal.TryParse(worksheet.Cells[row, 6].Text, out decimal price);
+                    decimal.TryParse(worksheet.Cells[row, 7].Text, out decimal qty);
+                    DateTime.TryParse(worksheet.Cells[row, 8].Text, out DateTime expDate);
+                    DateTime.TryParse(worksheet.Cells[row, 9].Text, out DateTime createdDate);
 
                     var product = new Product
                     {
                         Id = id,
                         ProductName = productName,
-                        Description = worksheet.Cells[row, 3].Text?.Trim(),
+                        ProductNameAr = productNameAr,
+                        Description = worksheet.Cells[row, 4].Text?.Trim(),
                         SellingPrice = price,
                         StockQuantity = qty,
                         ProductExpiryDate = expDate != DateTime.MinValue

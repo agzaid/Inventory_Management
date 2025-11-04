@@ -522,6 +522,7 @@ namespace Application.Services.Implementation
                         {
                             // --- Update fields safely ---
                             product.ProductName = vm.ProductName?.Trim().ToLower();
+                            product.ProductNameAr = vm.ProductNameAr;
                             product.Description = vm.Description?.Trim().ToLower();
                             product.SellingPrice = vm.SellingPrice;
                             product.StockQuantity = (int)vm.StockQuantity;
