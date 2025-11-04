@@ -42,7 +42,7 @@ namespace Infrastructure.EmailSender
         }
 
 
-        public string HtmlTemplateForOnlineOrder(string orderNumber, string customerName,string customerAddress, string phoneNumber)
+        public string HtmlTemplateForOnlineOrder(string? orderNumber, string? customerName,string? customerAddress, string? phoneNumber)
         {
             var emailBody = $@"
     <div style='font-family: Arial, sans-serif; color: #333;'>

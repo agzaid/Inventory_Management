@@ -112,6 +112,41 @@
             border: none;
             color: #fff;
         }
+
+        .policy-summary {
+            background: linear-gradient(180deg, #f9f9f9, #fff);
+            border-left: 4px solid #198754;
+            padding: 15px 20px;
+            border-radius: 12px;
+        }
+
+
+            .policy-summary:hover {
+                background-color: #fff;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .policy-summary i {
+                color: #198754;
+                margin-right: 8px;
+            }
+
+            .policy-summary p {
+                margin: 0 0 6px;
+            }
+
+            .policy-summary .learn-more {
+                display: inline-block;
+                margin-top: 5px;
+                color: #198754;
+                font-weight: 500;
+                text-decoration: none;
+            }
+
+                .policy-summary .learn-more:hover {
+                    text-decoration: underline;
+                }
+
     </style>
 }
 <section class="py-5">
@@ -122,6 +157,7 @@
                 <div class="mb-3 d-flex justify-content-center">
                     <img id="featured-image"
                          class="featured-img"
+                         loading="lazy"
                          src="@(Model.ListOfRetrievedImages?.Count > 0 ? Model.ListOfRetrievedImages[0] : "/images/placeholder.jpg")"
                          alt="@Model.ProductName" />
                 </div>
@@ -132,6 +168,7 @@
                     {
                         <img src="@Model.ListOfRetrievedImages[i]"
                              class="small-Img"
+                             loading="lazy"
                              alt="Image @i"
                              data-index="@i" />
                     }
@@ -177,7 +214,7 @@
                             <button type="button" class="button-plus">+</button>
                         </div>
 
-                       
+
                     </div>
 
 
@@ -190,14 +227,22 @@
                        onclick="addToCart()">
                         <i class="fa fa-shopping-basket me-1"></i> @Localizer["AddToCart"]
                     </a>
-                      <input id="successMessageOnsubmission" hidden type="text" data-val-custom="@Html.Encode(Localizer["YourOrderIsSubmittedSuccessfully"])">
+                    <input id="successMessageOnsubmission" hidden type="text" data-val-custom="@Html.Encode(Localizer["YourOrderIsSubmittedSuccessfully"])">
                     <input id="ItemWasDeletedSuccessfully" hidden type="text" data-val-custom="@Html.Encode(Localizer["ItemWasDeletedSuccessfully"])">
 
                 </div>
             </main>
+            <div class="policy-summary mt-3">
+                <p><i class="bi bi-shield-check"></i> Free returns within 3 days.</p>
+                <p><i class="bi bi-cash"></i> Cash on delivery available.</p>
+                <p><i class="bi bi-eye"></i> Check your items before payment.</p>
+                @* <a asp-controller="Home" asp-action="Policy" class="learn-more">Learn more</a> *@
+            </div>
         </div>
     </div>
 </section>
+
+
 
 <!-- content -->
 <!-- Footer -->
@@ -206,7 +251,7 @@
         var decodedItemWasDeletedSuccessfully = "";
         var decoded = "";
         $(document).ready(function () {
-               
+
                translatedMessages();
 
                     basketNumber();

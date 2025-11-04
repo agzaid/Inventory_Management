@@ -29,7 +29,7 @@ namespace Inventory_Management.Controllers
         private readonly IStringLocalizer _localizer;
         private readonly IMemoryCache _cache;
 
-        public HomeController(ILogger<HomeController> logger, IBrandService brandService, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IEmailSender emailSender,IStringLocalizer localizer, IMemoryCache cache)
+        public HomeController(ILogger<HomeController> logger, IBrandService brandService, IOnlineOrderService onlineOrderService, IFeedbackService feedbackService, IEmailSender emailSender, IStringLocalizer localizer, IMemoryCache cache)
         {
             _logger = logger;
             _brandService = brandService;
@@ -193,8 +193,13 @@ namespace Inventory_Management.Controllers
             var result = await _feedbackService.CreateFeedback(new FeedbackVM() { Name = name, Email = email, Subject = subject, Phone = phone, Message = message, ImagesFormFiles = ImagesFormFiles });
             if (result.Data == "success")
             {
-                TempData["success"] = "Feedback created successfully";
+                var emailBody = _emailSender.HtmlTemplateForOnlineOrder(null, name, null, phone);
 
+                await _emailSender.SendEmailAsync(
+                    "ahmedzaidtp34@gmail.com",
+                    "Feedback from: "+ email+ " _ Subject :" + subject,
+                    message
+                );
                 return RedirectToAction("Index");
             }
             else
