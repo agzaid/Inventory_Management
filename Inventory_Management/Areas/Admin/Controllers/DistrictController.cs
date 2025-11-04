@@ -60,9 +60,9 @@ namespace Inventory_Management.Areas.Admin.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View(_districtService.GetDistricById(id));
+            return View(await _districtService.GetDistricById(id));
         }
 
         [HttpPost]

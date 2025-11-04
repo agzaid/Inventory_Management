@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 
 
@@ -57,9 +58,9 @@ namespace Inventory_Management.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View(_shippingFreightService.GetShippingFreightById(id));
+            return View(await _shippingFreightService.GetShippingFreightById(id));
         }
 
         [HttpPost]

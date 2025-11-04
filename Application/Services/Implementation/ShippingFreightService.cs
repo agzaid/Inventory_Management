@@ -74,6 +74,7 @@ namespace Application.Services.Implementation
                     var newFreight = new ShippingFreight()
                     {
                         ShippingArea = obj.Area,
+                        ShippingAreaAr = obj.AreaAr,
                         Modified_Date = DateTime.Now,
                         //Region = obj.Region,
                         Price = obj.Price,
@@ -102,6 +103,7 @@ namespace Application.Services.Implementation
                     var shippingFrieghtVM = new ShippingFreightVM()
                     {
                         Area = shipping.ShippingArea,
+                        AreaAr = shipping.ShippingAreaAr,
                         Districts = shipping.Districts?.Select(s => s.Name).ToArray(),
                         Price = shipping.Price,
                         CreatedDate = shipping.Create_Date?.ToString("yyyy-MM-dd")
@@ -127,6 +129,7 @@ namespace Application.Services.Implementation
                 if (oldCategory != null)
                 {
                     oldCategory.ShippingArea = obj.Area;
+                    oldCategory.ShippingAreaAr = obj.AreaAr;
                     //oldCategory.Region= obj.Region;
                     oldCategory.Price = obj.Price;
                     oldCategory.Modified_Date = DateTime.UtcNow;

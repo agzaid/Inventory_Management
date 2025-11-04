@@ -33,14 +33,19 @@ namespace Application.Services.Implementation
             try
             {
                 var brands = await _unitOfWork.Brand.GetAllAsync(s => s.IsDeleted == false, "Images");
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images").OrderByDescending(s => s.Create_Date).Take(20);
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false, "Category,Images")
+                                                //.OrderByDescending(s =>
+                                                //    s.CategoryId == 2 || s.CategoryId == 14)
+                                                .OrderByDescending(s => s.Id)
+                                                .Take(20);
+
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false, "BrandsCategories,BrandsCategories.Brand").ToList();
 
                 var prvm = products.Select(s => new ProductVM()
                 {
                     Id = s.Id,
                     //DisplayProductName = s.DisplayProductName,
-                    ProductName = s.ProductName,
+                    ProductName = s.ProductName.ToUpper(),
                     ProductNameAr = s.ProductNameAr,
                     Description = s.Description,
                     CategoryName = s.Category?.DisplayCategoryName,
@@ -72,7 +77,9 @@ namespace Application.Services.Implementation
                         CreatedDate = bc.Brand?.Create_Date?.ToString("yyyy-MM-dd"),
                         ListOfRetrievedImages = bc.Brand?.Images?.Select(a => a.FilePath).ToList(),
                     }).ToList(),
-                }).ToList();
+                }).OrderByDescending(s => s.Id == 2)
+                  .ThenByDescending(s => s.Id == 14)
+                  .ThenBy(s => s.Id).ToList();
 
                 _logger.LogInformation("GetAllProducts method completed. {ProductCount} Products retrieved.", productVMs.Count);
                 return portalVM;
@@ -97,7 +104,8 @@ namespace Application.Services.Implementation
                 var image64 = new List<string>();
                 var productVMs = new List<ProductVM>();
 
-                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images").OrderByDescending(a => a.Create_Date).Take(20);
+                var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && (categoryId == null || s.CategoryId == categoryId), "Category,Images")
+                    .OrderByDescending(a => a.Id).Take(20);
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
 
                 var productsVMS = products.Select(s => new ProductVM()
@@ -139,7 +147,7 @@ namespace Application.Services.Implementation
                     s => s.IsDeleted == false
                          && (categoryId == null || s.CategoryId == categoryId)
                          && (brandId == null || s.BrandId == brandId),
-                    "Category,Images,Brand").OrderByDescending(a => a.Create_Date).Take(20);
+                    "Category,Images,Brand").OrderByDescending(a => a.Id).Take(20);
 
                 var productsVMS = products.Select(s => new ProductVM()
                 {
@@ -176,31 +184,7 @@ namespace Application.Services.Implementation
 
                 var products = _unitOfWork.Product.GetAll(s => s.IsDeleted == false && s.ProductName.Contains(name), "Category,Images");
                 var categories = _unitOfWork.Category.GetAll(s => s.IsDeleted == false).ToList();
-                //foreach (var item in products)
-                //{
-                //    retrievedImages.Clear();
-                //    if (item.Images?.Count() > 0)
-                //    {
-                //        image64 = item.Images.Select(s => FileExtensions.ByteArrayToImageBase64(s.ImageByteArray)).ToList();
-                //        retrievedImages.AddRange(image64);
-                //    }
-                //    var productVM = new ProductVM()
-                //    {
-                //        Id = item.Id,
-                //        ProductName = item.ProductName?.ToUpper(),
-                //        Description = item.Description,
-                //        CategoryName = item.Category?.CategoryName?.ToUpper(),
-                //        SellingPrice = item.SellingPrice,
-                //        OtherShopsPrice = item.OtherShopsPrice,
-                //        DifferencePercentage = Math.Ceiling(item.DifferencePercentage ?? 0).ToString("0.00") ?? "0.00",
-                //        StockQuantity = item.StockQuantity,
-                //        ExpiryDate = item.ProductExpiryDate?.ToString("yyyy-MM-dd"),
-                //        CreatedDate = item.Create_Date?.ToString("yyyy-MM-dd"),
-                //        Barcode = item.Barcode,
-                //        ListOfRetrievedImages = image64,
-                //    };
-                //    productVMs.Add(productVM);
-                //}
+
                 var productsVMS = products.Select(s => new ProductVM()
                 {
                     Id = s.Id,
@@ -255,7 +239,7 @@ namespace Application.Services.Implementation
                 //Expression<Func<Product, object>> includes = x => x.Images;
                 Expression<Func<Product, object>>[] includes = { x => x.Images, x => x.Category };
                 Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy;
-                orderBy = s => s.OrderByDescending(s => s.ProductName);
+                orderBy = s => s.OrderByDescending(s => s.Id);
 
                 var products = await _unitOfWork.Product.GetPaginatedAsync(pageNumber, pageSize, orderBy, filter, includes);
 
@@ -323,7 +307,7 @@ namespace Application.Services.Implementation
                 var shipping = _unitOfWork.District.GetAll(s => s.IsDeleted == false, "ShippingFreight");
                 var vm = shipping.Select(s => new SelectListItem()
                 {
-                    Text = $"{s.Name} ({s.ShippingFreight?.ShippingArea}) ({s.Price})",
+                    Text = $"{s.DisplayDistrictName} ({s.ShippingFreight?.DisplayShippingAreaName}) ({s.Price})",
                     Value = s.Id.ToString()
                 }).ToList();
                 return vm;
@@ -388,7 +372,7 @@ namespace Application.Services.Implementation
                     ShippingFreight shipping = null;
                     IEnumerable<DeliverySlot> deliverySlot;
                     decimal shippingPrice = 0;
-                    var grandTotalPrice = 0;
+                    decimal? grandTotalPrice = 0m;
                     if (cart.ShippingAreaPrice.HasValue)
                     {
                         shippingPrice = cart.ShippingAreaPrice.Value;
@@ -485,7 +469,8 @@ namespace Application.Services.Implementation
                                 ProductTagsFromProduct = product.ProductTags,
                                 BarcodeFromProduct = product.Barcode,
                             };
-                            grandTotalPrice += (int)(item.Quantity * product?.SellingPrice);
+                            grandTotalPrice += (item.Quantity * (product?.SellingPrice ?? 0m));
+
                             onlineOrder.InvoiceItems?.Add(invoiceItem);
                         }
                     }
