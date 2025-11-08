@@ -20,6 +20,7 @@ namespace Domain.Entities
         }
         public decimal? IndividualDiscount { get; set; }
         public decimal? Quantity { get; set; }
+        // this field is for SellingPriceFromProduct but with discount applied from seller like me
         public decimal? PriceSoldToCustomer { get; set; }
         public decimal? ShippingPrice { get; set; }
 

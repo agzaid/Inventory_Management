@@ -52,18 +52,31 @@
 
     #heroCarousel {
         position: relative;
-        height: 91vh;
+        width: 100%;
         overflow: hidden;
     }
 
+    /* Make the carousel auto-size based on image height */
     .hero-img {
         width: 100%;
-        height: 91vh;
-        object-fit: cover;
-        object-position: center;
+        height: auto; /* ✅ adjusts naturally based on image */
+        max-height: 100vh; /* ✅ ensures it never exceeds viewport height */
+        object-fit: cover; /* ✅ fill without distortion */
+        object-position: center; /* ✅ keep image centered */
     }
 
-    /* 🌟 Overlay fix */
+
+    .carousel-item {
+        height: 100%;
+    }
+
+        .carousel-item img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
     #heroCarousel::before {
         content: "";
         position: absolute;
@@ -73,7 +86,7 @@
         height: 100%;
         background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.2));
         z-index: 1;
-        pointer-events: none; /* ✅ lets clicks pass through overlay */
+        pointer-events: none;
     }
 
     /* Hero content (text area) stays clickable and visible */
@@ -113,11 +126,10 @@
     }
 
     @@media (max-width: 768px) {
-        .hero-img
-
-    {
-        height: 60vh;
-    }
+        .hero-img {
+            object-fit: cover; /* ✅ mobile view fills screen */
+            height: 60vh;
+        }
 
     #hero-content h1 {
         font-size: 32px;
