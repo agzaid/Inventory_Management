@@ -239,6 +239,7 @@ namespace Application.Services.Implementation
                     Slug = s.Slug,
                     CategoryName = s.Category?.CategoryName?.ToUpper(),
                     SellingPrice = s.SellingPrice,
+                    OtherShopsPrice = s.OtherShopsPrice,
                     StockQuantity = s.StockQuantity,
                     ExpiryDate = s.ProductExpiryDate?.ToString("yyyy-MM-dd"),
                     CreatedDate = s.Create_Date?.ToString("yyyy-MM-dd"),
@@ -525,6 +526,7 @@ namespace Application.Services.Implementation
                             product.ProductNameAr = vm.ProductNameAr;
                             product.Description = vm.Description?.Trim().ToLower();
                             product.SellingPrice = vm.SellingPrice;
+                            product.OtherShopsPrice = vm.OtherShopsPrice;
                             product.StockQuantity = (int)vm.StockQuantity;
                             // product.ProductExpiryDate = DateOnly.FromDateTime(vm.ExpiryDate);
                             product.Modified_Date = DateTime.UtcNow;

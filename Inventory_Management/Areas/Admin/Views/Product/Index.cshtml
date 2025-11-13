@@ -22,6 +22,7 @@
                                         <th>Details</th>
                                         <th>Category</th>
                                         <th>Price</th>
+                                        <th>Other Shops Price</th>
                                         <th>Qty</th>
                                         <th>Expires At</th>
                                         <th>Created At</th>
@@ -38,6 +39,7 @@
                                             <td>@item.Description</td>
                                             <td>@item.CategoryName</td>
                                             <td>@item.SellingPrice</td>
+                                            <td>@item.OtherShopsPrice</td>
                                             <td>
                                                 <span class="badge @(item.StockQuantity < 3 ? "bg-danger" : "bg-success")"
                                                       title="Stock quantity is @(item.StockQuantity < 3 ? "lower than 3" : "sufficient")">
@@ -69,6 +71,7 @@
                                         <th>Description</th>
                                         <th>Category</th>
                                         <th>Price</th>
+                                        <th>Other Shops Price</th>
                                         <th>Qty</th>
                                         <th>Expires At</th>
                                         <th>Created At</th>

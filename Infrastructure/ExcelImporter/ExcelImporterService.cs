@@ -35,9 +35,10 @@ namespace Infrastructure.ExcelImporter
                         continue; // Required field
 
                     decimal.TryParse(worksheet.Cells[row, 6].Text, out decimal price);
-                    decimal.TryParse(worksheet.Cells[row, 7].Text, out decimal qty);
-                    DateTime.TryParse(worksheet.Cells[row, 8].Text, out DateTime expDate);
-                    DateTime.TryParse(worksheet.Cells[row, 9].Text, out DateTime createdDate);
+                    decimal.TryParse(worksheet.Cells[row, 7].Text, out decimal othrprice);
+                    decimal.TryParse(worksheet.Cells[row, 8].Text, out decimal qty);
+                    DateTime.TryParse(worksheet.Cells[row, 9].Text, out DateTime expDate);
+                    DateTime.TryParse(worksheet.Cells[row, 10].Text, out DateTime createdDate);
 
                     var product = new Product
                     {
@@ -46,6 +47,7 @@ namespace Infrastructure.ExcelImporter
                         ProductNameAr = productNameAr,
                         Description = worksheet.Cells[row, 4].Text?.Trim(),
                         SellingPrice = price,
+                        OtherShopsPrice = othrprice,
                         StockQuantity = qty,
                         ProductExpiryDate = expDate != DateTime.MinValue
                                             ? DateOnly.FromDateTime(expDate)
