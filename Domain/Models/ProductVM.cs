@@ -22,6 +22,7 @@ namespace Domain.Models
                   Value = v
               }).ToList();
         }
+        private string _differencePercentage;
         public int? Id { get; set; }
         [Required(ErrorMessage = "Product Name is required.")]
         public string? ProductName { get; set; }
@@ -42,7 +43,27 @@ namespace Domain.Models
         public decimal? PurchasedGrams { get; set; }
         public decimal? TotalPurchasedPricePerGrams { get; set; }
         public decimal? OtherShopsPrice { get; set; }
-        public string? DifferencePercentage { get; set; }
+        public string DifferencePercentage
+        {
+            get
+            {
+                if (!OtherShopsPrice.HasValue || !SellingPrice.HasValue)
+                    return "0";
+
+                if (OtherShopsPrice.Value <= 0 || SellingPrice.Value == OtherShopsPrice.Value)
+                    return "0";
+
+                decimal diff = ((OtherShopsPrice.Value - SellingPrice.Value) / OtherShopsPrice.Value) * 100;
+                decimal rounded = Math.Ceiling(diff);
+                return rounded.ToString("0");
+            }
+            set
+            {
+                _differencePercentage = value; // stored but not used in calculation
+            }
+        }
+
+
         public string? MaximumDiscountPercentage { get; set; }
         public decimal? DiscPerceForCreateInvoice { get; set; }
         public decimal? BuyingPrice{ get; set; }

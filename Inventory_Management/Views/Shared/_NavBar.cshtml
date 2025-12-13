@@ -13,84 +13,191 @@
     ? "~/"
     : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
 }
-<section id="header">
-    <a asp-action="index" asp-controller="Home"> <img src="~/images/logo5.png" width="100px"height="64px" /> </a>
-    <div>
-        <ul id="navbar">
-            <li><a class="@(currentAction == "Index" && currentController == "Home" ? "active" : "")" asp-action="index">@Localizer["Home"]</a></li>
-            <li><a class=" @(currentAction == "Shop" && currentController == "Home" ? "active" : "")" asp-action="Shop">@Localizer["Shop"]</a></li>
-            @*   <li><a href="blog.html">Blog</a></li>
-            <li><a href="about.html">About</a></li> *@
-            <li><a asp-action="Contact" asp-controller="Home" class=" @(currentAction == "Contact" && currentController == "Home" ? "active" : "")">@Localizer["ContactUs"]</a></li>
-            <li id="lg-bag" class=" @(currentAction == "Cart" && currentController == "Home" ? "active" : "")">
-                <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum" class="badge rounded-pill bg-danger"></span></i></a>
-            </li>
-            <li class="nav-item dropdown">
-               @*  <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="ri-global-line"></i>
-                </a> *@
-                <ul class="">
-                    <form asp-controller="Culture" asp-action="SetCulture" asp-route-returnUrl="@returnUrl" class="px-3">
-                        <select name="culture"
-                                onchange="this.form.submit();"
-                                asp-for="@requestCulture.RequestCulture.UICulture.Name"
-                                asp-items="cultureItems"
-                                class="form-select form-select-sm">
-                        </select>
-                    </form>
-                </ul>
-            </li>
-            <a href="#" id="close"><i class="ri-close-large-fill"></i></a>
-            <li class="ms-3">
-                @if (User.Identity.IsAuthenticated)
+@{
+    // 1. Get the current culture name (e.g., "en-US", "ar-EG")
+    var currentCultureName = requestCulture.RequestCulture.UICulture.Name;
+
+    // 2. Define the target language and the display name for the button
+    string targetCultureName = "";
+    string targetDisplayName = "";
+
+    // Assuming you primarily support English ("en") and Arabic ("ar")
+    if (currentCultureName.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+    {
+        targetCultureName = LocalizationOptions.Value.SupportedUICultures
+        .FirstOrDefault(c => c.Name.StartsWith("ar", StringComparison.OrdinalIgnoreCase))?.Name;
+        targetDisplayName = "العربيه";
+    }
+    else if (currentCultureName.StartsWith("ar", StringComparison.OrdinalIgnoreCase))
+    {
+        targetCultureName = LocalizationOptions.Value.SupportedUICultures
+        .FirstOrDefault(c => c.Name.StartsWith("en", StringComparison.OrdinalIgnoreCase))?.Name;
+        targetDisplayName = "English";
+    }
+}
+
+<style>
+    /* Custom CSS for Modern Navbar */
+
+    /* * Use a primary color for active links to make them pop.
+     * (Replace #007bff with your brand color)
+     */
+    .active-link {
+        color: var(--bs-primary, #007bff) !important; /* Use Bootstrap primary color or custom */
+        font-weight: 600; /* Slightly bolder */
+        border-bottom: 2px solid var(--bs-primary, #007bff); /* Subtle indicator */
+        padding-bottom: 5px; /* Add padding to lift the text off the border */
+    }
+
+    /* Base Nav Link Style */
+    .nav-link {
+        color: #343a40 !important; /* Darker text for readability */
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        transition: color 0.3s ease, border-bottom 0.3s ease; /* Smooth hover transition */
+    }
+
+        .nav-link:hover:not(.active-link) {
+            color: var(--bs-secondary, #6c757d) !important; /* Subtle hover color */
+        }
+
+    /* Language Selector Cleanup */
+    .language-selector-modern {
+        background-color: transparent !important;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.85rem;
+        color: #343a40;
+        cursor: pointer;
+        border: 1px solid #ccc; /* Add a subtle border for a 'select' look */
+        border-radius: 0.5rem; /* Soft rounded corners */
+    }
+
+    /* Cart Icon Badge Adjustment */
+    .cart-icon-link .badge {
+        /* Fine-tune position for the small number badge */
+        transform: translate(25%, -25%); /* Moves it slightly down and right from the corner */
+    }
+
+    /* Mobile Toggler - Ensure the button is invisible but the icon is clear */
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+    /* Optional: Add a subtle transition for the sticky bar */
+    #main-navbar {
+        transition: all 0.3s ease;
+    }
+</style>
+<nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-2">
+    <div class="container-fluid px-lg-5">
+        <a class="navbar-brand" asp-action="index" asp-controller="Home">
+            <img src="~/images/logo5.png" alt="Logo" style="height: 40px; width: auto;" />
+        </a>
+
+        <div class="d-flex align-items-center d-lg-none">
+
+            <a class="nav-link cart-icon-link me-2" asp-action="Cart" asp-controller="Home" style="padding: 0;">
+                <i class="ri-shopping-bag-line position-relative" style="font-size: 1.5rem; color: #343a40;">
+                    <span id="cartNumMobile" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: .6em;"></span>
+                </i>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="ri-menu-3-line" style="font-size: 1.5rem;"></span>
+            </button>
+
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+
+                <li class="nav-item">
+                    <a class="nav-link @(currentAction == "Index" && currentController == "Home" ? "active-link" : "")" asp-action="index" asp-controller="Home">@Localizer["Home"]</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentAction == "Shop" && currentController == "Home" ? "active-link" : "")" asp-action="Shop" asp-controller="Home">@Localizer["Shop"]</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentAction == "Contact" && currentController == "Home" ? "active-link" : "")" asp-action="Contact" asp-controller="Home">@Localizer["ContactUs"]</a>
+                </li>
+
+                <li class="nav-item ms-lg-3 me-lg-2 d-none d-lg-block">
+                    <a class="nav-link cart-icon-link @(currentAction == "Cart" && currentController == "Home" ? "active-link" : "")" asp-action="Cart" asp-controller="Home">
+                        <i class="ri-shopping-bag-line position-relative" style="font-size: 1.2rem;">
+                            <span id="cartNum" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: .6em;"></span>
+                        </i>
+                    </a>
+                </li>
+
+                @{
+                    // ... (Your Language Toggle Razor Logic remains here)
+                }
+
+                @if (!string.IsNullOrEmpty(targetCultureName))
                 {
-                    @* Show Dashboard if user is an Admin *@
-                    @if (User.IsInRole("Admin"))
+                    <li class="nav-item d-flex align-items-center me-lg-2">
+                        <form asp-controller="Culture" asp-action="SetCulture" asp-route-returnUrl="@returnUrl" method="post" class="d-inline">
+                            <input type="hidden" name="culture" value="@targetCultureName" />
+                            <button type="submit" class="btn btn-outline-secondary btn-sm rounded-pill language-toggle-btn shadow-sm">
+                                <i class="ri-global-line me-1"></i>
+                                @targetDisplayName
+                            </button>
+                        </form>
+                    </li>
+                }
+
+                <li class="nav-item d-flex align-items-center mt-2 mt-lg-0">
+                    @* ... (Your Auth/Admin Buttons Logic remains here) ... *@
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        <a asp-controller="Home" asp-area="admin" asp-action="Index"
-                           class="btn btn-warning btn-sm rounded-pill px-3 shadow-sm me-2">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="Home" asp-area="admin" asp-action="Index"
+                               class="btn btn-warning btn-sm rounded-pill px-3 shadow-sm me-2">
+                                <i class="ri-dashboard-line me-1"></i> Dashboard
+                            </a>
+                        }
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm">
+                                <i class="ri-logout-box-line me-1"></i> Logout
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+                            <i class="ri-login-box-line me-1"></i> Login
                         </a>
                     }
-
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                        <button type="submit"
-                                class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-box-arrow-right me-1"></i> Logout
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <a asp-controller="Account" asp-action="Login"
-                       class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-sm">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
-                    </a>
-                }
-            </li>
-
-        </ul>
+                </li>
+            </ul>
+        </div>
     </div>
-
-    <div id="mobile">
-        <a asp-action="Cart" asp-controller="Home"><i class="ri-shopping-bag-line"><span id="cartNum1" style="font-size: .60em;" class="badge rounded-pill bg-danger"></span></i></a>
-        <i id="bar" class="ri-menu-fold-3-fill"></i>
-    </div>
-</section>
-
+</nav>
 @section scripts {
     <script>
-        //
         $(document).ready(function() {
-            debugger;
-                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
-                 if(cart == []){
-                     $("#cartNum,#cartNum1").innerHTML= 0;
-                     // $("#cartNum1").innerHTML= 0;
-                 }else{
-                        $("#cartNum,#cartNum1").innerHTML = cart.length;
-                        // $("#cartNum1").innerHTML = cart.length;
-             }
+            // Note: Removed 'debugger;' for clean production code.
+
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var cartCount = cart.length;
+
+            // Use .text() or .html() to set the content of the badge
+            // Select both the desktop badge (#cartNum) and the mobile badge (#cartNumMobile)
+            if (cartCount > 0) {
+                $("#cartNum, #cartNumMobile").text(cartCount);
+                // Optionally show the badges only if there are items
+                $("#cartNum, #cartNumMobile").show();
+            } else {
+                $("#cartNum, #cartNumMobile").text(0);
+                // Optionally hide the badges if the count is zero
+                // $("#cartNum, #cartNumMobile").hide();
+            }
+
+            // Your original code used .innerHTML which is not a jQuery function;
+            // I've fixed it to use .text() for the cart count.
+
+            // Note: If you want to use the original #cartNum1 ID from your very first request,
+            // you would change #cartNumMobile to #cartNum1 here and in the HTML above.
         });
     </script>
 }

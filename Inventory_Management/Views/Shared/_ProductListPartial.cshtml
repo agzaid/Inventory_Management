@@ -85,8 +85,8 @@
                 <div class="pro mx-1">
                     <img class="img-fluid"
                          src="@(product?.ListOfRetrievedImages != null && product.ListOfRetrievedImages.Count > 0
-                                                                                                                        ? product.ListOfRetrievedImages[0]
-                                                                                                                        : Url.Content("~/images/default-product.png"))"
+                                                                                                                                                                          ? product.ListOfRetrievedImages[0]
+                                                                                                                                                                          : Url.Content("~/images/default-product.png"))"
                  alt="">
 
                     <!-- Discount badge -->
@@ -111,7 +111,10 @@
                         <div class="price">
                             <div class="price-info">
                                 <span class="current">@Localizer["Currency"] @(product?.SellingPrice ?? 0)</span>
-                                <span class="old">@Localizer["Currency"] @(product?.OtherShopsPrice ?? 0)</span>
+                                @if (product?.OtherShopsPrice != 0)
+                                {
+                                    <span class="old">@Localizer["Currency"] @(product?.OtherShopsPrice ?? 0)</span>
+                                }
                             </div>
                             <button class="cart-btn">
                                 <i class="ri-shopping-cart-2-line"></i>
