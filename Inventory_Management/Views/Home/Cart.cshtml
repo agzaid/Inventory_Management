@@ -188,11 +188,11 @@
                  var cart = JSON.parse(localStorage.getItem('cart')) || [];
                  if(cart == [] || $("#cartNum").length==0){
                      var cartt = $("#cartNum").length;
-                       $("#cartNum,#cartNum1")[0].innerHTML= 0;
-                     // $("#cartNum1")[0].innerHTML= 0;
+                       $("#cartNum,#cartNumMobile")[0].innerHTML= 0;
+                     // $("#cartNumMobile")[0].innerHTML= 0;
                  }else{
-                       $("#cartNum,#cartNum1")[0].innerHTML= cart.length;
-                     // $("#cartNum1")[0].innerHTML= cart.length;
+                       $("#cartNum,#cartNumMobile")[0].innerHTML= cart.length;
+                     // $("#cartNumMobile")[0].innerHTML= cart.length;
 
                 cart.forEach(function(item) {
                     AddNewRow(item);

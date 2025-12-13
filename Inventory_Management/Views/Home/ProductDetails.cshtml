@@ -319,7 +319,7 @@
                 $('.remove-from-cart').on('click', function () {
                       const productId = $(this).data('product-id');
                       RemoveFromCart(productId);
-                      $('#cartNum,#cartNum1').text(JSON.parse(localStorage.getItem('cart')).length);
+                      $('#cartNum,#cartNumMobile').text(JSON.parse(localStorage.getItem('cart')).length);
                       });
                  });
 
@@ -352,7 +352,7 @@
                  }
 
                  localStorage.setItem('cart', JSON.stringify(cart));
-                 $('#cartNum,#cartNum1').text(cart.length);
+                 $('#cartNum,#cartNumMobile').text(cart.length);
 
                        basketNumber();
              }
@@ -384,7 +384,7 @@
 
                      localStorage.setItem('cart', JSON.stringify(cart));
 
-                     $('#cartNum,#cartNum1').text(cart.length);
+                     $('#cartNum,#cartNumMobile').text(cart.length);
                      _TOASTR.Success(decoded);
 
                            basketNumber();
@@ -408,7 +408,7 @@
                   let cart = JSON.parse(localStorage.getItem('cart')) || [];
                   cart = cart.filter(item => item.productId !== productId);
                   localStorage.setItem('cart', JSON.stringify(cart));
-                        $('#cartNum,#cartNum1').text(cart.length);
+                        $('#cartNum,#cartNumMobile').text(cart.length);
 
                    _TOASTR.Error(decodedItemWasDeletedSuccessfully);
              }

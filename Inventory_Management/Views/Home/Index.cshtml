@@ -474,10 +474,10 @@
                 var cart = JSON.parse(localStorage.getItem('cart')) || [];
                 if (cart.length === 0 || $("#cartNum").length == 0) {
                     $("#cartNum")[0].innerHTML = 0;
-                    $("#cartNum1")[0].innerHTML = 0;
+                    $("#cartNumMobile")[0].innerHTML = 0;
                 } else {
                     $("#cartNum")[0].innerHTML = cart.length;
-                    $("#cartNum1")[0].innerHTML = cart.length;
+                    $("#cartNumMobile")[0].innerHTML = cart.length;
                 }
 
                 // Category filter
