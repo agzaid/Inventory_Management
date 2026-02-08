@@ -1,10 +1,12 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Utility;
+using Application.Hubs;
 using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,11 +25,13 @@ namespace Application.Services.Implementation
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<InvoiceService> _logger;
+        private readonly IHubContext<InventoryHub> _hub;
 
-        public InvoiceService(IUnitOfWork unitOfWork, ILogger<InvoiceService> logger)
+        public InvoiceService(IUnitOfWork unitOfWork, ILogger<InvoiceService> logger, IHubContext<InventoryHub> hub)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _hub = hub;
         }
 
         public IEnumerable<InvoiceVM> GetAllInvoices()
@@ -128,6 +132,8 @@ namespace Application.Services.Implementation
                 }
 
                 // stock updates
+                var productUpdatesToBroadcast = new List<(decimal ProductId, decimal NewQty)>();
+
                 foreach (var productEntry in productQuantityMap)
                 {
                     var productUpdate = await _unitOfWork.Product.GetFirstOrDefaultAsync(s => s.Id == productEntry.Key);
@@ -135,6 +141,9 @@ namespace Application.Services.Implementation
                     {
                         productUpdate.StockQuantity -= productEntry.Value;
                         _unitOfWork.Product.Update(productUpdate);
+
+                        // collect to broadcast after save
+                        productUpdatesToBroadcast.Add((Convert.ToDecimal(productUpdate.Id), (Convert.ToDecimal(productUpdate.StockQuantity))));
                     }
                 }
 
@@ -164,7 +173,23 @@ namespace Application.Services.Implementation
                     _unitOfWork.OnlineOrder.Update(onlineOrder);
                 }
 
+
                 await _unitOfWork.SaveAsync();
+
+                // Broadcast after commit so clients reflect persisted state
+                foreach (var u in productUpdatesToBroadcast)
+                {
+                    try
+                    {
+                        await _hub.Clients.All.SendAsync("InventoryUpdated", u.ProductId, u.NewQty);
+                        _logger.LogInformation("Broadcasted inventory update for product {ProductId} -> {Qty}", u.ProductId, u.NewQty);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed broadcasting inventory update for product {ProductId}", u.ProductId);
+                    }
+                }
+
                 return new string[] { "success", "Invoice Created Successfully" };
             }
             catch (Exception ex)

@@ -16,6 +16,8 @@ namespace Domain.Entities
         public string? BrandNameAr { get; set; }
         [MaxLength(700)]
         public string? Description { get; set; }
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
 
         public ICollection<Product>? Products { get; set; }
         public ICollection<Image>? Images { get; set; } // Navigation property

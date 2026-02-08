@@ -17,6 +17,7 @@ namespace Domain.Models
         public List<IFormFile>? ImagesFormFiles { get; set; }
         //[LocalizedRequired("BrandName_Required")]
         public string? Description { get; set; }
+        public string? RowVersion { get; set; }
         public string? CreatedDate { get; set; }
         public List<int?> CategoryIds { get; set; }
         public List<SelectListItem>? CategoryList { get; set; }

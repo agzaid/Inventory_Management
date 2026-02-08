@@ -1,20 +1,13 @@
-using Application.Common.Interfaces;
-using Application.Services.Implementation;
-using Application.Services.Intrerfaces;
+using Application.Hubs;
 using Infrastructure.Data;
-using Infrastructure.DependencyInjection;
-using Infrastructure.Localization;
-using Infrastructure.Repo;
 using Inventory_Management.DependencyInjection;
 using Inventory_Management.Middleware;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
-using System;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,6 +65,8 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -153,6 +148,9 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+app.MapHub<InventoryHub>("/inventoryHub");
 
 app.MapControllerRoute(
       name: "admin",

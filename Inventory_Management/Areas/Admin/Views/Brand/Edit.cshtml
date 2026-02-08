@@ -18,6 +18,9 @@
                                                     <div class="col-lg-8">
                                                         <div class="border border-3 p-4 rounded"> *@
                                                 <div class="col-12">
+                                                    <input class="form-control" asp-for="RowVersion" hidden>
+                                                </div>
+                                                <div class="col-12">
                                                     <label class="form-label fw-semibold">Brand Name</label>
                                                     <input class="form-control" asp-for="BrandName">
                                                     <span asp-validation-for="BrandName" class="text-danger"></span>

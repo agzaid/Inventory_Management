@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Drawing.Drawing2D;
 using System.Linq.Expressions;
@@ -169,6 +170,10 @@ namespace Application.Services.Implementation
 
                 return Result<string>.Success("success", "Brand Created Successfully");
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Result<string>.Failure("Data was changed by another user. Please refresh.", "conflict");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating Brand with BrandName: {BrandName}", obj.BrandName);
@@ -223,6 +228,7 @@ namespace Application.Services.Implementation
                         BrandName = Brand.BrandName,
                         BrandNameAr = Brand.BrandNameAr,
                         Description = Brand.Description,
+                        RowVersion =  Convert.ToBase64String(Brand.RowVersion),
                         //CategoryId = Brand.CategoryId,
                         CreatedDate = Brand.Create_Date?.ToString("yyyy-MM-dd"),
                         ListOfRetrievedImages = Brand.Images?.Select(s => s.FilePath).ToList(),
@@ -274,84 +280,114 @@ namespace Application.Services.Implementation
         {
             try
             {
+                // Validate that RowVersion exists and is not null
+                if (string.IsNullOrEmpty(obj.RowVersion))
+                {
+                    _logger.LogWarning("RowVersion is missing for Brand update attempt with Id: {Id}", obj.Id);
+                    return false;
+                }
+
+                // Convert Base64 RowVersion back to byte array
+                byte[] originalRowVersion;
+                try
+                {
+                    originalRowVersion = Convert.FromBase64String(obj.RowVersion);
+                }
+                catch (FormatException ex)
+                {
+                    _logger.LogError(ex, "Invalid Base64 RowVersion format for Brand Id: {Id}", obj.Id);
+                    return false;
+                }
+
                 // Load old brand with its images (tracked)
                 var oldBrand = await _unitOfWork.Brand.GetFirstOrDefaultAsync(
                     s => s.Id == obj.Id,
                     "Images,BrandsCategories",
                     true);
 
-                if (oldBrand != null)
+                if (oldBrand == null)
                 {
-                    // Update main Brand properties
-                    oldBrand.BrandName = obj.BrandName?.ToLower();
-                    oldBrand.BrandNameAr = obj.BrandNameAr;
-                    oldBrand.Description = obj.Description?.ToLower();
-                    oldBrand.Modified_Date = DateTime.UtcNow;
-                    //oldBrand.CategoryId = obj.CategoryId;
-
-                    // 1. Remove unwanted old images
-                    var imagesToBeRemoved = oldBrand.Images
-                        .Where(s => !obj.OldImagesBytes.Contains(s.FilePath))
-                        .ToList();
-
-                    foreach (var img in imagesToBeRemoved)
-                    {
-                        _unitOfWork.Image.Remove(img); // remove from DB
-                        await FileExtensions.DeleteImages(new List<string> { img.FilePath }); // remove from wwwroot
-                    }
-
-                    // 2. Add new uploaded images
-                    if (obj.ImagesFormFiles?.Count > 0)
-                    {
-                        var resultImagePaths = await FileExtensions.SaveImagesOptimized(obj.ImagesFormFiles, "Brand");
-
-                        var newImages = resultImagePaths.Select(s => new Domain.Entities.Image
-                        {
-                            FilePath = s,
-                            Create_Date = DateTime.Now,
-                        }).ToList();
-
-                        foreach (var img in newImages)
-                        {
-                            oldBrand.Images.Add(img);
-                        }
-                    }
-                    // --- 4. Update brand-category relations ---
-                    var newCategoryIds = obj.CategoryIds;
-                    var existingBrandCategories = oldBrand.BrandsCategories.ToList();
-
-                    // Categories to remove
-                    var categoriesToRemove = existingBrandCategories
-                        .Where(bc => !newCategoryIds.Contains(bc.CategoryId))
-                        .ToList();
-
-                    //if (categoriesToRemove.Any())
-                    //    _unitOfWork.BrandsCategories.RemoveRange(categoriesToRemove);
-                    foreach (var item in categoriesToRemove)
-                    {
-                        await _unitOfWork.BrandsCategories.RemoveAsync(item);
-                    }
-                    // Categories to add
-                    var existingCategoryIds = existingBrandCategories.Select(bc => bc.CategoryId).ToHashSet();
-                    var categoriesToAdd = newCategoryIds
-                        .Where(catId => !existingCategoryIds.Contains(catId))
-                        .Select(catId => new BrandsCategories
-                        {
-                            BrandId = oldBrand.Id,
-                            CategoryId = catId,
-                            Create_Date = DateTime.UtcNow
-                        }).ToList();
-
-                    foreach (var bc in categoriesToAdd)
-                        oldBrand.BrandsCategories.Add(bc);
-
-                    // --- 5. Save all changes ---
-                    _unitOfWork.Brand.Update(oldBrand);
-                    await _unitOfWork.SaveAsync();
-
-                    return true;
+                    _logger.LogWarning("Brand not found with Id: {Id}", obj.Id);
+                    return false;
                 }
 
+                // Check if RowVersion matches (concurrency check)
+                if (!oldBrand.RowVersion.SequenceEqual(originalRowVersion))
+                {
+                    _logger.LogWarning("Concurrency conflict detected for Brand Id: {Id}. Database version differs from submitted version.", obj.Id);
+                    return false; // Version mismatch - data was modified by another user
+                }
+
+                // Update main Brand properties
+                oldBrand.BrandName = obj.BrandName?.ToLower();
+                oldBrand.BrandNameAr = obj.BrandNameAr;
+                oldBrand.Description = obj.Description?.ToLower();
+                oldBrand.Modified_Date = DateTime.UtcNow;
+
+                // 1. Remove unwanted old images
+                var imagesToBeRemoved = oldBrand.Images
+                    .Where(s => !obj.OldImagesBytes.Contains(s.FilePath))
+                    .ToList();
+
+                foreach (var img in imagesToBeRemoved)
+                {
+                    _unitOfWork.Image.Remove(img); // remove from DB
+                    await FileExtensions.DeleteImages(new List<string> { img.FilePath }); // remove from wwwroot
+                }
+
+                // 2. Add new uploaded images
+                if (obj.ImagesFormFiles?.Count > 0)
+                {
+                    var resultImagePaths = await FileExtensions.SaveImagesOptimized(obj.ImagesFormFiles, "Brand");
+
+                    var newImages = resultImagePaths.Select(s => new Domain.Entities.Image
+                    {
+                        FilePath = s,
+                        Create_Date = DateTime.Now,
+                    }).ToList();
+
+                    foreach (var img in newImages)
+                    {
+                        oldBrand.Images.Add(img);
+                    }
+                }
+
+                // 3. Update brand-category relations
+                var newCategoryIds = obj.CategoryIds ?? new List<int?>();
+                var existingBrandCategories = oldBrand.BrandsCategories.ToList();
+
+                // Categories to remove
+                var categoriesToRemove = existingBrandCategories
+                    .Where(bc => !newCategoryIds.Contains(bc.CategoryId))
+                    .ToList();
+
+                foreach (var item in categoriesToRemove)
+                {
+                    await _unitOfWork.BrandsCategories.RemoveAsync(item);
+                }
+
+                // Categories to add
+                var existingCategoryIds = existingBrandCategories.Select(bc => bc.CategoryId).ToHashSet();
+                var categoriesToAdd = newCategoryIds
+                    .Where(catId => catId.HasValue && !existingCategoryIds.Contains(catId.Value))
+                    .Select(catId => new BrandsCategories
+                    {
+                        BrandId = oldBrand.Id,
+                        CategoryId = catId.Value,
+                        Create_Date = DateTime.UtcNow
+                    }).ToList();
+
+                foreach (var bc in categoriesToAdd)
+                    oldBrand.BrandsCategories.Add(bc);
+
+                _unitOfWork.Brand.Update(oldBrand);
+                await _unitOfWork.SaveAsync();
+
+                return true;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Concurrency exception while updating Brand with Id: {Id}", obj.Id);
                 return false;
             }
             catch (Exception ex)
