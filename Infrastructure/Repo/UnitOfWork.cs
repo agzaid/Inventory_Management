@@ -26,6 +26,7 @@ namespace Infrastructure.Repo
         public IFeedbackRepository Feedback { get; private set; }
         public ISellerRepository Seller { get; private set; }
         public IBrandsCategoriesRepository BrandsCategories { get; private set; }
+        public IScrapedPriceRepository ScrapedPrice { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -43,6 +44,7 @@ namespace Infrastructure.Repo
             InvoiceItem = new InvoiceItemsRepository(_db);
             Seller = new SellerRepository(_db);
             BrandsCategories = new BrandsCategoriesRepository(_db);
+            ScrapedPrice = new ScrapedPriceRepository(_db);
         }
         public async Task SaveAsync()
         {

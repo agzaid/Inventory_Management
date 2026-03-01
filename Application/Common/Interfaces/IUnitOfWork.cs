@@ -22,6 +22,7 @@ namespace Application.Common.Interfaces
         IFeedbackRepository Feedback { get; }
         ISellerRepository Seller { get; }
         IBrandsCategoriesRepository BrandsCategories { get; }
+        IScrapedPriceRepository ScrapedPrice { get; }
         Task SaveAsync();
 
     }

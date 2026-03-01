@@ -1,4 +1,4 @@
-using Application.Hubs;
+﻿using Application.Hubs;
 using Infrastructure.Data;
 using Inventory_Management.DependencyInjection;
 using Inventory_Management.Middleware;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using PuppeteerSharp;
 using Serilog;
 using Serilog.Events;
 using System.Globalization;
@@ -70,7 +71,7 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-app.UseMiddleware<ErrorHandlingMiddleware>(); // Global exception handler
+//app.UseMiddleware<ErrorHandlingMiddleware>(); // Global exception handler
 
 try
 {
@@ -92,40 +93,22 @@ catch (Exception ex)
     throw;
 }
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error"); // For exceptions
-    app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
-    //app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    // In development, this catches errors FIRST. 
+    // Comment this out if you want to test your SweetAlert/Global Middleware locally.
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Error");
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
+    app.UseHsts();
 }
 
 // Register the rate limiting middleware with a max limit of 5 requests per 10 seconds
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseMiddleware<RateLimitingMiddleware>();
-//app.UseWhen(
-//    ctx => ctx.Request.Path.StartsWithSegments("/cart"),
-//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(30, TimeSpan.FromMinutes(1))
-//);
-//app.UseWhen(
-//    ctx => ctx.Request.Path.Value?.Contains("Cart", StringComparison.OrdinalIgnoreCase) == true,
-//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromMinutes(1))
-//);      // ~1 request every 2 sec
-//app.UseWhen(
-//    ctx => ctx.Request.Path.Value?.Contains("CheckoutDetails", StringComparison.OrdinalIgnoreCase) == true,
-//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromMinutes(1))
-//);
-//// 10 per minute per IP
-//app.UseWhen(
-//    ctx => ctx.Request.Path.StartsWithSegments("/admin"),
-//    appBuilder => appBuilder.UseMiddleware<RateLimitingMiddleware>(300, TimeSpan.FromMinutes(1))
-//);
-
 
 
 var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
@@ -161,5 +144,24 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Store the task so we can check it if needed, or just let it run
+var browserDownloadTask = Task.Run(async () =>
+{
+    try
+    {
+        // Use a consistent path
+        var browserPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PuppeteerBrowsers");
+        var fetcher = new BrowserFetcher(new BrowserFetcherOptions { Path = browserPath });
+
+        Log.Information("⏳ Checking/Downloading Chromium in {Path}...", browserPath);
+        await fetcher.DownloadAsync();
+        Log.Information("✅ Chromium is ready.");
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "❌ Puppeteer Download Failed at startup");
+    }
+});
 
 app.Run();

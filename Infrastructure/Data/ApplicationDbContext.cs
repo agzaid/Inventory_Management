@@ -29,6 +29,7 @@ namespace Infrastructure.Data
         public DbSet<BrandsCategories> BrandsCategories { get; set; }
         //public DbSet<BrandsCategories> BrandsCategories { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<ScrapedPrice> ScrapedPrice { get; set; }
 
 
         //public static void SeedData(ApplicationDbContext context)

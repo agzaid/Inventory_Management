@@ -4,6 +4,7 @@ using Application.Services.Intrerfaces;
 using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Repo;
+using Infrastructure.PriceScraper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,10 +29,12 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<ISellerService, SellerService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IBrandsCategoriesService, BrandsCategoriesService>();
+            services.AddScoped<IScrapedPriceService, ScrapedPriceService>();
             services.AddScoped<Application.Common.Interfaces.IEmailSender, Infrastructure.EmailSender.SmtpEmailSender>();
 
             services.AddTransient<ExcelImporter.ExcelImporterService>();
             services.AddTransient<ExcelImporter.ExcelImporterXML>();
+            services.AddSingleton<PriceScraperService>();
 
 
             return services;
