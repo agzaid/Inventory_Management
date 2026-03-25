@@ -531,23 +531,23 @@ namespace Infrastructure.PriceScraper
             return string.Empty;
         }
 
-        public async Task<ScrapeResult> ScrapeAsync(string url, bool usePuppeteerFallback = true)
+        public async Task<ScrapeResult> ScrapeAsync(string url, bool useSeleniumFallback = true)
         {
-            // 1. Try Selenium first as requested
-            Console.WriteLine("🚀 Attempting scrape with Selenium...");
-            var result = ScrapeWithSelenium(url);
+            // 1. Try Puppeteer first
+            Console.WriteLine("🚀 Attempting scrape with Puppeteer...");
+            var result = await ScrapeWithPuppeteerAsync(url);
 
-            // 2. If Selenium succeeds, return it immediately
+            // 2. If Puppeteer succeeds, return it immediately
             if (result.Success)
             {
                 return result;
             }
 
-            // 3. If Selenium fails and fallback is allowed, try Puppeteer
-            if (usePuppeteerFallback)
+            // 3. If Puppeteer fails and fallback is allowed, try Selenium
+            if (useSeleniumFallback)
             {
-                Console.WriteLine($"⚠️ Selenium failed: {result.Error}. Falling back to Puppeteer...");
-                return await ScrapeWithPuppeteerAsync(url);
+                Console.WriteLine($"⚠️ Puppeteer failed: {result.Error}. Falling back to Selenium...");
+                return ScrapeWithSelenium(url);
             }
 
             return result;
