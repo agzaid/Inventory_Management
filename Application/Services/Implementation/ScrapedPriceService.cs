@@ -49,5 +49,13 @@ namespace Application.Services.Implementation
         {
             return await _unitOfWork.ScrapedPrice.GetPricesByUrlAsync(url);
         }
+
+        public async Task<List<ScrapedPrice>> GetLatestPricesForListAsync(List<int> productIds)
+        {
+            if (productIds == null || !productIds.Any())
+                return new List<ScrapedPrice>();
+
+            return await _unitOfWork.ScrapedPrice.GetLatestPricesForProductIdsAsync(productIds);
+        }
     }
 }

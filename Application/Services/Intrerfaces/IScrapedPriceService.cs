@@ -8,5 +8,6 @@ namespace Application.Services.Intrerfaces
         Task<List<ScrapedPrice>> GetPriceHistoryAsync(int productId, int take = 10);
         Task<ScrapedPrice> GetLatestPriceAsync(int productId);
         Task<List<ScrapedPrice>> GetPricesByUrlAsync(string url);
+        Task<List<ScrapedPrice>> GetLatestPricesForListAsync(List<int> productIds);
     }
 }

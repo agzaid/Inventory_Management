@@ -34,7 +34,7 @@ namespace Infrastructure.DependencyInjection
 
             services.AddTransient<ExcelImporter.ExcelImporterService>();
             services.AddTransient<ExcelImporter.ExcelImporterXML>();
-            services.AddSingleton<PriceScraperService>();
+            services.AddScoped<PriceScraperService>();
 
 
             return services;

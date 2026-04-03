@@ -7,5 +7,6 @@ namespace Application.Common.Interfaces
         Task<List<ScrapedPrice>> GetPriceHistoryByProductIdAsync(int productId, int take = 10);
         Task<ScrapedPrice> GetLatestPriceByProductIdAsync(int productId);
         Task<List<ScrapedPrice>> GetPricesByUrlAsync(string url);
+        Task<List<ScrapedPrice>> GetLatestPricesForProductIdsAsync(List<int> productIds);
     }
 }

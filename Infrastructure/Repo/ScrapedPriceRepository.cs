@@ -38,5 +38,21 @@ namespace Infrastructure.Repo
                 .OrderByDescending(x => x.ScrapedDateTime)
                 .ToListAsync();
         }
+
+        public async Task<List<ScrapedPrice>> GetLatestPricesForProductIdsAsync(List<int> productIds)
+        {
+            if (productIds == null || !productIds.Any())
+                return new List<ScrapedPrice>();
+
+            return await _context.ScrapedPrice
+                .Where(sp => productIds.Contains(sp.ProductId)
+                          && !sp.IsDeleted
+                          && sp.IsSuccessful)
+                .GroupBy(sp => sp.ProductId)
+                .Select(group => group
+                    .OrderByDescending(x => x.ScrapedDateTime)
+                    .FirstOrDefault())
+                .ToListAsync();
+        }
     }
 }

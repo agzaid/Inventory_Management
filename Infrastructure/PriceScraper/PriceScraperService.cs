@@ -3,6 +3,8 @@ using System.Globalization;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using Application.Common.Interfaces;
+using Domain.Entities;
 
 namespace Infrastructure.PriceScraper
 {
@@ -12,10 +14,17 @@ namespace Infrastructure.PriceScraper
     /// </summary>
     public class PriceScraperService
     {
-        private IBrowser _browser;
-        private readonly object _browserLock = new object();
-        private bool _browserInitializing = false;
+        private static IBrowser _browser;
+        private static readonly object _browserLock = new object();
+        private static bool _browserInitializing = false;
         private static readonly string BrowserCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PuppeteerBrowsers");
+
+        private readonly IUnitOfWork _unitOfWork;
+
+        public PriceScraperService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         private async Task<IBrowser> GetBrowserInstanceAsync()
         {
@@ -122,8 +131,8 @@ namespace Infrastructure.PriceScraper
                 {
                     var type = e.Request.ResourceType;
                     // Block: images, CSS, fonts, media, tracking
-                    if (type == ResourceType.Image || 
-                        type == ResourceType.StyleSheet || 
+                    if (type == ResourceType.Image ||
+                        type == ResourceType.StyleSheet ||
                         type == ResourceType.Font ||
                         type == ResourceType.Media ||
                         type == ResourceType.Other && e.Request.Url.Contains("analytics"))
@@ -172,34 +181,34 @@ namespace Infrastructure.PriceScraper
 
                 var priceData = await priceExtractTask;
 
-                if (!string.IsNullOrEmpty(priceData) && 
+                if (!string.IsNullOrEmpty(priceData) &&
                     decimal.TryParse(priceData, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal price))
                 {
-                    return new ScrapeResult 
-                    { 
-                        Success = true, 
-                        Price = price, 
-                        Method = "Puppeteer", 
+                    return new ScrapeResult
+                    {
+                        Success = true,
+                        Price = price,
+                        Method = "Puppeteer",
                         Url = url,
                         Currency = "EGP",
                         Timestamp = DateTime.UtcNow
                     };
                 }
 
-                return new ScrapeResult 
-                { 
-                    Success = false, 
-                    Error = "Price parsing failed", 
+                return new ScrapeResult
+                {
+                    Success = false,
+                    Error = "Price parsing failed",
                     Url = url,
                     Method = "Puppeteer"
                 };
             }
             catch (Exception ex)
             {
-                return new ScrapeResult 
-                { 
-                    Success = false, 
-                    Error = $"Puppeteer error: {ex.Message}", 
+                return new ScrapeResult
+                {
+                    Success = false,
+                    Error = $"Puppeteer error: {ex.Message}",
                     Url = url,
                     Method = "Puppeteer"
                 };
@@ -469,7 +478,7 @@ namespace Infrastructure.PriceScraper
                                 return $"{wholePart}.{decimalPart}";
                             }
                         }
-                        
+
                         var priceMatch = System.Text.RegularExpressions.Regex.Match(text, @"(\d+\.?\d*)");
                         if (priceMatch.Success && decimal.Parse(priceMatch.Value, System.Globalization.NumberStyles.Any) > 1)
                         {
@@ -533,24 +542,55 @@ namespace Infrastructure.PriceScraper
 
         public async Task<ScrapeResult> ScrapeAsync(string url, bool useSeleniumFallback = true)
         {
-            // 1. Try Puppeteer first
             Console.WriteLine("🚀 Attempting scrape with Puppeteer...");
             var result = await ScrapeWithPuppeteerAsync(url);
 
-            // 2. If Puppeteer succeeds, return it immediately
-            if (result.Success)
-            {
-                return result;
-            }
-
-            // 3. If Puppeteer fails and fallback is allowed, try Selenium
-            if (useSeleniumFallback)
+            if (!result.Success && useSeleniumFallback)
             {
                 Console.WriteLine($"⚠️ Puppeteer failed: {result.Error}. Falling back to Selenium...");
-                return ScrapeWithSelenium(url);
+                result = ScrapeWithSelenium(url);
             }
 
             return result;
+        }
+
+        public async Task<ScrapeResult> ScrapeAsync(int productId, string url, bool useSeleniumFallback = true)
+        {
+            var result = await ScrapeAsync(url, useSeleniumFallback);
+
+            if (result.Success)
+            {
+                await SaveScrapeResultToDatabase(productId, url, result);
+            }
+
+            return result;
+        }
+
+        private async Task SaveScrapeResultToDatabase(int productId, string url, ScrapeResult result)
+        {
+            try
+            {
+                var scrapedPrice = new ScrapedPrice
+                {
+                    ProductId = productId,
+                    SourceUrl = url,
+                    Price = result.Price,
+                    Currency = result.Currency,
+                    ScraperMethod = result.Method,
+                    IsSuccessful = true,
+                    ErrorMessage = string.Empty,
+                    ScrapedDateTime = result.Timestamp
+                };
+
+                await _unitOfWork.ScrapedPrice.AddAsync(scrapedPrice);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
 
     }

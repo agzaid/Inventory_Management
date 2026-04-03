@@ -4,9 +4,17 @@
     <div class="page-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0 text-uppercase">🕷️ Market Price Scraper</h5>
-            <button type="button" class="btn btn-warning px-4" onclick="scrapeAll()">
-                <i class="bx bx-run"></i> Scrape All Products
-            </button>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-warning px-4" onclick="scrapeAll()">
+                    <i class="bx bx-run"></i> Scrape All Products
+                </button>
+                <button type="button" class="btn btn-success px-4" onclick="updateAllPrices()">
+                    <i class="bx bx-sync"></i> Update All Prices
+                </button>
+                <button type="button" class="btn btn-info px-4" onclick="scheduledScrapeAll()">
+                    <i class="bx bx-time"></i> Scheduled Scrape All
+                </button>
+            </div>
         </div>
 
         <div class="card radius-10">
@@ -19,6 +27,7 @@
                                 <th>System Price</th>
                                 <th style="width: 30%;">Scraping URL</th>
                                 <th>Other Shops Price</th>
+                                <th>Last Scraped Date</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -31,7 +40,7 @@
                                         <small class="text-muted">@item.ProductNameAr</small>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light-primary text-primary w-100">
+                                        <span class="badge bg-light-primary text-primary w-100" data-original-price="@item.SellingPrice">
                                             @item.SellingPrice EGP
                                         </span>
                                     </td>
@@ -41,17 +50,51 @@
                                             <div class="input-group input-group-sm">
                                                 <input type="url" name="sourceUrl" class="form-control"
                                                        placeholder="Paste Carrefour/Amazon URL..."
-                                                       value="@item.Barcode"> @* Assuming SourceUrl exists in VM *@
+                                                       value="@item.LastScrapedUrl">
+                                                @if (!string.IsNullOrEmpty(item.LastScrapedUrl))
+                                                {
+                                                    <button type="button" class="btn btn-outline-secondary" 
+                                                            onclick="clearUrl(this)" title="Clear URL">
+                                                        <i class="bx bx-x"></i>
+                                                    </button>
+                                                }
                                             </div>
                                         </form>
                                     </td>
                                     <td class="text-center">
-                                        <h6 class="scraped-result mb-0 text-secondary">@item.OtherShopsPrice</h6>
+                                        <div>
+                                            <h6 class="scraped-result mb-0 @(item.LastScrapedPrice.HasValue ? "text-success fw-bold" : "text-secondary")">
+                                                @(item.LastScrapedPrice.HasValue ? $"{item.LastScrapedPrice} EGP" : "Not scraped")
+                                            </h6>
+                                        </div>
                                     </td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-primary btn-scrape-single">
-                                            <i class="bx bx-refresh"></i> Scrape
-                                        </button>
+                                        <small class="text-muted">@item.LastScrapedDate</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" 
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item btn-scrape-single" href="#" 
+                                                       data-product-id="@item.Id">
+                                                        <i class="bx bx-refresh"></i> Scrape
+                                                    </a>
+                                                </li>
+                                                @if (item.LastScrapedPrice.HasValue)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item btn-apply-price" href="#"
+                                                           data-product-id="@item.Id">
+                                                            <i class="bx bx-check"></i> Apply Price
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -64,6 +107,9 @@
 </div>
 
 @section scripts {
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     <script>
         $(document).ready(function () {
             // Initialize DataTable if you want search/pagination
@@ -72,21 +118,35 @@
                 buttons: ['copy', 'excel', 'pdf', 'print']
             });
 
-            // Handle Single Scrape Button
-            $('.btn-scrape-single').on('click', function () {
+            // Handle Scrape action from dropdown
+            $(document).on('click', '.btn-scrape-single', function (e) {
+                e.preventDefault();
                 const $row = $(this).closest('tr');
                 scrapeRow($row);
             });
+
+            // Handle Apply Price action from dropdown
+            $(document).on('click', '.btn-apply-price', function (e) {
+                e.preventDefault();
+                const $row = $(this).closest('tr');
+                const productId = $(this).data('product-id');
+                applyPrice($row, productId);
+            });
         });
+
+        // Clear URL function
+        function clearUrl(button) {
+            const $input = $(button).closest('.input-group').find('input[name="sourceUrl"]');
+            $input.val('').focus();
+        }
 
         // Async function to scrape a single row
         function scrapeRow($row) {
             return new Promise((resolve) => {
-                const $btn = $row.find('.btn-scrape-single');
                 const $resultCell = $row.find('.scraped-result');
+                const $dateCell = $row.find('td:nth-child(5)'); // Last Scraped Date column
                 const sourceUrl = $row.find('input[name="sourceUrl"]').val();
                 const productId = $row.find('input[name="productId"]').val();
-                const originalHtml = $btn.html();
 
                 if (!sourceUrl) {
                     $resultCell.html('<small class="text-danger">Missing URL</small>');
@@ -94,48 +154,375 @@
                     return;
                 }
 
-                // Loading State
-                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+                // Show loading state
                 $resultCell.html('<div class="spinner-grow spinner-grow-sm text-primary"></div>');
 
                 $.ajax({
-                    url: '@Url.Action("TestScrape", "Scraper")',
+                    url: '@Url.Action("ScrapeAndSave", "Scraper")',
                     type: 'GET',
-                    data: { url: sourceUrl },
+                    data: { productId: productId, url: sourceUrl },
                     success: function (response) {
                         if (response.success) {
+                            // Update price display
                             $resultCell.text(response.price + " " + response.currency)
                                        .removeClass("text-secondary")
                                        .addClass("text-success fw-bold");
+                            
+                            // Update date
+                            const date = new Date(response.timestamp);
+                            $dateCell.text(date.toLocaleString());
+                            
+                            // Show apply button if it was hidden
+                            const $applyItem = $row.find('.btn-apply-price').closest('li');
+                            if ($applyItem.hasClass('d-none')) {
+                                $applyItem.removeClass('d-none');
+                            }
+                            
+                            // Show success toast
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Scraped successfully: ' + response.price + ' ' + response.currency,
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
                         } else {
                             $resultCell.html('<small class="text-danger">Failed</small>');
                             console.error("Scrape Error:", response.error);
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'error',
+                                title: 'Scrape failed: ' + response.error,
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
                         }
                     },
                     error: function () {
                         $resultCell.html('<small class="text-danger">Server Error</small>');
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'Server error occurred',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
                     },
                     complete: function () {
-                        $btn.prop('disabled', false).html(originalHtml);
                         resolve();
                     }
                 });
             });
         }
 
-        // Bulk Scrape All rows sequentially
-        async function scrapeAll() {
-            const $rows = $('.scrape-form').closest('tr');
+        // Apply scraped price to product
+                async function applyPrice($row, productId) {
+            const $systemPriceCell = $row.find('td:nth-child(2) .badge');
+            const $scrapedResultCell = $row.find('.scraped-result');
+            const currentPriceText = $scrapedResultCell.text();
 
-            if (!confirm(`Are you sure you want to scrape ${$rows.length} items?`)) return;
-
-            for (let i = 0; i < $rows.length; i++) {
-                await scrapeRow($($rows[i]));
-                // Optional delay to be nice to the target server
-                await new Promise(r => setTimeout(r, 500));
+            // 1. Extract the scraped price value from the UI
+            const priceMatch = currentPriceText.match(/[\d.]+/);
+            if (!priceMatch) {
+                Swal.fire({ icon: 'warning', title: 'No valid price to apply', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                return;
             }
 
-            alert("Bulk scraping process finished.");
+            const scrapedPrice = parseFloat(priceMatch[0]);
+            const originalPrice = $systemPriceCell.data('original-price');
+
+            // 2. Show the "Update Price" Popup (Same as Update All)
+            const { value: decreaseAmount } = await Swal.fire({
+                title: 'Apply Scraped Price',
+                html: `
+                    <p>Applying price for this product: <strong>${scrapedPrice} EGP</strong></p>
+                    <p>Enter amount to decrease (0 = no decrease):</p>
+                    <input id="singleDecreaseAmount" class="swal2-input" type="number" value="0" min="0" step="0.01">
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Apply Now',
+                preConfirm: () => {
+                    const decrease = parseFloat(document.getElementById('singleDecreaseAmount').value);
+                    if (isNaN(decrease) || decrease < 0) {
+                        Swal.showValidationMessage('Please enter a valid number');
+                        return false;
+                    }
+                    return decrease;
+                }
+            });
+
+            if (decreaseAmount === undefined) return; // User cancelled
+
+            // 3. Calculate the new adjusted price
+            const finalPrice = Math.max(0, scrapedPrice - decreaseAmount);
+
+            // 4. Show loading and Send to Server
+            $systemPriceCell.html('<span class="spinner-border spinner-border-sm"></span>');
+
+            $.ajax({
+                url: '@Url.Action("UpdateProductPrice", "Scraper")', // Using the same endpoint as 'Update All'
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    newPrice: finalPrice
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // Update UI immediately
+                        $systemPriceCell.text(finalPrice.toFixed(2) + ' EGP')
+                                        .data('original-price', finalPrice);
+
+                        Swal.fire({ icon: 'success', title: 'Price updated to ' + finalPrice.toFixed(2), toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+
+                        // Optional: reload after a delay
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        $systemPriceCell.text(originalPrice + ' EGP');
+                        Swal.fire({ icon: 'error', title: response.error || 'Update failed' });
+                    }
+                },
+                error: function () {
+                    $systemPriceCell.text(originalPrice + ' EGP');
+                    Swal.fire({ icon: 'error', title: 'Server error' });
+                }
+            });
+        }
+
+        // Bulk Scrape All products (not just visible ones)
+        async function scrapeAll() {
+            const result = await Swal.fire({
+                title: 'Scrape All Products',
+                text: 'This will scrape ALL products in the database, not just the visible ones. This may take a while.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, scrape all!',
+                showLoaderOnConfirm: true
+            });
+
+            if (!result.isConfirmed) return;
+
+            // Show progress
+            let completed = 0;
+            let total = 0;
+
+            // First, get all products with URLs
+            Swal.fire({
+                title: 'Fetching products...',
+                html: 'Please wait while we fetch all products with URLs.',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Get all products with URLs from server
+            $.get('@Url.Action("GetAllProductsWithUrls", "Scraper")', function(products) {
+                total = products.length;
+                
+                if (total === 0) {
+                    Swal.fire('No products', 'No products with URLs found to scrape.', 'info');
+                    return;
+                }
+
+                // Process each product
+                processProducts(products, 0, total);
+            }).fail(function() {
+                Swal.fire('Error', 'Failed to fetch products list', 'error');
+            });
+        }
+
+        // Process products recursively
+        function processProducts(products, index, total) {
+            if (index >= products.length) {
+                Swal.fire('Completed!', `Successfully scraped ${total} products.`, 'success');
+                return;
+            }
+
+            const product = products[index];
+            const progress = Math.round((index / total) * 100);
+            
+            Swal.fire({
+                title: 'Scraping in progress...',
+                html: `Processing product ${index + 1} of ${total}<br><div class="progress mt-2"><div class="progress-bar" style="width: ${progress}%"></div></div>`,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Scrape current product
+            $.ajax({
+                url: '@Url.Action("ScrapeAndSave", "Scraper")',
+                type: 'GET',
+                data: { productId: product.id, url: product.url },
+                success: function() {
+                    // Process next product
+                    setTimeout(() => processProducts(products, index + 1, total), 500);
+                },
+                error: function() {
+                    // Continue even if one fails
+                    setTimeout(() => processProducts(products, index + 1, total), 500);
+                }
+            });
+        }
+
+        // Update All Prices with adjustment
+        async function updateAllPrices() {
+            const { value: decreaseAmount } = await Swal.fire({
+                title: 'Update All Prices',
+                html: `
+                    <p>This will update all products with their scraped prices.</p>
+                    <p>Enter amount to decrease from scraped prices (0 = no decrease):</p>
+                    <input id="decreaseAmount" class="swal2-input" type="number" value="0" min="0" step="0.01">
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Update Prices',
+                preConfirm: () => {
+                    const decrease = parseFloat(document.getElementById('decreaseAmount').value);
+                    if (isNaN(decrease) || decrease < 0) {
+                        Swal.showValidationMessage('Please enter a valid positive number');
+                        return false;
+                    }
+                    return decrease;
+                }
+            });
+
+            if (decreaseAmount === undefined) return;
+
+            // Show progress
+            let completed = 0;
+            let total = 0;
+
+            Swal.fire({
+                title: 'Fetching products...',
+                html: 'Please wait while we fetch all products with scraped prices.',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Get all products with scraped prices
+            $.get('@Url.Action("GetAllProductsWithScrapedPrices", "Scraper")', function(products) {
+                total = products.length;
+                
+                if (total === 0) {
+                    Swal.fire('No products', 'No products with scraped prices found to update.', 'info');
+                    return;
+                }
+
+                // Process each product
+                updateProductPrices(products, 0, total, decreaseAmount);
+            }).fail(function() {
+                Swal.fire('Error', 'Failed to fetch products list', 'error');
+            });
+        }
+
+        // Update product prices recursively
+        function updateProductPrices(products, index, total, decreaseAmount) {
+            if (index >= products.length) {
+                Swal.fire('Completed!', `Successfully updated ${total} product prices.`, 'success');
+                setTimeout(() => window.location.reload(), 2000);
+                return;
+            }
+
+            const product = products[index];
+            const progress = Math.round((index / total) * 100);
+            const adjustedPrice = Math.max(0, product.scrapedPrice - decreaseAmount);
+            
+            Swal.fire({
+                title: 'Updating prices...',
+                html: `Updating price for: ${product.name}<br>
+                       Scraped: ${product.scrapedPrice} EGP<br>
+                       Adjusted: ${adjustedPrice.toFixed(2)} EGP<br>
+                       <div class="progress mt-2"><div class="progress-bar" style="width: ${progress}%"></div></div>`,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Update current product price
+            $.ajax({
+                url: '@Url.Action("UpdateProductPrice", "Scraper")',
+                type: 'POST',
+                data: { 
+                    productId: product.id, 
+                    newPrice: adjustedPrice 
+                },
+                success: function() {
+                    // Process next product
+                    setTimeout(() => updateProductPrices(products, index + 1, total, decreaseAmount), 200);
+                },
+                error: function() {
+                    // Continue even if one fails
+                    setTimeout(() => updateProductPrices(products, index + 1, total, decreaseAmount), 200);
+                }
+            });
+        }
+
+        // Scheduled Scrape All - Combines scraping and updating prices with 5 EGP decrease
+        async function scheduledScrapeAll() {
+            const result = await Swal.fire({
+                title: 'Scheduled Scrape & Update',
+                html: 'This will:<br>1. Scrape ALL products<br>2. Update prices with 5 EGP decrease<br><br>Perfect for automated scheduled tasks!',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#0ea5e9',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Start Scheduled Task',
+                showLoaderOnConfirm: true
+            });
+
+            if (!result.isConfirmed) return;
+
+            // Show initial loading
+            Swal.fire({
+                title: 'Starting scheduled task...',
+                html: 'Initializing scrape and update process...',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Call the dedicated scheduled action
+            $.post('@Url.Action("ScheduledScrapeAndUpdate", "Scraper")', function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Scheduled Task Completed!',
+                        html: `Scraped: ${response.scrapedCount} products<br>Updated: ${response.updatedCount} prices<br>Failed: ${response.failedCount} products`,
+                        timer: 5000,
+                        showConfirmButton: true
+                    });
+                    
+                    // Reload page after delay to show updated data
+                    setTimeout(() => window.location.reload(), 5000);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Task Failed',
+                        text: response.error || 'An error occurred during the scheduled task',
+                        showConfirmButton: true
+                    });
+                }
+            }).fail(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'Failed to communicate with the server',
+                    showConfirmButton: true
+                });
+            });
         }
     </script>
+    
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 }

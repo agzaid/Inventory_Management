@@ -43,6 +43,12 @@ namespace Domain.Models
         public decimal? PurchasedGrams { get; set; }
         public decimal? TotalPurchasedPricePerGrams { get; set; }
         public decimal? OtherShopsPrice { get; set; }
+        
+        // Last scraped values
+        public string? LastScrapedUrl { get; set; }
+        public decimal? LastScrapedPrice { get; set; }
+        public string? LastScrapedDate { get; set; }
+        
         public string DifferencePercentage
         {
             get
